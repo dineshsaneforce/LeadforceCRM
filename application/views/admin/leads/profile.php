@@ -303,7 +303,7 @@ if (!isset($lead)) {
                                 </div>
                             </div>
                         <?php else: ?>
-                            <p class="bold font-medium-xs"><?php echo (isset($lead) && $lead->title != '' ? $lead->title : '-') ?></p>
+                            <p class="bold font-medium-xs"><?php echo (isset($lead) && $lead->name != '' ? $lead->name : '-') ?></p>
                         <?php endif; ?>
                     </div>
                     <div class="col-md-6">
@@ -643,26 +643,50 @@ echo render_select('teamleader', $teamleaders, array('staffid', array('firstname
         </div>
     </div>
     <div class="row">
+        <?php if($lead_person_details){
+            $value =$lead_person_details->name;
+        }else{
+            $value =$lead->name;
+        }
+        ?>
         <div class="col-md-6">
-            <?php echo render_input('personname', 'Person Name', '','text',['onblur'=>'validate_lead_profile_text_input(this.value,\'name\')','maxlength'=>'150']); ?>
+            <?php echo render_input('personname', 'Person Name', $value,'text',['onblur'=>'validate_lead_profile_text_input(this.value,\'name\')','maxlength'=>'150']); ?>
         </div>
+        <?php if($lead_person_details){
+            $value =$lead_person_details->title;
+        }else{
+            $value =$lead->title;
+        }
+        ?>
         <div class="col-md-6">
-            <?php echo render_input('title', 'lead_title', '','text',['onblur'=>'validate_lead_profile_text_input(this.value,\'title\')','maxlength'=>'100']); ?>
+            <?php echo render_input('title', 'lead_title', $value,'text',['onblur'=>'validate_lead_profile_text_input(this.value,\'title\')','maxlength'=>'100']); ?>
         </div>
     </div>
                     
 
     <div class="row">
         <div class="col-md-6">
-            <?php $value = (isset($email_data) ? $email_data['from']['email'] : ''); ?>
+            <?php if($lead_person_details){
+                $value =$lead_person_details->email;
+            }else{
+                $value =$lead->email;
+            }
+            ?>
+            <?php $value = (isset($email_data) ? $email_data['from']['email'] : $value); ?>
             <div class="form-group" app-field-wrapper="email">
                 <label for="email" class="control-label">Email Address</label>
                 <input type="email" id="email" name="email" class="form-control" value="<?php echo $value; ?>" autocomplete="new-text">
             </div>
             <?php //echo render_input('email', 'lead_add_edit_email', $value); ?>
-            <?php $value = (isset($lead) ? $lead->phonenumber : '');?>
         </div>
         <div class="col-md-6">
+            <?php if($lead_person_details){
+                $value =$lead_person_details->phonenumber;
+            }else{
+                $value =$lead->phonenumber;
+            }
+            ?>
+
             <div class="form-group" app-field-wrapper="phonenumber" id="phonenumber_iti_wrapper">
                 <label for="phonenumber" class="control-label"><?php echo _l('lead_add_edit_phonenumber') ?></label>
                 <div class="input-group" style="width:100%">
@@ -1028,10 +1052,18 @@ $hascoustomfields =$this->db->get(db_prefix() . 'customfields')->row();
         <?php if (!has_permission('leads', '', 'create')): ?>
             status =true;
         <?php endif; ?>
-        $('[name="personname"]').val('').attr('readonly',status);
-        $('[name="title"]').val('').attr('readonly',status);
-        $('[name="email"]').val('').attr('readonly',status);
-        $('[name="phonenumber"]').val('').attr('readonly',status);
+        if($('#contactid').val() ==''){
+            $('[name="personname"]').attr('readonly',status);
+            $('[name="title"]').attr('readonly',status);
+            $('[name="email"]').attr('readonly',status);
+            $('[name="phonenumber"]').attr('readonly',status);
+        }else{
+            $('[name="personname"]').val('').attr('readonly',status);
+            $('[name="title"]').val('').attr('readonly',status);
+            $('[name="email"]').val('').attr('readonly',status);
+            $('[name="phonenumber"]').val('').attr('readonly',status);
+        }
+        
         
     }
 
