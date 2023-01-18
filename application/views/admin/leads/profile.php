@@ -533,7 +533,7 @@ echo render_select('teamleader', $teamleaders, array('staffid', array('firstname
         <div class="col-md-6">
             <div class="form-group" app-field-wrapper="client_id">
                 <label for="client_id" class="control-label"><?php echo _l('client') ?></label>
-                <select id="client_id" name="client_id" data-live-search="true" data-width="100%" class="ajax-search" data-empty-title="New Organization">
+                <select id="client_id" name="client_id" data-live-search="true" data-width="100%" class="ajax-search" data-empty-title="New Organization" multiple data-max-options="1">
                     <?php 
                         $selectedclientid = (isset($lead) ? $lead->client_id : '');
                         if($selectedclientid){
@@ -623,7 +623,7 @@ echo render_select('teamleader', $teamleaders, array('staffid', array('firstname
     <div class="row">
         <div class="col-md-6">
             <div class="form-group" app-field-wrapper="contactid">
-                <select id="contactid" name="contactid" data-live-search="true" data-width="100%" class="selectpicker" >
+                <select id="contactid" name="contactid" data-live-search="true" data-width="100%" class="selectpicker" multiple data-max-options="1">
                     <?php 
                         if($selectedcontactid){
                             $rel_data = get_relation_data('contact',$selectedcontactid);
@@ -1048,20 +1048,20 @@ $hascoustomfields =$this->db->get(db_prefix() . 'customfields')->row();
         $('[name="zip"]').val('').attr('readonly',status);
         $('[name="clientphonenumber"]').val('').attr('readonly',status);
     }
-    function disabled_person_fields(status=true){
+    function disabled_person_fields(status=true,reset=true){
         <?php if (!has_permission('leads', '', 'create')): ?>
             status =true;
         <?php endif; ?>
-        if($('#contactid').val() ==''){
-            $('[name="personname"]').attr('readonly',status);
-            $('[name="title"]').attr('readonly',status);
-            $('[name="email"]').attr('readonly',status);
-            $('[name="phonenumber"]').attr('readonly',status);
-        }else{
+        if(reset ==true){
             $('[name="personname"]').val('').attr('readonly',status);
             $('[name="title"]').val('').attr('readonly',status);
             $('[name="email"]').val('').attr('readonly',status);
             $('[name="phonenumber"]').val('').attr('readonly',status);
+        }else{
+            $('[name="personname"]').attr('readonly',status);
+            $('[name="title"]').attr('readonly',status);
+            $('[name="email"]').attr('readonly',status);
+            $('[name="phonenumber"]').attr('readonly',status);
         }
         
         
@@ -1095,6 +1095,10 @@ $hascoustomfields =$this->db->get(db_prefix() . 'customfields')->row();
         }else{
             var url ="<?php echo admin_url('leads/get_org_person');?>";
         }
+        var contactReset =false;
+        if($('#contactid').val() !=''){
+            contactReset =true;
+        }
 		$.ajax({url: url, success: function(result){
 			var myArr = JSON.parse(result);
             $('#contactid').empty();
@@ -1111,7 +1115,7 @@ $hascoustomfields =$this->db->get(db_prefix() . 'customfields')->row();
                 
             });
             $('#contactid').selectpicker('refresh');
-            disabled_person_fields(false);
+            disabled_person_fields(false,contactReset);
         }});
        
 	}
