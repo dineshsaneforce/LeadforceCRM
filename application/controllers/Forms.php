@@ -236,11 +236,7 @@ class Forms extends ClientsController
                     $this->db->insert(db_prefix() . 'leads', $regular_fields);
                     $lead_id = $this->db->insert_id();
 
-                    hooks()->do_action('lead_created', [
-                        'lead_id'          => $lead_id,
-                        'web_to_lead_form' => true,
-                        ]);
-
+                    hooks()->do_action('lead_created', $lead_id);
                     $success = false;
                     if ($lead_id) {
                         $success = true;

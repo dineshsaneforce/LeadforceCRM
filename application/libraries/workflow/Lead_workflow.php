@@ -259,7 +259,7 @@ class Lead_workflow extends Workflow_app
             $this->setQueryFields(
                 self::$module['name'],
                 array(
-                    'id'=>'form_form_id',
+                    'id'=>'from_form_id',
                     'label'=>'Web Form',
                     'type'=>'string',
                     'input'=>'select',
