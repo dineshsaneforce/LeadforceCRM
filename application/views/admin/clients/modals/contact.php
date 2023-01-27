@@ -186,7 +186,7 @@
 										}*/
                                         echo '<option value="'.$rel_val['id'].'" selected>'.$rel_val['name'].'</option>';
                                  }
-                             }elseif($selected != ''){
+                             }elseif($selected != '' && $selected !=0){
                                 $rel_data = get_relation_data('customer',$selected);
                                 $rel_val = get_relation_values($rel_data,'customer');
 								/*if(!empty($all_clients)){
