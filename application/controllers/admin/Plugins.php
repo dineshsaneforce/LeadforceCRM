@@ -9,11 +9,25 @@ class Plugins extends AdminController
     public function __construct()
     {
         parent::__construct();
+        $this->load->library('integration_manager');
     }
 
     public function index()
     {
-        $this->load->view('admin/plugins/plugins');
+        if(!is_admin()){
+            access_denied();
+        }
+        $data =[];
+        $data['title'] ='Plugins';
+        $data['categoryintegrations'] = $this->integration_manager->getIntegrations();
+        $this->load->view('admin/plugins/plugins',$data);
+    }
+
+    public function search() {
+        $searchTerm = $this->input->post('searchTerm');
+        $data['categoryintegrations'] = $this->integration_manager->searchIntegrations($searchTerm);
+        $data['searchTerm'] = $searchTerm;
+        $this->load->view('admin/plugins/pluginslist', $data);
     }
 
 }

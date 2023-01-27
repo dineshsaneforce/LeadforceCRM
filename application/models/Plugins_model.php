@@ -18,6 +18,19 @@ class Plugins_model extends App_Model
     {
         $this->db->insert(db_prefix().'plugin_configs',array('config'=>json_encode($config)));
     }
+    
+    public function save_config($plugin,$config)
+    {
+        $this->db->where('plugin',$plugin);
+
+        $exsits =$this->db->get(db_prefix().'plugin_configs')->row();
+        if($exsits){
+            $this->db->where('plugin',$plugin);
+            $this->db->update(db_prefix().'plugin_configs',array('config'=>json_encode($config)));
+        }else{
+            $this->db->insert(db_prefix().'plugin_configs',array('plugin'=>$plugin,'config'=>json_encode($config)));
+        }
+    }
 
     public function get_config($id)
     {
@@ -27,6 +40,31 @@ class Plugins_model extends App_Model
             $config->config =json_decode($config->config,true);
         }
         return $config;
+    }
+
+    public function get_config_by_plugin($plugin)
+    {
+        $this->db->where('plugin',$plugin);
+        $config =$this->db->get(db_prefix().'plugin_configs')->row();
+        if($config && $config->config){
+            $config->config =json_decode($config->config,true);
+        }
+        return $config;
+    }
+
+    public function get_configs_by_plugin($plugin)
+    {
+        $this->db->where('plugin',$plugin);
+        $configs =$this->db->get(db_prefix().'plugin_configs')->result_object();
+
+        if($configs){
+            foreach($configs as $key => $value){
+                if($configs[$key]->config){
+                    $configs[$key]->config =json_decode($configs[$key]->config,true);
+                }
+            }
+        }
+        return $configs;
     }
 
     public function get_leadads()
