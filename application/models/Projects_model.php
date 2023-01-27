@@ -326,7 +326,8 @@ class Projects_model extends App_Model
                 }
 
                 $project->client_data = new StdClass();
-                $project->client_data = $this->clients_model->get($project->clientid);
+                if($project->clientid)
+                    $project->client_data = $this->clients_model->get($project->clientid);
 
                 $project            = hooks()->apply_filters('project_get', $project);
                 $GLOBALS['project'] = $project;
