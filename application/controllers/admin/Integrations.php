@@ -25,7 +25,13 @@ class Integrations extends AdminController
 
     public function search() {
         $searchTerm = $this->input->post('searchTerm');
-        $data['categoryintegrations'] = $this->integration_manager->searchIntegrations($searchTerm);
+
+        if(strlen(trim($searchTerm)) ==0){
+            $data['categoryintegrations'] = $this->integration_manager->getIntegrations();
+        }else{
+            $data['categoryintegrations'] = $this->integration_manager->searchIntegrations($searchTerm);
+        }
+        
         $data['searchTerm'] = $searchTerm;
         $this->load->view('admin/integrations/integrationslist', $data);
     }
