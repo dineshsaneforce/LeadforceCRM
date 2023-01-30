@@ -60,7 +60,7 @@
 
     function updatewhatsapptemplates() {
         $.ajax({
-            url: '<?php echo admin_url('plugin/whatsapp/gettemplates') ?>',
+            url: '<?php echo admin_url('integration/whatsapp/gettemplates') ?>',
             type: "get",
             dataType: "json",
             success: function(response) {
@@ -92,7 +92,7 @@
         var templateName = $('#WhatsappConfig #template').val();
         if (templateName) {
             $.ajax({
-                url: '<?php echo admin_url('plugin/whatsapp/gettemplate') ?>/' + templateName,
+                url: '<?php echo admin_url('integration/whatsapp/gettemplate') ?>/' + templateName,
                 type: "get",
                 dataType: "json",
                 success: function(response) {

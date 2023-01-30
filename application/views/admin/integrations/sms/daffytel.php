@@ -4,16 +4,20 @@
     <div class="content">
         <div class="row">
             <div class="col-md-6 col-md-offset-3">
+                <div class="mbot15 text-right">
+                    <a href="<?php echo admin_url('integration/sms') ?>" class="btn btn-info">Go to templates</a>
+                    <br>
+                </div>
                 <div class="panel_s">
                     <div class="panel-body">
                         <h4>Daffytel Configuration</h4>
                         <hr class="hr-panel-heading" />
-                        <?php echo form_open(admin_url('plugin/sms/daffytel'),array('id'=>'daffytelForm'));?>
+                        <?php echo form_open(admin_url('integration/sms/daffytel'),array('id'=>'daffytelForm'));?>
                         <div class="form-group" >
                             <label for="access_token" class="control-label ">Access Token</label>
                             <input type="text" id="access_token" name="access_token" class="form-control" required value="<?php echo set_value('access_token') ?>" >
                         </div>
-                        <button type="submit" class="btn btn-primary" id="save_template">Save</button>
+                        <button type="submit" class="btn btn-info pull-right" id="save_template">Save</button>
                         <?php echo form_close(); ?>
                     </div>
                 </div>

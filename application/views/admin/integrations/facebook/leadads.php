@@ -7,7 +7,7 @@
             <div class="col-md-12">
                 <div class="panel_s">
                     <div class="panel-body">
-                        <a href="<?= admin_url('plugin/facebook/connectleadads') ?>" type="button" class="btn btn-primary" style="float:right; margin-bottom:15px;">
+                        <a href="<?= admin_url('integration/facebook/connectleadads') ?>" type="button" class="btn btn-primary" style="float:right; margin-bottom:15px;">
                         + Connect LeadAd
                         </a>
 
@@ -30,7 +30,7 @@
                                         <td data-order="<?php echo $leadad->config['facebookLoginName']; ?>"><?php echo $leadad->config['facebookLoginName']; ?></td>
                                         <td data-order="<?php echo $leadad->config['page']; ?>"><?php echo $leadad->config['page']; ?></td>
                                         <td data-order="<?php echo $leadad->config['form']; ?>"><?php echo $leadad->config['form']; ?></td>
-                                        <td><a href="<?= admin_url('plugin/facebook/deleteleadad/'.$leadad->id) ?>" class="btn text-danger delete_link"><i class="fa fa-trash" aria-hidden="true"></i> Delete</a></td>
+                                        <td><a href="<?= admin_url('integration/facebook/deleteleadad/'.$leadad->id) ?>" class="btn text-danger delete_link"><i class="fa fa-trash" aria-hidden="true"></i> Delete</a></td>
                                     </tr>
                                     <?php endforeach; ?>
                                 </tbody>

@@ -26,9 +26,9 @@ class Whatsapp extends AdminController
         if (!has_permission($this->moudle_permission_name, '', 'view')) {
             access_denied($this->moudle_permission_name);
         }
-        $data =array('title'=>'whatsapp_settings');
+        $data =array('title'=>_l('whatsapp'));
         $data['settings'] =$this->whatsapp_model->getSettings();
-        $this->load->view('admin/plugins/whatsapp/settings',$data);
+        $this->load->view('admin/integrations/whatsapp/settings',$data);
     }
 
     public function gettemplates()

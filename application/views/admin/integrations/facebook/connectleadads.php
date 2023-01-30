@@ -57,12 +57,12 @@
                 <div class="panel_s">
                     <div class="panel-body">
                         <!-- <div id="fb-root"></div> -->
-                        <?php echo form_open(admin_url('plugin/facebook/connectleadads'),array('id'=>'facebookleadgenform')) ?>
+                        <?php echo form_open(admin_url('integration/facebook/connectleadads'),array('id'=>'facebookleadgenform')) ?>
                         <div class="row">
                             <div id="facebookLoginWrapper" class="col-md-6 col-md-offset-3">
                                 <div class="card ">
                                     <div class="card-body border text-center">
-                                        <img src="<?php echo base_url('assets/images/pluginslogo/facebook.jpeg') ?>" alt="">
+                                        <img src="<?php echo base_url('assets/images/integrationslogo/facebook.jpeg') ?>" alt="">
                                         <h4>Facebook Lead Ads</h4>
                                         <p class="text-muted">Have new leads who sign up through Facebook, automatically uploaded into Leads.</p>
                                         <br><br>
@@ -178,7 +178,7 @@
                             <?php endif; ?>
                             
                             <button class="btn pull-right" id="saveleadgenconfig">Save Configuration</button>
-                            <a href="<?php echo admin_url('plugin/facebook/leadads') ?>" class="btn pull-right btn-default" style="margin-right: 15px;">Cancel</a>
+                            <a href="<?php echo admin_url('integration/facebook/leadads') ?>" class="btn pull-right btn-default" style="margin-right: 15px;">Cancel</a>
                         </div>
                         <?php echo form_close(); ?>
                     </div>
@@ -229,7 +229,7 @@
                 function getPageProfileLink(pageId,pageAccessToken){
                     var url ='';
                     $.ajax({
-                        url: "<?php echo admin_url('plugin/facebook/get_page_profilelink')?>?pageId="+pageId+"&page_access_token="+pageAccessToken,
+                        url: "<?php echo admin_url('integration/facebook/get_page_profilelink')?>?pageId="+pageId+"&page_access_token="+pageAccessToken,
                         type: 'GET',
                         dataType: 'json', // added data type
                         async:false,
@@ -245,7 +245,7 @@
                 }
                 function getFbPages(userID,accessToken){
                     $.ajax({
-                        url: "<?php echo admin_url('plugin/facebook/get_pages')?>?userID="+userID+"&access_token="+accessToken,
+                        url: "<?php echo admin_url('integration/facebook/get_pages')?>?userID="+userID+"&access_token="+accessToken,
                         type: 'GET',
                         dataType: 'json', // added data type
                         success: function(res) {
@@ -275,7 +275,7 @@
                 function getFbForms(pagekey){
                     var pageDetails =pages[pagekey];
                     $.ajax({
-                        url: "<?php echo admin_url('plugin/facebook/get_leadgen_forms')?>?pageId="+pageDetails.id+"&page_access_token="+pageDetails.access_token,
+                        url: "<?php echo admin_url('integration/facebook/get_leadgen_forms')?>?pageId="+pageDetails.id+"&page_access_token="+pageDetails.access_token,
                         type: 'GET',
                         dataType: 'json', // added data type
                         success: function(res) {
@@ -298,7 +298,7 @@
                     var pageDetails =pages[pagekey];
                     var leadgenformdetail =leadgenforms[formid];
                     $.ajax({
-                        url: "<?php echo admin_url('plugin/facebook/get_leadgen_form_details')?>?formId="+leadgenformdetail.id+"&page_access_token="+pageDetails.access_token,
+                        url: "<?php echo admin_url('integration/facebook/get_leadgen_form_details')?>?formId="+leadgenformdetail.id+"&page_access_token="+pageDetails.access_token,
                         type: 'GET',
                         dataType: 'json', // added data type
                         success: function(res) {
@@ -362,7 +362,7 @@
                                 if(response.success ==true){
                                     alert_float('success','Configured Successfully');
                                     setTimeout(function(){  
-                                        window.location.href = admin_url+'plugin/facebook/leadads';
+                                        window.location.href = admin_url+'integration/facebook/leadads';
                                     }, 500);
                                 }else{
                                     alert_float('danger','Something went wrong try again later.');

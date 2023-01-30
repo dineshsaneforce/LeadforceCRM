@@ -34,7 +34,7 @@ class Whatsapp_model extends App_Model
             update_option('whatsapp_options',json_encode($settings));
             return [
                 'success'=> true,
-                'msg' => _l('whats_app_account_saved')
+                'msg' => 'Account saved successfully'
             ];
         }
     }

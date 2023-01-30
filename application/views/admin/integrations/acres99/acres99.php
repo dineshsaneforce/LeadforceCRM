@@ -23,7 +23,7 @@
                                     <?php if ($configs) : foreach ($configs as $key => $config) : ?>
                                             <tr>
                                                 <td data-order="<?php echo $config->form_name; ?>"><?php echo $config->form_name; ?></td>
-                                                <td><a data-toggle="modal" data-target="#configModal" href="<?php echo admin_url('plugin/acres99/config/' . $config->id) ?>" class="">View</a> | <a class="text-danger" href="<?php echo admin_url('plugin/acres99/deleteconfig/' . $config->id) ?>" class="">Delete</a></td>
+                                                <td><a data-toggle="modal" data-target="#configModal" href="<?php echo admin_url('integration/acres99/config/' . $config->id) ?>" class="">View</a> | <a class="text-danger" href="<?php echo admin_url('integration/acres99/deleteconfig/' . $config->id) ?>" class="">Delete</a></td>
                                             </tr>
                                     <?php endforeach;
                                     endif; ?>
@@ -53,7 +53,7 @@
 <div class="modal" id="connectFormModal" style="display: none; z-index: 1050;">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form action="<?php echo admin_url('plugin/acres99') ?>" method="POST">
+            <form action="<?php echo admin_url('integration/acres99') ?>" method="POST">
                 <div class="modal-header">
                     <span class="title">Connect Form</span>
                     <button type="button" class="close" data-dismiss="modal">×</button>
