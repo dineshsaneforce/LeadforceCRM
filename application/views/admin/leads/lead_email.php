@@ -28,7 +28,7 @@ $emails =$this->leads_model->get_emails($lead->id);
 	<div class="col-md-12 email">
 		<div class="table-responsive">
 			<form id="formId" >
-				<table class="table dt-table" >
+				<table class="table dt-table" data-order-col="4" data-order-type="desc">
 					<thead>
 						<tr>
 						  <th>From</th>
@@ -41,13 +41,13 @@ $emails =$this->leads_model->get_emails($lead->id);
 					<tbody>
 						<?php if(!empty($emails)){foreach($emails as $email1){?>
 						  <tr clss="<?php echo $email1['uiid'];?>_mail_row">
-							<td data-order="<?php echo $email1['from']; ?>">
-								<a href="javascript:void(0)" onClick="getMessage('<?php echo $email1['id'];?>');"><?php echo $email1['from_email'];?></a>
+							<td >
+								<a href="javascript:void(0)" onClick="getMessage('<?php echo $email1['id'];?>',<?php echo $email1['local_id'];?>);"><?php echo $email1['from_email'];?></a>
 							  </td>
 							  <?php $to_mails = json_decode($email1['mail_to'],true);?>
-							  <td data-order="<?php echo $email1['to']; ?>"><a href="javascript:void(0)" onClick="getMessage('<?php echo $email1['id'];?>');"><?php echo $to_mails[0]['email']; ?></a></td>
-							  <td data-order="<?php echo $email1['subject']; ?>">
-								<a href="javascript:void(0)" onClick="getMessage('<?php echo $email1['id'];?>');"><?php echo $email1['subject'];?></a>
+							  <td ><a href="javascript:void(0)" onClick="getMessage('<?php echo $email1['id'];?>',<?php echo $email1['local_id'];?>);"><?php echo $to_mails[0]['email']; ?></a></td>
+							  <td >
+								<a href="javascript:void(0)" onClick="getMessage('<?php echo $email1['id'];?>',<?php echo $email1['local_id'];?>);"><?php echo $email1['subject'];?></a>
 							  </td>
 							  <td>
 								<?php if(!empty($email1['attachements']) && $email1['attachements'] != '[]'){
@@ -73,8 +73,8 @@ $emails =$this->leads_model->get_emails($lead->id);
 								}
 								} ?>
 							  </td>
-							  <td data-order="<?php echo $email1['date']; ?>">
-								<a href="javascript:void(0)" onClick="getMessage('<?php echo $email1['id'];?>');"><?php echo date('D, d M Y h:i A',strtotime($email1['date'])); ?></a>
+							  <td data-order="<?php echo $email1['udate']; ?>">
+								<a href="javascript:void(0)" onClick="getMessage('<?php echo $email1['id'];?>',<?php echo $email1['local_id'];?>);"><?php echo date('D, d M Y h:i A',strtotime($email1['date'])); ?></a>
 							  </td>
 						   </tr>
 						<?php }}?>
@@ -132,7 +132,7 @@ $emails =$this->leads_model->get_emails($lead->id);
             function(data, status) {
                 var json = $.parseJSON(data);
                 $('#reply_toemail').val(json.from_address);
-                $('#ch_uid').val(uid);
+                $('#ch_uid').val(json.message_id);
                 $('#reply_subject').val('Re: ' + json.subject);
                 $('.ch_files_r').html('');
                 $('#r_files').html('');
@@ -161,7 +161,7 @@ $emails =$this->leads_model->get_emails($lead->id);
             function(data, status) {
                 var json = $.parseJSON(data);
                 $('#reply_toemail').val(json.from_address);
-                $('#ch_uid').val(uid);
+                $('#ch_uid').val(json.message_id);
                 $('#reply_subject').val('Re: ' + json.subject);
 
                 $('.ch_files_r').html('');
@@ -198,11 +198,12 @@ $emails =$this->leads_model->get_emails($lead->id);
 		});
 	}
 
-	function getMessage(val){
+	function getMessage(val,local_id){
 		document.getElementById('overlay').style.display = '';
 		$.post(admin_url + 'leads/getmessage',
 		{
-			uid:val
+			uid:val,
+			local_id:local_id,
 		},
 		function(data,status){
 			document.getElementById('overlay').style.display = 'none'; 

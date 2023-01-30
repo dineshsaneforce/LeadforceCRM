@@ -855,7 +855,7 @@ function add_content(msg_id){
 	});
 }
 function add_to(msg_id){
-	document.getElementById('overlay_new1').style.display = '';
+	document.getElementById('overlay').style.display = '';
 	$.post(admin_url + 'outlook_mail/get_outlook_message',
 	{
 		msg_id:msg_id
@@ -876,12 +876,13 @@ function add_to(msg_id){
 		$('#r_file').val('');
 		tinyMCE.get('reply_description').setContent('');
 		$('#r_getFile').val('');
-		document.getElementById('overlay_new1').style.display = 'none'; 
+		$('#reply-modal').modal('show');
+		document.getElementById('overlay').style.display = 'none'; 
 		
 	});
 }
 function add_reply_all(msg_id){
-	document.getElementById('overlay_new1').style.display = '';
+	document.getElementById('overlay').style.display = '';
 	$.post(admin_url + 'outlook_mail/get_outlook_message',
 	{
 		msg_id:msg_id
@@ -903,7 +904,8 @@ function add_reply_all(msg_id){
 		$('#r_file').val('');
 		tinyMCE.get('reply_description').setContent('');
 		$('#r_getFile').val('');
-		document.getElementById('overlay_new1').style.display = 'none'; 
+		$('#reply-modal').modal('show');
+		document.getElementById('overlay').style.display = 'none'; 
 		
 	});
 }

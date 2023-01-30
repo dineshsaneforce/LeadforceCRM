@@ -25,9 +25,18 @@ class Plugins extends AdminController
 
     public function search() {
         $searchTerm = $this->input->post('searchTerm');
-        $data['categoryintegrations'] = $this->integration_manager->searchIntegrations($searchTerm);
-        $data['searchTerm'] = $searchTerm;
-        $this->load->view('admin/plugins/pluginslist', $data);
+        $data =[];
+        if(strlen(trim($searchTerm)) !=0){
+            $data['categoryintegrations'] = $this->integration_manager->searchIntegrations($searchTerm);
+            $data['searchTerm'] = $searchTerm;
+            $this->load->view('admin/plugins/pluginslist', $data);
+        }else{
+            $data['categoryintegrations'] = $this->integration_manager->getIntegrations();
+            $data['searchTerm'] = $searchTerm;
+            $this->load->view('admin/plugins/pluginslist', $data);
+        }
+        
+        
     }
 
 }

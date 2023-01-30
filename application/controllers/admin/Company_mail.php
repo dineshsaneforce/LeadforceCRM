@@ -212,7 +212,7 @@ class Company_mail extends AdminController
 				);
 			}
 		}
-		
+		$folders ['message_id']=$email['message_id'];
 		$folders ['rel_data'] =$rel_data;
         echo json_encode($folders);
         exit;
@@ -790,8 +790,9 @@ class Company_mail extends AdminController
 		echo render_deal_lead_list_by_email($_REQUEST['toemail']);
 	}
 	public function forward() {
-
-		if(get_option('connect_mail')=='no'){
+		if($this->input->post('rel_type') =='lead'){
+			$redirect_url = admin_url('leads/lead/'.$this->input->post('rel_id').'?group=tab_email');
+		}elseif(get_option('connect_mail')=='no'){
 			$redirect_url = admin_url('outlook_mail/connect_outlook');
 		}else{
 			if(get_option('company_mail_server')=='yes'){
@@ -814,7 +815,9 @@ class Company_mail extends AdminController
 		$this->imap_mailer->send();
     }
 	public function reply() {
-		if(get_option('connect_mail')=='no'){
+		if($this->input->post('rel_type') =='lead'){
+			$redirect_url = admin_url('leads/lead/'.$this->input->post('rel_id').'?group=tab_email');
+		}elseif(get_option('connect_mail')=='no'){
 			$redirect_url = admin_url('outlook_mail/connect_outlook');
 		}else{
 			if(get_option('company_mail_server')=='yes'){
@@ -824,7 +827,6 @@ class Company_mail extends AdminController
 				$redirect_url = site_url().'admin/company_mail/check_user_mail';
 			}
 		}
-		
 		$this->load->library('mails/imap_mailer');
 		$this->imap_mailer->set_to($this->input->post('toemail', false));
 		$this->imap_mailer->set_subject($this->input->post('name', false));
@@ -835,7 +837,7 @@ class Company_mail extends AdminController
 		$this->imap_mailer->set_rel_type($this->input->post('rel_type', false));
 		$this->imap_mailer->set_rel_id($this->input->post('rel_id', false));
 		$this->imap_mailer->set_redirectTo($redirect_url);
-		$this->imap_mailer->set_parentId($this->input->post('parent_id',false));
+		$this->imap_mailer->set_parentId($this->input->post('ch_uid',false));
 		$this->imap_mailer->send();
     }
 	public function autocomplete(){
