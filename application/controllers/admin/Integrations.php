@@ -29,7 +29,8 @@ class Integrations extends AdminController
             $data['categoryintegrations'] = $this->integration_manager->getIntegrations();
         }else{
             $data['categoryintegrations'] = $this->integration_manager->searchIntegrations($searchTerm);
-        }        $data['searchTerm'] = $searchTerm;
+        }        
+        $data['searchTerm'] = $searchTerm;
         $this->load->view('admin/plugins/pluginslist', $data);
     }
 
