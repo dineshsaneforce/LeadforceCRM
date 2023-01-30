@@ -4,7 +4,7 @@
     <div class="content">
         <div class="panel_s">
             <div class="panel-body">
-                <?php echo form_open(admin_url('plugin/indiamart/saveMergeFields'),array('id'=>'indiamartMergeFiedls')); ?>
+                <?php echo form_open(admin_url('integration/indiamart/saveMergeFields'),array('id'=>'indiamartMergeFiedls')); ?>
                 <div class="row">
                     <input type="hidden" name="source_id" id="source_id" value="">
                     <div class="col-md-12">

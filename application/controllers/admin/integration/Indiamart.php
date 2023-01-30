@@ -47,7 +47,7 @@ class Indiamart extends AdminController
         $data['name'] = explode(',',$fvs->name);;
         $data['lead_company'] = explode(',',$fvs->lead_company);
 
-        $this->load->view('admin/plugins/indiamart/mergefields',$data);
+        $this->load->view('admin/integrations/indiamart/mergefields',$data);
     }
 
     public function saveMergeFields()
@@ -181,7 +181,7 @@ class Indiamart extends AdminController
                 }
             }
             
-            redirect(admin_url('plugin/indiamart'));
+            redirect(admin_url('integration/indiamart'));
         }
     }
 
