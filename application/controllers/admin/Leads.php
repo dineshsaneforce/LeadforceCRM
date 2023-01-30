@@ -1908,8 +1908,15 @@ class Leads extends AdminController
     }
 
     public function getmessage() {
-        $this->db->where('id', $_REQUEST['uid']);
-        $local_email =$this->db->get(db_prefix().'localmailstorage')->row();
+        
+        if(isset($_REQUEST['local_id']) && $_REQUEST['local_id'] >0){
+            $this->db->where('id', $_REQUEST['uid']);
+            $local_email =$this->db->get(db_prefix().'reply')->row();
+        }else{
+            $this->db->where('id', $_REQUEST['uid']);
+            $local_email =$this->db->get(db_prefix().'localmailstorage')->row();
+
+        }
         $output ='';
         if($local_email){
             $mail_to =json_decode($local_email->mail_to);

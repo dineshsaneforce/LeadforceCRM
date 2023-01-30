@@ -647,7 +647,7 @@ table.body {
             function(data, status) {
                 var json = $.parseJSON(data);
                 $('#reply_toemail').val(json.from_address);
-                $('#ch_uid').val(uid);
+                $('#ch_uid').val(json.message_id);
                 $('#reply_subject').val('Re: ' + json.subject);
                 $('.ch_files_r').html('');
                 $('#r_files').html('');
@@ -676,7 +676,7 @@ table.body {
             function(data, status) {
                 var json = $.parseJSON(data);
                 $('#reply_toemail').val(json.from_address);
-                $('#ch_uid').val(uid);
+                $('#ch_uid').val(json.message_id);
                 $('#reply_subject').val('Re: ' + json.subject);
 
                 $('.ch_files_r').html('');

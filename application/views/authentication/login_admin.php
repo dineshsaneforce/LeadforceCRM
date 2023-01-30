@@ -375,10 +375,10 @@ p {
         <div class="col-md-6 carousel-wrapper"> 
             <div class="carousel-wrapper"> 
                   <div class="text-wrapper">
-                      <p>With great cheerfulness, zeal and brightest rays of joy and hope!!!</p>
+                      <!-- <p>With great cheerfulness, zeal and brightest rays of joy and hope!!!</p> -->
                   </div>       
                   <div class="images-wrapper">
-                      <img src="<?php echo base_url('uploads/company/login_banner.png') ?>" class="image img-1 show" alt="" />
+                      <img src="<?php echo base_url('uploads/company/login_banner.png?V=1.0') ?>" class="image img-1 show" alt="" />
                   </div>
             </div>
         </div>  
