@@ -261,18 +261,30 @@ class Imap_mailer
                 $data['ConversationId'] =$email['ConversationId'];
             }
 
-            $log_action ='added';
-            if($this->parentId >0){
-                unset($data['attachment_id']);
-                unset($data['mail_by']);
-                $data['local_id'] =$this->parentId;
-                $this->CI->db->insert(db_prefix() . 'reply', $data);
-                $log_action ='replied';
+            $log_action ='';
+            if($this->parentId){
+                $this->CI->db->where('message_id',$this->parentId);
+                $parentMessage =$this->CI->db->get(db_prefix().'localmailstorage')->row();
+                if($parentMessage){
+                    if($parentMessage->project_id){
+                        $this->rel_type ='project';
+                        $this->rel_id =$data['project_id'] =$parentMessage->project_id;
+                    }elseif($parentMessage->lead_id){
+                        $this->rel_type ='lead';
+                        $this->rel_id  =$data['lead_id'] =$parentMessage->lead_id;
+                    }
+                    
+                    unset($data['attachment_id']);
+                    unset($data['ConversationId']);
+                    $data['local_id'] =$parentMessage->id;
+                    $this->CI->db->insert(db_prefix() . 'reply', $data);
+                    $log_action ='replied';
+                }
             }else{
                 $this->CI->db->insert(db_prefix() . 'localmailstorage', $data);
             }
             
-            if($this->rel_type =='lead'){
+            if($this->rel_type =='lead' && $log_action !=''){
                 $this->CI->leads_model->log_activity($this->rel_id,'email',$log_action,$this->CI->db->insert_id());
             }
             
@@ -548,6 +560,37 @@ class Imap_mailer
             
         }
         
+    }
+
+
+    public function getLocalMessages($type,$type_id)
+    {
+        $selects =array('uid','id','from_email','mail_to','subject','attachements','message_id','mail_by','folder','date','udate');
+        if($type =='lead'){
+            $this->CI->db->where('lead_id', $type_id);
+        }
+        $localmailstorageselects =$selects;
+        $localmailstorageselects[] ='0 as local_id';
+        $this->CI->db->select(implode(',',$localmailstorageselects));
+    
+        $this->CI->db->from(db_prefix().'localmailstorage');
+        
+        $subQuery1 = $this->CI->db->get_compiled_select();
+        $this->CI->db->reset_query();
+        
+        // #2 SubQueries no.2 -------------------------------------------
+        $replyselects =$selects;
+        $replyselects[] ='local_id';
+        $this->CI->db->select(implode(',',$replyselects));
+        
+        if($type =='lead'){
+            $this->CI->db->where('lead_id', $type_id);
+        }
+        $this->CI->db->from(db_prefix().'reply');
+        $subQuery2 = $this->CI->db->get_compiled_select();
+        $this->CI->db->reset_query();
+        // #3 Union with Simple Manual Queries --------------------------
+        return $this->CI->db->query("select * from ($subQuery1 UNION $subQuery2) as unionTable order by udate desc")->result_array();
     }
 
 }

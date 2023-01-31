@@ -17,7 +17,7 @@ class Facebook extends AdminController
     {
         $data =['title'=>'Facebook Lead ads'];
         $data['leadads']  = $this->facebook_model->get_leadgen_configs();
-        $this->load->view('admin/plugins/facebook/leadads',$data);
+        $this->load->view('admin/integrations/facebook/leadads',$data);
     }
     public function connectleadads()
     {
@@ -34,7 +34,7 @@ class Facebook extends AdminController
         $this->load->model('leads_model');
         $data =['title'=>'Facebook Lead ads'];
         $data['lead_sources']  = $this->leads_model->get_source();
-        $this->load->view('admin/plugins/facebook/connectleadads',$data);
+        $this->load->view('admin/integrations/facebook/connectleadads',$data);
     }
 
     public function get_pages()
@@ -81,6 +81,6 @@ class Facebook extends AdminController
     public function deleteleadad($id)
     {
         $this->facebook_model->delete_leadgen_config($id);
-        redirect(admin_url('plugin/facebook/leadads'));
+        redirect(admin_url('integration/facebook/leadads'));
     }
 }

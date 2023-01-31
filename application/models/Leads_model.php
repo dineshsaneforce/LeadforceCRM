@@ -7,6 +7,7 @@ class Leads_model extends App_Model {
     public function __construct() {
         parent::__construct();
         $this->load->model('products_model');
+        $this->load->library('mails/imap_mailer');
     }
 
     /**
@@ -1516,18 +1517,11 @@ class Leads_model extends App_Model {
 
     public function get_emails($lead_id)
     {
-
-        $this->db->where('lead_id', $lead_id);
-
-		$this->db->where('staff_id !=', 0);
-        $this->db->order_by('udate', 'desc');
-		//$this->db->group_by('uid'); 
-        $emails = $this->db->get(db_prefix() . 'localmailstorage')->result_array();
-        return $emails;
+        return $this->imap_mailer->getLocalMessages('lead',$lead_id);
     }
     public function get_emails_count($lead_id)
     {
-
+        $count =0;
         $this->db->where('lead_id', $lead_id);
 
 		$this->db->where('staff_id !=', 0);
@@ -1535,9 +1529,21 @@ class Leads_model extends App_Model {
 		//$this->db->group_by('uid'); 
         $emails = $this->db->get(db_prefix() . 'localmailstorage')->row();
         if($emails){
-            return $emails->count;
+            $count +=$emails->count;
         }
-        return 0;
+
+        $this->db->where('lead_id', $lead_id);
+
+		$this->db->where('staff_id !=', 0);
+        $this->db->select('count(id) AS count');
+		//$this->db->group_by('uid'); 
+        $emails = $this->db->get(db_prefix() . 'reply')->row();
+        
+        if($emails){
+            $count +=$emails->count;
+        }
+
+        return $count;
     }
 
     /**
