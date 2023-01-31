@@ -32,8 +32,7 @@ function app_init_admin_sidebar_menu_items() {
         $pipelines = $CI->db->get(db_prefix() . 'pipeline')->result_array();
         //echo $CI->db->last_query(); exit;
         //echo "<pre>"; print_r($pipelines); exit;
-        //$projurl = admin_url('projects/kanban_noscroll?pipelines='.$pipelines[0]['id'].'&member=&gsearch=');
-        $projurl = admin_url('projects/kanban_noscroll?pipelines='.$pipelines[0]['id'].'&member='.get_staff_user_id().'&gsearch=');
+        $projurl = admin_url('projects/kanban_noscroll?pipelines='.$pipelines[0]['id'].'&member=&gsearch=');
         // $projurl = admin_url('projects/index_list?pipelines=&member=&gsearch=');
         if(!is_admin(get_staff_user_id())) {
             $projurl = admin_url('projects/kanban_noscroll?pipelines='.$pipelines[0]['id'].'&member='.get_staff_user_id().'&gsearch=');
