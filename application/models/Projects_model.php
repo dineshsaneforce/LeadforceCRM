@@ -394,7 +394,7 @@ class Projects_model extends App_Model
 
                 $project->client_data = new StdClass();
                 if($project->clientid)
-                    $project->client_data = $this->clients_model->get($project->clientid);
+                     $project->client_data = $this->clients_model->get($project->clientid);
 
                 $project            = hooks()->apply_filters('project_get', $project);
                 $GLOBALS['project'] = $project;
@@ -3353,7 +3353,7 @@ class Projects_model extends App_Model
         }
 
         if ($_SESSION['member']) {
-            $this->db->where('((' . db_prefix() . 'projects.id IN (SELECT ' . db_prefix() . 'projects.id FROM ' . db_prefix() . 'projects join ' . db_prefix() . 'project_members  on ' . db_prefix() . 'project_members.project_id = ' . db_prefix() . 'projects.id WHERE ' . db_prefix() . 'project_members.staff_id in (' . $_SESSION['member'] . '))) OR  ' . db_prefix() . 'projects.teamleader in (' . $_SESSION['member'] . '))');
+            $this->db->where('((' . db_prefix() . 'projects.id IN (SELECT ' . db_prefix() . 'projects.id FROM ' . db_prefix() . 'projects join ' . db_prefix() . 'project_members  on ' . db_prefix() . 'project_members.project_id = ' . db_prefix() . 'projects.id WHERE ' . db_prefix() . 'project_members.staff_id in (' . implode(',',$_SESSION['member']) . '))) OR  ' . db_prefix() . 'projects.teamleader in (' . implode(',',$_SESSION['member']) . '))');
            
         }
 
@@ -3447,10 +3447,10 @@ class Projects_model extends App_Model
             $this->db->where(db_prefix() . 'projects.id IN (SELECT id FROM ' . db_prefix() . 'projects WHERE name like "%' . $gsearch . '%")');
         }
         if ($_SESSION['member']) {
-            $this->db->where('((' . db_prefix() . 'projects.id IN (SELECT ' . db_prefix() . 'projects.id FROM ' . db_prefix() . 'projects join ' . db_prefix() . 'project_members  on ' . db_prefix() . 'project_members.project_id = ' . db_prefix() . 'projects.id WHERE ' . db_prefix() . 'project_members.staff_id in (' . $_SESSION['member'] . '))) OR  ' . db_prefix() . 'projects.teamleader in (' . $_SESSION['member'] . '))');
+            $this->db->where('((' . db_prefix() . 'projects.id IN (SELECT ' . db_prefix() . 'projects.id FROM ' . db_prefix() . 'projects join ' . db_prefix() . 'project_members  on ' . db_prefix() . 'project_members.project_id = ' . db_prefix() . 'projects.id WHERE ' . db_prefix() . 'project_members.staff_id in (' . implode(',',$_SESSION['member']) . '))) OR  ' . db_prefix() . 'projects.teamleader in (' . implode(',',$_SESSION['member']) . '))');
             //$this->db->where('(' . db_prefix() . 'projects.id IN (SELECT ' . db_prefix() . 'projects.id FROM ' . db_prefix() . 'projects join ' . db_prefix() . 'project_members  on ' . db_prefix() . 'project_members.project_id = ' . db_prefix() . 'projects.id WHERE ' . db_prefix() . 'project_members.staff_id in (' . $_SESSION['member'] . ') OR  ' . db_prefix() . 'projects.teamleader in (' . $_SESSION['member'] . ') ))');
             //$this->db->where('(' . db_prefix() . 'projects.teamleader = ' . $_SESSION['member'] .' OR ' . db_prefix() . 'projects.id IN (SELECT project_id FROM ' . db_prefix() . 'project_members WHERE staff_id=' . $_SESSION['member'] . '))');
-        }
+           }
 
         $pipeline = $this->session->userdata('pipelines');
         if (empty($pipeline)) {
@@ -3478,15 +3478,15 @@ class Projects_model extends App_Model
                 $this->db->limit($limit);
             }
         }
-
+ 
         
         if ($count == false) {
 			
             return $result = $this->db->get()->result_array();
-
+       
         }
         //echo $this->db->last_query(); exit;
-        return $this->db->count_all_results();
+        return $this->db->count_all_results(); 
     }
 	public function do_kanban_forecast_query($intervel, $which, $year, $count = false, $search = '', $page = 1, $sort = []) {
                 //pre($_SESSION);
@@ -3558,7 +3558,7 @@ class Projects_model extends App_Model
         }
 
         if ($_SESSION['member']) {
-            $this->db->where('((' . db_prefix() . 'projects.id IN (SELECT ' . db_prefix() . 'projects.id FROM ' . db_prefix() . 'projects join ' . db_prefix() . 'project_members  on ' . db_prefix() . 'project_members.project_id = ' . db_prefix() . 'projects.id WHERE ' . db_prefix() . 'project_members.staff_id in (' . $_SESSION['member'] . '))) OR  ' . db_prefix() . 'projects.teamleader in (' . $_SESSION['member'] . '))');
+            $this->db->where('((' . db_prefix() . 'projects.id IN (SELECT ' . db_prefix() . 'projects.id FROM ' . db_prefix() . 'projects join ' . db_prefix() . 'project_members  on ' . db_prefix() . 'project_members.project_id = ' . db_prefix() . 'projects.id WHERE ' . db_prefix() . 'project_members.staff_id in (' . implode(',',$_SESSION['member']) . '))) OR  ' . db_prefix() . 'projects.teamleader in (' . implode(',',$_SESSION['member']) . '))');
             //$this->db->where('(' . db_prefix() . 'projects.id IN (SELECT ' . db_prefix() . 'projects.id FROM ' . db_prefix() . 'projects join ' . db_prefix() . 'project_members  on ' . db_prefix() . 'project_members.project_id = ' . db_prefix() . 'projects.id WHERE ' . db_prefix() . 'project_members.staff_id in (' . $_SESSION['member'] . ') OR  ' . db_prefix() . 'projects.teamleader in (' . $_SESSION['member'] . ') ))');
             //$this->db->where('(' . db_prefix() . 'projects.teamleader = ' . $_SESSION['member'] .' OR ' . db_prefix() . 'projects.id IN (SELECT project_id FROM ' . db_prefix() . 'project_members WHERE staff_id=' . $_SESSION['member'] . '))');
         }
@@ -3665,7 +3665,7 @@ class Projects_model extends App_Model
         }
 
         if ($_SESSION['member']) {
-            $this->db->where('((' . db_prefix() . 'projects.id IN (SELECT ' . db_prefix() . 'projects.id FROM ' . db_prefix() . 'projects join ' . db_prefix() . 'project_members  on ' . db_prefix() . 'project_members.project_id = ' . db_prefix() . 'projects.id WHERE ' . db_prefix() . 'project_members.staff_id in (' . $_SESSION['member'] . '))) OR  ' . db_prefix() . 'projects.teamleader in (' . $_SESSION['member'] . '))');
+            $this->db->where('((' . db_prefix() . 'projects.id IN (SELECT ' . db_prefix() . 'projects.id FROM ' . db_prefix() . 'projects join ' . db_prefix() . 'project_members  on ' . db_prefix() . 'project_members.project_id = ' . db_prefix() . 'projects.id WHERE ' . db_prefix() . 'project_members.staff_id in (' . implode(',',$_SESSION['member']) . '))) OR  ' . db_prefix() . 'projects.teamleader in (' . implode(',',$_SESSION['member']) . '))');
             //$this->db->where('(' . db_prefix() . 'projects.id IN (SELECT ' . db_prefix() . 'projects.id FROM ' . db_prefix() . 'projects join ' . db_prefix() . 'project_members  on ' . db_prefix() . 'project_members.project_id = ' . db_prefix() . 'projects.id WHERE ' . db_prefix() . 'project_members.staff_id in (' . $_SESSION['member'] . ') OR  ' . db_prefix() . 'projects.teamleader in (' . $_SESSION['member'] . ') ))');
             //$this->db->where('(' . db_prefix() . 'projects.teamleader = ' . $_SESSION['member'] .' OR ' . db_prefix() . 'projects.id IN (SELECT project_id FROM ' . db_prefix() . 'project_members WHERE staff_id=' . $_SESSION['member'] . '))');
         }

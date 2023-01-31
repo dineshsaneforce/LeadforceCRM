@@ -16,19 +16,25 @@
                 <a href="<?php echo admin_url('projects/project'); ?>" class="btn btn-info pull-left display-block mright5">
                   <?php echo _l('new_project'); ?>
                 </a>
-              <?php }
+              <?php } 
               $list_url = admin_url('projects/index_list?pipelines=&member=&gsearch=');
-              $kanban_onscroll_url = admin_url('projects/kanban_noscroll?pipelines='.$pipelines[0]['id'].'&member=&gsearch=');
-            //   $kanban_url = admin_url('projects/kanbans?pipelines='.$pipelines[0]['id'].'&member=&gsearch=');
-              $forecast_url = admin_url('projects/kanbans_forecast?pipelines='.$pipelines[0]['id'].'&member='.$mem.'&gsearch='.$gsearch);
-			  $approval_url = admin_url('projects/index_list?approvalList=1&pipelines=&member=&gsearch=');
-              if(!is_admin(get_staff_user_id())) {
+			  $kanban_onscroll_url = admin_url('projects/kanban_noscroll?pipelines='.$pipelines[0]['id'].'&gsearch='.$gsearch);
+			  foreach($mem as $member) {
+				  $kanban_onscroll_url .= '&member[]=' . $member;
+			  }
+			   //   $kanban_url = admin_url('projects/kanbans?pipelines='.$pipelines[0]['id'].'&member=&gsearch=');
+			$forecast_url = admin_url('projects/kanbans_forecast?pipelines='.$pipelines[0]['id'].'&gsearch='.$gsearch);
+			   foreach($mem as $member) {
+				$forecast_url .= '&member[]=' . $member;
+			}			  
+			$approval_url = admin_url('projects/index_list?approvalList=1&pipelines=&member=&gsearch=');
+			  if(!is_admin(get_staff_user_id())) {
                   $list_url = admin_url('projects/index_list?pipelines='.$pipelines[0]['id'].'&member='.get_staff_user_id().'&gsearch=');
                   $kanban_onscroll_url = admin_url('projects/kanban_noscroll?pipelines='.$pipelines[0]['id'].'&member='.get_staff_user_id().'&gsearch=');
                 //   $kanban_url = admin_url('projects/kanbans?pipelines='.$pipelines[0]['id'].'&member='.get_staff_user_id().'&gsearch=');
                   $forecast_url = admin_url('projects/kanbans_forecast?pipelines='.$pipelines[0]['id'].'&member='.$mem.'&gsearch='.$gsearch);
                 //   $approval_url = admin_url('projects/index_list?approvalList=1&pipelines='.$pipelines[0]['id'].'&member='.get_staff_user_id().'&gsearch=');
-              }
+				}
               ?>
               <a href="<?php echo $list_url; ?>" data-toggle="tooltip" title="<?php echo _l('projects'); ?>" class="btn <?php echo !isset($_GET['approvalList'])?'btn-primary':'btn-default' ?>"><i class="fa fa-list" aria-hidden="true"></i></a>
               <a href="<?php echo $kanban_onscroll_url; ?>" data-toggle="tooltip" title="<?php echo _l('leads_switch_to_kanban_noscroll'); ?>" class="btn btn-default"><i class="fa fa-th" aria-hidden="true"></i></a>
@@ -177,32 +183,24 @@ foreach($custom_fields as $cfkey=>$cfval){
 							$need_fields = json_decode($fields);
 						}
 			            if(has_permission('projects','','view') /*&& !empty($need_fields) && in_array("members", $need_fields)*/){ ?>
-			            	<div class="col-md-4">
-			            		<select class="selectpicker" data-live-search="true" data-title="All Members" name="member" data-width="100%">
-                        <?php if(is_admin(get_staff_user_id()) || count($project_members) > 1) { ?> 
-                          <option value="" <?php if($selectedMember == ''){echo ' selected'; } ?>>All Members</option>
-                        <?php } ?>
-			            			<?php foreach($project_members as $member) { ?>
-			            				<option value="<?php echo $member['staff_id']; ?>"<?php if($selectedMember == $member['staff_id']){echo ' selected'; } ?>>
-			            					<?php echo $member['firstname'] . ' ' . $member['lastname']; ?>
-			            				</option>
-			            			<?php } ?>
-			            	</select>
-			            </div>
-					<?php } ?>
-					<!-- <div class="col-md-4">
-						<div class="form-group">
-							<input type="search" name="gsearch" class="form-control input-sm" value="<?php echo (isset($gsearch)?$gsearch:''); ?>" placeholder="Search..."/>
-						</div>
-					</div> -->
-			        <div class="col-md-2">
-			        	<button type="submit" class="btn btn-default"><?php echo _l('apply'); ?></button>
-			        </div>
-              <?php echo form_close(); ?>
-              </div>
-               <div class="row mbot15">
-                <div class="col-md-12">
-                  <?php
+								<div class="col-md-4">
+			            			<?php if(!$selectedMember){$selectedMember =array();} ?>
+									<select multiple class="selectpicker" data-live-search="true" data-title="All Members" name="member[]" data-width="100%">									
+									<?php foreach($project_members as $member) { ?>
+									<option value="<?php echo $member['staff_id']; ?>" 
+									<?php if(in_array($member['staff_id'], $selectedMember)) { echo 'selected'; } ?>>
+									<?php echo $member['firstname'] . ' ' . $member['lastname']; ?>
+										</option>
+									<?php } ?>
+										</select>
+									</div>
+									<?php } ?>
+									<div class="col-md-2">
+										<button type="submit" class="btn btn-default"><?php echo _l('apply'); ?></button>
+									</div>
+										<?php echo form_close(); ?>
+									</div>
+				<?php
                   $_where = '';
                   if(!has_permission('projects','','view')){
                     $_where = 'id IN (SELECT project_id FROM '.db_prefix().'project_members WHERE staff_id='.get_staff_user_id().')';
@@ -213,17 +211,17 @@ foreach($custom_fields as $cfkey=>$cfval){
                       $_where = ($_where == '' ? '' : $_where.' AND ');
                       $_where .= ' id IN (SELECT ' . db_prefix() . 'projects.id FROM ' . db_prefix() . 'projects join ' . db_prefix() . 'project_members  on ' . db_prefix() . 'project_members.project_id = ' . db_prefix() . 'projects.id WHERE ' . db_prefix() . 'project_members.staff_id in (' . implode(',',$my_staffids) . ') OR  ' . db_prefix() . 'projects.teamleader in (' . implode(',',$my_staffids) . ') )';
                   }
-
-                  ?>
+				
+                ?>
                 </div>
                 <div class="_filters _hidden_inputs">
                   <?php
-                  echo form_hidden('my_projects');
-				  if(isset($_GET['approvalList']) && $_GET['approvalList']==1){
-					echo form_hidden('approval_projects');
-                  	echo form_hidden('rejected_projects');
-				  }
-                  
+				  echo form_hidden('my_projects');
+					if(isset($_GET['approvalList']) && $_GET['approvalList']==1){
+						  echo form_hidden('approval_projects');
+						  echo form_hidden('rejected_projects');
+					  }
+
                   foreach($statuses as $status){
                    $value = $status['id'];
                      if($status['filter_default'] == 1 && !$this->input->get('status')){
@@ -233,46 +231,8 @@ foreach($custom_fields as $cfkey=>$cfval){
                      }
                      echo form_hidden('project_status_'.$status['id'],'');
                     ?>
-                   <!-- <div class="col-md-5ths total-column"> 
-                    <div class="panel_s">
-                      <div class="panel-body">
-                          <?php 
-                        
-                          
-                          $where = ($_where == '' ? '' : $_where.' AND ').'status = '.$status['id'];
-                          
-                          $where .= ' AND projects.deleted_status = 0 ';
-                          
-                          if ($_SESSION['member']) {
-                              $where .= ' AND ' . db_prefix() . 'projects.id IN (SELECT project_id FROM ' . db_prefix() . 'project_members WHERE staff_id=' . $_SESSION['member'] . ')';
-                          }
-                          
-                          //echo "<pre>"; print_r($_SESSION); exit;
-                          $pipeline = $_SESSION['pipelines'];
-                          if (empty($pipeline)) {
-                              $pipeline = 0;
-                          }else{
-                              $where .= ' AND ' . db_prefix() . 'projects.pipeline_id = '.$pipeline;
-                          }
-                          $gsearch = $_SESSION['gsearch'];
-                          
-                          if(!empty($gsearch)){
-                              $where .= ' AND ' . db_prefix() . 'projects.id IN (SELECT id FROM ' . db_prefix() . 'projects WHERE name like "%' . $gsearch . '%")';
-                          }  
-                          
-                          
-                          ?>
-                          <a href="#" onclick="dt_custom_view('project_status_<?php echo $status['id']; ?>','.table-projects','project_status_<?php echo $status['id']; ?>',true); return false;">
-                          <h3 class="bold" style="margin-top:0px;"><?php echo total_rows(db_prefix().'projects',$where); ?></h3>
-                          <span style="color:<?php echo $status['color']; ?>" project-status-<?php echo $status['id']; ?>">
-                          <?php echo $status['name']; ?>
-                          </span>
-                        </a>
-                      </div>
-                    </div>
-                  </div> -->
+                   
                       <?php } ?>
-               </div>
              </div>
              <div class="clearfix"></div>
               <hr class="hr-panel-heading" />
@@ -320,7 +280,7 @@ foreach($custom_fields as $cfkey=>$cfval){
 				}
 				else if($need_field12 == 'project_members[]'){
 					$req_field = 'project_members';
-				}
+				} 
 		?>
 				<div class="form-group select-placeholder" style="margin-top:10px;">
 					<label for="status" class="control-label required"><?php if(in_array($need_field12,$mandatory_fields1) || $req_field == 'name'){ ?><small class="req text-danger">* </small><?php  }echo _l($need_fields_label[$i]);?></label>
@@ -366,7 +326,7 @@ foreach($custom_fields as $cfkey=>$cfval){
 									foreach($client_contacts as $client_contact1){
 										echo '<option value="'.$client_contact1['id'].'" >'.$client_contact1['firstname'].' '.$client_contact1['lastname'].'</option>';
 									} 
-								}
+								}  
 								?>
 
 							</select>
@@ -381,7 +341,7 @@ foreach($custom_fields as $cfkey=>$cfval){
 									foreach($pipelines as $pipeline1){
 										echo '<option value="'.$pipeline1['id'].'" >'.$pipeline1['name'].'</option>';
 									} 
-								}
+								} 
 								?>
 
 							</select>
