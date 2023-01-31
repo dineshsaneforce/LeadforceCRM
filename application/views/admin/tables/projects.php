@@ -245,7 +245,7 @@ if(!empty($gsearch)){
 if($userAccessApproval ==false){
     $my_staffids = $this->ci->staff_model->get_my_staffids();
     if ($_SESSION['member']) {
-        $memb = $_SESSION['member'];
+        $memb = implode(',',$_SESSION['member']);
         array_push($where, ' AND (' . db_prefix() . 'projects.id IN (SELECT ' . db_prefix() . 'projects.id FROM ' . db_prefix() . 'projects join ' . db_prefix() . 'project_members  on ' . db_prefix() . 'project_members.project_id = ' . db_prefix() . 'projects.id WHERE ' . db_prefix() . 'project_members.staff_id in (' . $memb . ')'.$approval_where.') OR  ' . db_prefix() . 'projects.teamleader in (' . $memb . ') )');
         //array_push($where, ' AND ' . db_prefix() . 'projects.id IN (SELECT project_id FROM ' . db_prefix() . 'project_members WHERE staff_id=' . $memb . ')');
         //array_push($where, ' AND ' . db_prefix() . 'projects.teamleader = ' . $memb);
@@ -262,6 +262,11 @@ if($userAccessApproval ==false){
             }
             array_push($where, ' AND (' . db_prefix() . 'projects.id IN (SELECT ' . db_prefix() . 'projects.id FROM ' . db_prefix() . 'projects join ' . db_prefix() . 'project_members  on ' . db_prefix() . 'project_members.project_id = ' . db_prefix() . 'projects.id WHERE ' . db_prefix() . 'project_members.staff_id in (' . implode(',',$my_staffids) . ')'.$approval_where.') OR  ' . db_prefix() . 'projects.teamleader in (' . implode(',',$my_staffids) . ') )');
         }
+    }
+}else{
+    if ($_SESSION['member']) {
+        $memb = implode(',',$_SESSION['member']);
+        array_push($where, ' AND (' . db_prefix() . 'projects.id IN (SELECT ' . db_prefix() . 'projects.id FROM ' . db_prefix() . 'projects join ' . db_prefix() . 'project_members  on ' . db_prefix() . 'project_members.project_id = ' . db_prefix() . 'projects.id WHERE ' . db_prefix() . 'project_members.staff_id in (' . $memb . ')'.$approval_where.') OR  ' . db_prefix() . 'projects.teamleader in (' . $memb . ') )');
     }
 }
 

@@ -5,7 +5,7 @@
 	<div class="content">
 		<div class="row">
 			<div class="panel_s">
-				<div class="panel-body">
+				<div class="panel-body">				
 				
 					<div class="row">
 						<div class="col-md-3 padding0">
@@ -15,33 +15,59 @@
 								  <?php echo _l('new_project'); ?>
 								</a>
 							  <?php }
-							if(isset($_SESSION['pipelines'])) {
-								$pid = $_SESSION['pipelines'];
-							} else {
-								$pid = $pipelines[0]['id'];
+								if(isset($_SESSION['pipelines'])) {
+									$pid = $_SESSION['pipelines'];
+								} else {
+									$pid = $pipelines[0]['id'];
+								}
+								if(isset($_SESSION['member'])) {
+									$mem = $_SESSION['member'];
+								} else {
+									$mem = get_staff_user_id();
+								}
+								if(isset($_SESSION['gsearch'])) {
+									$gsearch = $_SESSION['gsearch'];
+								} else {
+									$gsearch = '';
+								}
+							//  $list_url = admin_url('projects/index_list?pipelines=&member=&gsearch=');
+							//  $kanban_onscroll_url = admin_url('projects/kanban_noscroll?pipelines='.$pid.'&member='.$mem.'&gsearch='.$gsearch);
+							// //  $kanban_url = admin_url('projects/kanbans?pipelines='.$pid.'&member='.$mem.'&gsearch='.$gsearch);
+							//  $forecast_url = admin_url('projects/kanbans_forecast?pipelines='.$pid.'&member='.$mem.'&gsearch='.$gsearch);
+							//  $approval_url = admin_url('projects/index_list?approvalList=1&pipelines=&member=&gsearch=');
+							//  if(!is_admin(get_staff_user_id())) {
+							// 	//$list_url = admin_url('projects/index_list?pipelines='.$pipelines[0]['id'].'&member='.get_staff_user_id().'&gsearch=');
+							// 	$list_url = admin_url('projects/index_list?pipelines=&member='.get_staff_user_id().'&gsearch=');
+							// 	$kanban_onscroll_url = admin_url('projects/kanban_noscroll?pipelines='.$pid.'&member='.$mem.'&gsearch='.$gsearch);
+							// 	// $kanban_url = admin_url('projects/kanbans?pipelines='.$pid.'&member='.$mem.'&gsearch='.$gsearch);
+							// 	$forecast_url = admin_url('projects/kanbans_forecast?pipelines='.$pid.'&member='.$mem.'&gsearch='.$gsearch);
+							// } 
+							$list_url = admin_url('projects/index_list?pipelines=&gsearch=');
+							foreach($mem as $member) {
+								$list_url .= '&member[]=' . $member;
 							}
-							if(isset($_SESSION['member'])) {
-								$mem = $_SESSION['member'];
-							} else {
-								$mem = get_staff_user_id();
+
+						$kanban_onscroll_url = admin_url('projects/kanban_noscroll?pipelines='.$pid.'&gsearch='.$gsearch);
+							foreach($mem as $member) {
+								$kanban_onscroll_url .= '&member[]=' . $member;
 							}
-							if(isset($_SESSION['gsearch'])) {
-								$gsearch = $_SESSION['gsearch'];
-							} else {
-								$gsearch = '';
+
+						$forecast_url = admin_url('projects/kanbans_forecast?pipelines='.$pipelines[0]['id'].'&gsearch='.$gsearch);
+							foreach($mem as $member) {
+								$forecast_url .= '&member[]=' . $member;
 							}
-							 $list_url = admin_url('projects/index_list?pipelines=&member=&gsearch=');
-							 $kanban_onscroll_url = admin_url('projects/kanban_noscroll?pipelines='.$pid.'&member='.$mem.'&gsearch='.$gsearch);
-							//  $kanban_url = admin_url('projects/kanbans?pipelines='.$pid.'&member='.$mem.'&gsearch='.$gsearch);
-							 $forecast_url = admin_url('projects/kanbans_forecast?pipelines='.$pid.'&member='.$mem.'&gsearch='.$gsearch);
-							 $approval_url = admin_url('projects/index_list?approvalList=1&pipelines=&member=&gsearch=');
-							 if(!is_admin(get_staff_user_id())) {
+
+						$approval_url = admin_url('projects/index_list?approvalList=1&pipelines=&gsearch=');
+							foreach($mem as $member) {
+								$approval_url .= '&member[]=' . $member;
+							} 
+							if(!is_admin(get_staff_user_id())) {
 								//$list_url = admin_url('projects/index_list?pipelines='.$pipelines[0]['id'].'&member='.get_staff_user_id().'&gsearch=');
 								$list_url = admin_url('projects/index_list?pipelines=&member='.get_staff_user_id().'&gsearch=');
 								$kanban_onscroll_url = admin_url('projects/kanban_noscroll?pipelines='.$pid.'&member='.$mem.'&gsearch='.$gsearch);
 								// $kanban_url = admin_url('projects/kanbans?pipelines='.$pid.'&member='.$mem.'&gsearch='.$gsearch);
 								$forecast_url = admin_url('projects/kanbans_forecast?pipelines='.$pid.'&member='.$mem.'&gsearch='.$gsearch);
-							 }  
+							 }
 							  
 							 ?>
 							  <a href="<?php echo $list_url; ?>" data-toggle="tooltip" title="<?php echo _l('projects'); ?>" class="btn btn-default"><i class="fa fa-list" aria-hidden="true"></i></a>
@@ -79,24 +105,17 @@
 						}
 			            if(has_permission('projects','','view') /*&& !empty($need_fields) && in_array("members", $need_fields)*/){ ?>
 			            	<div class="col-md-2">
-			            		<select class="selectpicker" data-live-search="true" data-title="All Members" name="member" data-width="100%">
-									<?php if(is_admin(get_staff_user_id()) || count($project_members) > 1) { ?> 
-										<option value="" <?php if($selectedMember == ''){echo ' selected'; } ?>>All Members</option>
+							<?php if(!$selectedMember){$selectedMember =array();} ?>
+									<select multiple class="selectpicker" data-live-search="true" data-title="All Members" name="member[]" id="staff_id" data-width="100%">									
+									<?php foreach($project_members as $member) { ?>
+									<option value="<?php echo $member['staff_id']; ?>" 
+									<?php if(in_array($member['staff_id'], $selectedMember)) { echo 'selected'; } ?>>
+									<?php echo $member['firstname'] . ' ' . $member['lastname']; ?>
+										</option>
 									<?php } ?>
-			            			<?php foreach($project_members as $member) { ?>
-			            				<option value="<?php echo $member['staff_id']; ?>"<?php if($selectedMember == $member['staff_id']){echo ' selected'; } ?>>
-			            					<?php echo $member['firstname'] . ' ' . $member['lastname']; ?>
-			            				</option>
-			            			<?php } ?>
-			            		</option>
-			            	</select>
-			            </div>
-					<?php } ?>
-					<!-- <div class="col-md-2">
-						<div class="form-group">
-							<input type="search" name="gsearch" class="form-control input-sm" value="<?php echo (isset($gsearch)?$gsearch:''); ?>" placeholder="Search..."/>
-						</div>
-					</div> -->
+										</select>
+									</div>
+									<?php } ?>
 			        <div class="col-md-1">
 			        	<button type="submit" class="btn btn-default"><?php echo _l('apply'); ?></button>
 			        </div>
