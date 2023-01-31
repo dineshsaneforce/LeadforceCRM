@@ -4,13 +4,36 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 function app_init_admin_sidebar_menu_items() {
     $CI = &get_instance();
-    if (has_permission('dashboard', '', 'view')) {
+    if (has_permission('dashboard', '', 'view')) { 
         $CI->app_menu->add_sidebar_menu_item('dashboard', [
             'name' => _l('als_dashboard'),
             'href' => admin_url(),
             'position' => 1,
             'icon' => 'fa fa-tachometer',
-        ]);
+        ]);      
+     $number_of_records = $CI->db->count_all_results('dashboard_report');       
+       if ($number_of_records != 0)
+       {       
+            if (has_permission('reports', '', 'view') || has_permission('reports', '', 'create'))
+            {
+                $CI->app_menu->add_sidebar_children_item('dashboard', [
+                    'name' => _l('system_dashboard'),
+                    'href' => admin_url(),
+                    'position' => 1,
+                    'icon' => 'fa fa-tachometer',
+                ]);
+                $rResult =$CI->db->get(db_prefix().'dashboard_report')->result_array();
+                foreach ($rResult as $aRow) 
+                {
+                    $CI->app_menu->add_sidebar_children_item('dashboard', [
+                        'name' => $aRow['dashboard_name'],
+                        'href' => admin_url('dashboard/view/'.$aRow['id']),
+                        'icon' => 'fa fa-folder-open-o',
+                        'position' => 1,
+                    ]);
+                }
+            }
+        }
     }
 
     if (has_permission('leads', '', 'view')) {
