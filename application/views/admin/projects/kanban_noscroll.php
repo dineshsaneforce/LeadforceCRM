@@ -40,6 +40,7 @@
 							} else {
 								$gsearch = '';
 							}
+
 							//  $list_url = admin_url('projects/index_list?pipelines=&member=&gsearch=');
 							//  $kanban_onscroll_url = admin_url('projects/kanban_noscroll?pipelines='.$pid.'&member='.$mem.'&gsearch='.$gsearch);
 							// //  $kanban_url = admin_url('projects/kanbans?pipelines='.$pid.'&member='.$mem.'&gsearch='.$gsearch);
