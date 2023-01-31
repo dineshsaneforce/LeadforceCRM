@@ -31,7 +31,6 @@
 								$gsearch = '';
 							}
 							//pre($mem);
-<<<<<<< Link-dynamic-dashboard-to-sidebar
 							// $list_url = admin_url('projects/index_list?pipelines=&member=&gsearch=');
 							// $kanban_onscroll_url = admin_url('projects/kanban_noscroll?pipelines='.$pid.'&gsearch='.$gsearch);
 							// foreach($mem as $member) {
@@ -61,13 +60,7 @@
 									$approval_url .= '&member[]=' . $member;
 								}
 
-=======
-							$list_url = admin_url('projects/index_list?pipelines=&member=&gsearch=');
-							$kanban_onscroll_url = admin_url('projects/kanban_noscroll?pipelines='.$pid.'&member='.$mem.'&gsearch='.$gsearch);
-							// $kanban_url = admin_url('projects/kanbans?pipelines='.$pid.'&member='.$mem.'&gsearch='.$gsearch);
-							$forecast_url = admin_url('projects/kanbans_forecast?pipelines=&member='.$mem.'&gsearch='.$gsearch);
-							$approval_url = admin_url('projects/index_list?approvalList=1&pipelines=&member=&gsearch=');
->>>>>>> main
+
 							if(!is_admin(get_staff_user_id())) {
 							   //$list_url = admin_url('projects/index_list?pipelines='.$pipelines[0]['id'].'&member='.get_staff_user_id().'&gsearch=');
 							   $list_url = admin_url('projects/index_list?pipelines=&member='.get_staff_user_id().'&gsearch=');
@@ -112,29 +105,17 @@
 			            if(has_permission('projects','','view')/* && !empty($need_fields) && in_array("members", $need_fields)*/){ ?>
 			            	<div class="col-md-2">
 							<?php if(!$selectedMember){$selectedMember =array();} ?>
-									<select multiple class="selectpicker" data-live-search="true" data-title="All Members" name="member[]" id="staff_id" data-width="100%">
-									
-									<?php foreach($project_members as $member) { ?>
-									<option value="<?php echo $member['staff_id']; ?>" 
-									<?php if(in_array($member['staff_id'], $selectedMember)) { echo 'selected'; } ?>>
-									<?php echo $member['firstname'] . ' ' . $member['lastname']; ?>
-										</option>
-									<?php } ?>
-										</select>
-									</div>
-									<?php } ?>
-<<<<<<< Link-dynamic-dashboard-to-sidebar
-=======
-			            			<?php foreach($project_members as $member) { ?>
-			            				<option value="<?php echo $member['staff_id']; ?>"<?php if($selectedMember == $member['staff_id']){echo ' selected'; } ?>>
-			            					<?php echo $member['firstname'] . ' ' . $member['lastname']; ?>
-			            				</option>
-			            			<?php } ?>
-			            		</option>
-			            	</select>
-			            </div>
-					<?php } ?>
->>>>>>> main
+							<select multiple class="selectpicker" data-live-search="true" data-title="All Members" name="member[]" id="staff_id" data-width="100%">
+							
+							<?php foreach($project_members as $member) { ?>
+							<option value="<?php echo $member['staff_id']; ?>" 
+							<?php if(in_array($member['staff_id'], $selectedMember)) { echo 'selected'; } ?>>
+							<?php echo $member['firstname'] . ' ' . $member['lastname']; ?>
+								</option>
+							<?php } ?>
+								</select>
+							</div>
+							<?php } ?>
 					<!-- <div class="col-md-2">
 						<div class="form-group">
 							<input type="search" name="gsearch" class="form-control input-sm" value="<?php echo (isset($gsearch)?$gsearch:''); ?>" placeholder="Search..."/>
