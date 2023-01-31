@@ -874,7 +874,7 @@ function add_to(msg_id){
 		$('#rfilecnt').val(1);
 		$('#rallcnt').val(0);
 		$('#r_file').val('');
-		tinyMCE.get('reply_description').setContent('');
+		tinyMCE.get('reply_description').setContent('<blockquote style="border-left: 2px solid #ccc; padding-left: 10px;">'+json.message+'</blockquote><br><br>');
 		$('#r_getFile').val('');
 		$('#reply-modal').modal('show');
 		document.getElementById('overlay').style.display = 'none'; 
@@ -890,7 +890,7 @@ function add_reply_all(msg_id){
 	function(data,status){
 		var json = $.parseJSON(data);
 		$('#reply_msg_id').val(msg_id);
-		$('#reply_toemail').val(json.from_address);
+		$('#reply_toemail').val(json.to_address);
 		$('#ch_uid').val(msg_id);
 		$('#reply_subject').val('Re: '+json.subject); 
 		
@@ -902,7 +902,7 @@ function add_reply_all(msg_id){
 		$('#rfilecnt').val(1);
 		$('#rallcnt').val(0);
 		$('#r_file').val('');
-		tinyMCE.get('reply_description').setContent('');
+		tinyMCE.get('reply_description').setContent('<blockquote style="border-left: 2px solid #ccc; padding-left: 10px;">'+json.message+'</blockquote><br><br>');
 		$('#r_getFile').val('');
 		$('#reply-modal').modal('show');
 		document.getElementById('overlay').style.display = 'none'; 
