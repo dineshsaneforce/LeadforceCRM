@@ -161,8 +161,8 @@
                         })
                     });
                     </script>
-<?php  if(!empty($need_fields) && in_array("clientid", $need_fields)){?>
-<div class="form-group select-placeholder clientiddiv input-group-select">
+                            <?php  if(!empty($need_fields) && in_array("clientid", $need_fields)){?>
+                            <div class="form-group select-placeholder clientiddiv input-group-select">
                             <label for="clientid" class="control-label"> <small class="req text-danger"><?php  if(!empty($mandatory_fields) && in_array("clientid", $mandatory_fields)){echo '*';}?> </small><?php echo _l('project_customer'); ?></label>
 							<input type="hidden" id="ch_client" value="<?php  if(!empty($mandatory_fields) && in_array("clientid", $mandatory_fields)){echo '2';}else{ echo '1';}?>">
 							<div class="input-group input-group-select select-groups_in[]">

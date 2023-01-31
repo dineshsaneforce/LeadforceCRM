@@ -4247,3 +4247,4 @@ $lang['RejectionReason']    =   'Rejection Reason';
 $lang['als_sales']          =   'Sales';
 $lang['sms'] = 'SMS';
 $lang['plugins'] = 'Plugins';
+$lang['integrations'] = 'Integrations';

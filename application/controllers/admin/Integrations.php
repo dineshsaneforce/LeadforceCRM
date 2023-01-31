@@ -2,7 +2,7 @@
 
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Plugins extends AdminController
+class Integrations extends AdminController
 {
     public $moudle_permission_name = 'settings';
 
@@ -18,25 +18,20 @@ class Plugins extends AdminController
             access_denied();
         }
         $data =[];
-        $data['title'] ='Plugins';
+        $data['title'] ='Integrations';
         $data['categoryintegrations'] = $this->integration_manager->getIntegrations();
-        $this->load->view('admin/plugins/plugins',$data);
+        $this->load->view('admin/integrations/integrations',$data);
     }
 
     public function search() {
         $searchTerm = $this->input->post('searchTerm');
-        $data =[];
-        if(strlen(trim($searchTerm)) !=0){
-            $data['categoryintegrations'] = $this->integration_manager->searchIntegrations($searchTerm);
-            $data['searchTerm'] = $searchTerm;
-            $this->load->view('admin/plugins/pluginslist', $data);
-        }else{
+        if(strlen(trim($searchTerm)) ==0){
             $data['categoryintegrations'] = $this->integration_manager->getIntegrations();
-            $data['searchTerm'] = $searchTerm;
-            $this->load->view('admin/plugins/pluginslist', $data);
-        }
-        
-        
+        }else{
+            $data['categoryintegrations'] = $this->integration_manager->searchIntegrations($searchTerm);
+        }        
+        $data['searchTerm'] = $searchTerm;
+        $this->load->view('admin/plugins/pluginslist', $data);
     }
 
 }

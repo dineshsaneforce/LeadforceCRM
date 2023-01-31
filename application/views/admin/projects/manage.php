@@ -19,20 +19,20 @@
               <?php }
               $list_url = admin_url('projects/index_list?pipelines=&member=&gsearch=');
               $kanban_onscroll_url = admin_url('projects/kanban_noscroll?pipelines='.$pipelines[0]['id'].'&member=&gsearch=');
-              $kanban_url = admin_url('projects/kanbans?pipelines='.$pipelines[0]['id'].'&member=&gsearch=');
+            //   $kanban_url = admin_url('projects/kanbans?pipelines='.$pipelines[0]['id'].'&member=&gsearch=');
               $forecast_url = admin_url('projects/kanbans_forecast?pipelines='.$pipelines[0]['id'].'&member='.$mem.'&gsearch='.$gsearch);
 			  $approval_url = admin_url('projects/index_list?approvalList=1&pipelines=&member=&gsearch=');
               if(!is_admin(get_staff_user_id())) {
                   $list_url = admin_url('projects/index_list?pipelines='.$pipelines[0]['id'].'&member='.get_staff_user_id().'&gsearch=');
                   $kanban_onscroll_url = admin_url('projects/kanban_noscroll?pipelines='.$pipelines[0]['id'].'&member='.get_staff_user_id().'&gsearch=');
-                  $kanban_url = admin_url('projects/kanbans?pipelines='.$pipelines[0]['id'].'&member='.get_staff_user_id().'&gsearch=');
+                //   $kanban_url = admin_url('projects/kanbans?pipelines='.$pipelines[0]['id'].'&member='.get_staff_user_id().'&gsearch=');
                   $forecast_url = admin_url('projects/kanbans_forecast?pipelines='.$pipelines[0]['id'].'&member='.$mem.'&gsearch='.$gsearch);
                 //   $approval_url = admin_url('projects/index_list?approvalList=1&pipelines='.$pipelines[0]['id'].'&member='.get_staff_user_id().'&gsearch=');
               }
               ?>
               <a href="<?php echo $list_url; ?>" data-toggle="tooltip" title="<?php echo _l('projects'); ?>" class="btn <?php echo !isset($_GET['approvalList'])?'btn-primary':'btn-default' ?>"><i class="fa fa-list" aria-hidden="true"></i></a>
               <a href="<?php echo $kanban_onscroll_url; ?>" data-toggle="tooltip" title="<?php echo _l('leads_switch_to_kanban_noscroll'); ?>" class="btn btn-default"><i class="fa fa-th" aria-hidden="true"></i></a>
-              <a href="<?php echo $kanban_url; ?>" data-toggle="tooltip" title="<?php echo _l('leads_switch_to_kanban'); ?>" class="btn btn-default"><i class="fa fa-th-large" aria-hidden="true"></i></a>
+              <!-- <a href="<?php echo $kanban_url; ?>" data-toggle="tooltip" title="<?php echo _l('leads_switch_to_kanban'); ?>" class="btn btn-default"><i class="fa fa-th-large" aria-hidden="true"></i></a> -->
               <a href="<?php echo $forecast_url; ?>" data-toggle="tooltip" title="<?php echo _l('leads_switch_to_forecast'); ?>" class="btn btn-default"><i class="fa fa-line-chart" aria-hidden="true"></i></a>
 			  <a href="<?php echo $approval_url; ?>" data-toggle="tooltip" title="<?php echo _l('deal_approval_list'); ?>" class="btn <?php echo isset($_GET['approvalList'])?'btn-primary':'btn-default' ?> "><i class="fa fa-check-square-o" aria-hidden="true"></i></a>
 
@@ -190,11 +190,11 @@ foreach($custom_fields as $cfkey=>$cfval){
 			            	</select>
 			            </div>
 					<?php } ?>
-					<div class="col-md-4">
+					<!-- <div class="col-md-4">
 						<div class="form-group">
 							<input type="search" name="gsearch" class="form-control input-sm" value="<?php echo (isset($gsearch)?$gsearch:''); ?>" placeholder="Search..."/>
 						</div>
-					</div>
+					</div> -->
 			        <div class="col-md-2">
 			        	<button type="submit" class="btn btn-default"><?php echo _l('apply'); ?></button>
 			        </div>

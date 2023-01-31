@@ -5,7 +5,7 @@
         background-color: #f8fafb;
     }
 
-    .plugin {
+    .integration {
         background-color: #fff;
         border-radius: 5px;
         padding: 20px 15px;
@@ -14,11 +14,11 @@
         border: 1px solid #e6e6e6;
     }
 
-    .plugin-logo {
+    .integration-logo {
         width: 100%;
     }
 
-    .plugin-title h4 {
+    .integration-title h4 {
         margin-bottom: 5px !important;
         display: -webkit-box;
         -webkit-line-clamp: 1;
@@ -27,7 +27,7 @@
         text-overflow: ellipsis;
     }
 
-    .plugin-description p {
+    .integration-description p {
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
@@ -35,7 +35,7 @@
         text-overflow: ellipsis;
     }
 
-    .plugin-tags .badge {
+    .integration-tags .badge {
         border-radius: 5px;
         padding: 5px 10px;
         margin-bottom: 5px;
@@ -52,8 +52,8 @@
                 <button class="btn btn-info my-2 my-sm-0" type="submit" id="searchButton">Search</button>
             </form>
         </div>
-        <div class="row plugins-wrapper" id="integrationsContainer">
-            <?php $this->load->view('admin/plugins/pluginslist') ?>
+        <div class="row integrations-wrapper" id="integrationsContainer">
+            <?php $this->load->view('admin/integrations/integrationslist') ?>
         </div>
     </div>
 </div>
@@ -65,7 +65,7 @@
             var searchTerm = $("#searchTerm").val();
             $.ajax({
                 type: "POST",
-                url: "<?php echo admin_url('plugins/search'); ?>",
+                url: "<?php echo admin_url('integrations/search'); ?>",
                 data: {
                     searchTerm: searchTerm,
                 },

@@ -22,7 +22,7 @@ class Facebook_model extends App_Model
         $this->db->insert($this->tableName,$data);
         return [
             'success'=> true,
-            'msg' => _l('whats_app_account_saved')
+            'msg' => 'Settings saved successfully'
         ];
     }
 

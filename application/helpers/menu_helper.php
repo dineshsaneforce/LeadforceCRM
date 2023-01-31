@@ -33,7 +33,8 @@ function app_init_admin_sidebar_menu_items() {
         //echo $CI->db->last_query(); exit;
         //echo "<pre>"; print_r($pipelines); exit;
         //$projurl = admin_url('projects/kanban_noscroll?pipelines='.$pipelines[0]['id'].'&member=&gsearch=');
-        $projurl = admin_url('projects/index_list?pipelines=&member=&gsearch=');
+        $projurl = admin_url('projects/kanban_noscroll?pipelines='.$pipelines[0]['id'].'&member='.get_staff_user_id().'&gsearch=');
+        // $projurl = admin_url('projects/index_list?pipelines=&member=&gsearch=');
         if(!is_admin(get_staff_user_id())) {
             $projurl = admin_url('projects/kanban_noscroll?pipelines='.$pipelines[0]['id'].'&member='.get_staff_user_id().'&gsearch=');
 			//$projurl = admin_url('projects/index_list?pipelines=&member='.get_staff_user_id().'&gsearch=');
@@ -399,9 +400,9 @@ function app_init_admin_sidebar_menu_items() {
     }
 
     if (is_admin()) {
-        $CI->app_menu->add_sidebar_menu_item('plugins', [
-            'name' => _l('plugins'),
-            'href' => admin_url('plugins'),
+        $CI->app_menu->add_sidebar_menu_item('integrations', [
+            'name' => _l('integrations'),
+            'href' => admin_url('integrations'),
             'icon' => 'fa fa-plug',
             'position' => 65,
         ]);
@@ -600,25 +601,25 @@ if (is_admin()) {
         
     }
 
-            if (has_permission('settings')) {
-                $CI->app_menu->add_setup_menu_item('sms', [
-                    'collapse' => true,
-                    'name' => _l('sms'),
-                    'position' => 215,
-                ]);
-                $CI->app_menu->add_setup_children_item('sms', [
-                    'slug' => 'sms-templates',
-                    'name' =>_l('templates'),
-                    'href' => admin_url('plugin/sms'),
-                    'position' => 5,
-                ]);
-                $CI->app_menu->add_setup_children_item('sms', [
-                    'slug' => 'sms-daffytel',
-                    'name' => 'Daffytel',
-                    'href' => admin_url('plugin/sms/daffytel'),
-                    'position' => 5,
-                ]);
-            }
+            // if (has_permission('settings')) {
+            //     $CI->app_menu->add_setup_menu_item('sms', [
+            //         'collapse' => true,
+            //         'name' => _l('sms'),
+            //         'position' => 215,
+            //     ]);
+            //     $CI->app_menu->add_setup_children_item('sms', [
+            //         'slug' => 'sms-templates',
+            //         'name' =>_l('templates'),
+            //         'href' => admin_url('integration/sms'),
+            //         'position' => 5,
+            //     ]);
+            //     $CI->app_menu->add_setup_children_item('sms', [
+            //         'slug' => 'sms-daffytel',
+            //         'name' => 'Daffytel',
+            //         'href' => admin_url('integration/sms/daffytel'),
+            //         'position' => 5,
+            //     ]);
+            // }
 
             if (has_permission('settings')) {
                 $CI->app_menu->add_setup_menu_item('email', [
@@ -640,13 +641,13 @@ if (is_admin()) {
                 'position' => 5,
                 ]);
         }
-        if (has_permission('settings', '', 'view')) {
-            $CI->app_menu->add_setup_menu_item('enable_call', [
-                'href' => admin_url('call_settings/enable_call'),
-                'name' => _l('call_settings'),
-                'position' => 6,
-            ]);
-        }
+        // if (has_permission('settings', '', 'view')) {
+        //     $CI->app_menu->add_setup_menu_item('enable_call', [
+        //         'href' => admin_url('call_settings/enable_call'),
+        //         'name' => _l('call_settings'),
+        //         'position' => 6,
+        //     ]);
+        // }
        
     //
     //        $CI->app_menu->add_setup_menu_item('gdpr', [

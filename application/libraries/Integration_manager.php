@@ -5,13 +5,14 @@ class Integration_manager {
 
     public function __construct() {
         $this->integrations = array();
-        $this->addIntegration("Facebook lead ads","Instant alerts for Facebook Lead Ads.",'facebook.jpeg','plugin/facebook/leadads',array('leads','facebook'),'Leads','Upcoming');
-        $this->addIntegration("99Acres","Online Platform To Real Estate Developers, Brokers and Owners For Listing Their Property.",'99acres.jpeg','plugin/acres99',array('leads','99acres'),'Leads');
-        $this->addIntegration("IndiaMart","IndiaMART is India's largest online B2B marketplace, connecting buyers with suppliers.",'indiamart.jpeg','plugin/indiamart',array('leads','Indiamart'),'Leads');
-        $this->addIntegration("LinkedIn","LinkedIn is one of the most trusted networks for building connections, enhancing your networking opportunities and finding the right career.",'linkedin.png','plugin/indiamart',array('leads','LinkedIn'),'Leads','Upcoming');
+        // $this->addIntegration("Facebook lead ads","Instant alerts for Facebook Lead Ads.",'facebook.jpeg','integration/facebook/leadads',array('leads','facebook'),'Leads','Upcoming');
+        $this->addIntegration("Facebook lead ads","Instant alerts for Facebook Lead Ads.",'facebook.jpeg','',array('leads','facebook'),'Leads','Upcoming');
+        $this->addIntegration("99Acres","Online Platform To Real Estate Developers, Brokers and Owners For Listing Their Property.",'99acres.jpeg','integration/acres99',array('leads','99acres'),'Leads');
+        $this->addIntegration("IndiaMart","IndiaMART is India's largest online B2B marketplace, connecting buyers with suppliers.",'indiamart.jpeg','integration/indiamart',array('leads','Indiamart'),'Leads');
+        $this->addIntegration("LinkedIn","LinkedIn is one of the most trusted networks for building connections, enhancing your networking opportunities and finding the right career.",'linkedin.png','',array('leads','LinkedIn'),'Leads','Upcoming');
 
-        $this->addIntegration("Whatsapp Business API","Send Automated Updates, Reminders on WhatsApp & Provide seamless Customer Experience.",'whatsapp.jpeg','plugin/whatsapp',array('notification','whatsapp'),'Message');
-        $this->addIntegration("Daffytel","Daffytel Cloud Telephony in Chennai is one of the leading businesses in the Telecommunication Services.",'daffytel.png','plugin/sms/daffytel',array('notification','sms','Daffytel'),'Message');
+        $this->addIntegration("Whatsapp Business API","Send Automated Updates, Reminders on WhatsApp & Provide seamless Customer Experience.",'whatsapp.jpeg','integration/whatsapp',array('notification','whatsapp'),'Message');
+        $this->addIntegration("Daffytel","Daffytel Cloud Telephony in Chennai is one of the leading businesses in the Telecommunication Services.",'daffytel.png','integration/sms/daffytel',array('notification','sms','Daffytel'),'Message');
         
         $this->addIntegration("Daffytel","Daffytel Cloud Telephony in Chennai is one of the leading businesses in the Telecommunication Services.",'daffytel.png','call_settings/enable_call',array('ivr','Daffytel'),'Call');
         $this->addIntegration("Telecmi","TeleCMI is the Leading IVR Service Provider in Chennai, Mumbai & Bangalore.",'telecmi.png','call_settings/enable_call',array('ivr','telecmi'),'Call');
