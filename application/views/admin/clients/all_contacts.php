@@ -105,8 +105,8 @@
           ?>
         <div class="inline-block new-contact-wrapper" style="width:100%" data-title="<?php echo _l('customer_contact_person_only_one_allowed'); ?>"<?php if(isset($disable_new_contacts)){ ?> data-toggle="tooltip"<?php } ?>>
    <!-- <a href="#" <?php if(isset($client->userid)){?> onclick="contact(<?php echo $client->userid; ?>); return false;"<?php }?> class="btn btn-info new-contact mbot25<?php if(isset($disable_new_contacts)){echo ' disabled';} ?>"><?php echo _l('new_contact'); ?></a> -->
-            <?php if (has_permission('contacts','','create')) { ?><a href="#" onclick="contact(<?php echo $client->userid; ?>); return false;" class="btn btn-info new-contact mbot25<?php if(isset($disable_new_contacts)){echo ' disabled';} ?>" id="check_new_contact"><?php echo _l('new_contact'); ?></a> <?php } ?>
-   <a href="#" ic data-toggle="modal" data-target="#contactid_add_modal" return false;" class="btn btn-info new-contact mbot25<?php if(isset($disable_new_contacts)){echo ' disabled';} ?>"><?php echo _l('merge_contact'); ?></a>
+            <?php if (has_permission('contacts','','create')) { ?><a href="#" onclick="contact(<?php echo isset($client->userid) ? $client->userid : 0; ?>); return false;" class="btn btn-info new-contact mbot25<?php if(isset($disable_new_contacts)){echo ' disabled';} ?>" id="check_new_contact"><?php echo _l('new_contact'); ?></a> <?php } ?>
+   <a href="#" ic data-toggle="modal" data-target="#contactid_add_modal" return false; class="btn btn-info new-contact mbot25<?php if(isset($disable_new_contacts)){echo ' disabled';} ?>"><?php echo _l('merge_contact'); ?></a>
    <div class="btn-group pull-right mleft4 mbot25 btn-with-tooltip-group _filter_data" data-toggle="tooltip" data-title="<?php echo _l('contact_list_column'); ?>">
        <!-- Button trigger modal -->
 <button type="button" class="btn btn-default" data-toggle="modal" data-target="#projects_list_column_orderModal">

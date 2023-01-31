@@ -1555,7 +1555,7 @@ class Projects extends AdminController
 				}
 			}
 			else{
-				if(isset($data['clientid_copy_project']) && !empty($data['clientid_copy_project'])){
+				if(isset($data['clientid_copy_project'])){
 					$success = $this->projects_model->update(array('clientid'=>$data['clientid_copy_project'],'project_modified'=>date('Y-m-d H:i:s'),'modified_by'=>get_staff_user_id()), $data['project_id']);
 				}elseif(isset($data['pipeline_id']) && !empty($data['pipeline_id'])){
 					$success = $this->projects_model->update(array('pipeline_id'=>$data['pipeline_id'],'project_modified'=>date('Y-m-d H:i:s'),'modified_by'=>get_staff_user_id()), $data['project_id']);
