@@ -144,6 +144,10 @@ class Imap_mailer
         $this->CI->email->reply_to($this->imapconf['username'], 'Replay me');
         $this->CI->email->subject($this->subject);
         $this->CI->email->message($this->message);
+        if($this->parentId){
+            $this->CI->email->set_header('In-Reply-To: ',$this->parentId);
+            $this->CI->email->set_header('References: ',$this->parentId);
+        }
         
         if(!empty($this->attachments)){
             $_FILES["attachment"] =$this->attachments;

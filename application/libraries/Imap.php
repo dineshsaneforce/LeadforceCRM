@@ -1911,7 +1911,7 @@ class Imap
 		}
 		$req_to = rtrim($req_to,',');
 		
-		$data = array('subject'=>$inboxEmails['subject'],'message'=>$inboxEmails['body']['html'],'from_address'=>$inboxEmails['from']['email'],'to_address'=>$req_to,'uid'=>$_REQUEST['uid']);
+		$data = array('subject'=>$inboxEmails['subject'],'message'=>($inboxEmails['body']['html'])?$inboxEmails['body']['html']:$inboxEmails['body']['plain'],'from_address'=>$inboxEmails['from']['email'],'to_address'=>$req_to,'uid'=>$_REQUEST['uid']);
 		return $data; 
 		exit;
 	}
