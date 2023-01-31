@@ -117,8 +117,8 @@
                             <label for="clientid" class="control-label"><?php echo _l('project_customer'); ?></label>
 							<div class="input-group input-group-select select-groups_in[]">
                             <select id="clientid" name="clientid" data-live-search="true" data-width="100%" class="ajax-search selectpicker" data-none-selected-text="<?php echo _l('dropdown_non_selected_tex'); ?>">
-                             <?php 
-                             $selected = (isset($contact->userid) ? $contact->userid: '');
+                             <?php
+                             $selected = (isset($contact->userid) ? $contact->userid: '');         
                              
                              if(is_array($selected)){
                                  foreach ($selected as $keys => $values) {

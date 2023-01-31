@@ -157,6 +157,7 @@ $hasApprovalFlow = $this->workflow_model->getflows('deal_approval',0,['service'=
                         <?php } ?>
                       </div>
                       <div class="data_edit" style=" display:none;">
+                      <?php $selected = (isset($project) ? $project->clientid : '');?>
                         <div class="form-group select-placeholder clientiddiv form-group-select-input-groups_in[] input-group-select">
                                  <div class="input-group input-group-select select-groups_in[]">
                                  <select id="clientid_copy_project" name="clientid_copy_project" data-live-search="true" data-width="100%" class="ajax-search" data-none-selected-text="<?php echo _l('dropdown_non_selected_tex'); ?>">
@@ -164,7 +165,7 @@ $hasApprovalFlow = $this->workflow_model->getflows('deal_approval',0,['service'=
                                  if($selected == ''){
                                     $selected = (isset($customer_id) ? $customer_id: '');
                                  }
-                                 if($selected != ''){
+                                 if($selected != '' && $selected !=0){
                                     $rel_data = get_relation_data('customer',$selected);
                                     $rel_val = get_relation_values($rel_data,'customer');
                                     echo '<option value="'.$rel_val['id'].'" selected>'.$rel_val['name'].'</option>';
