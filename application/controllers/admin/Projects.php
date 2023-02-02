@@ -435,7 +435,7 @@ class Projects extends AdminController
             }
             
         }
-        $this->load->view('admin/projects/project', $data);
+        $this->load->view('admin/projects/newProject', $data);
     }
 
     public function getContactpersonList() {
@@ -1102,7 +1102,6 @@ class Projects extends AdminController
             'status' => $selected_statuses,
             'member' => $selectedMember,
         ]);
-        
         $data['pipelines'] = $this->pipeline_model->getPipeline();
       
         $this->load->view('admin/projects/kanbans', $data);
