@@ -45,6 +45,9 @@ a:hover{
     
     background: var(--theme-primary-dark);
 }
+.modal-content {
+    border-radius: 0px 0px 6px 6px;
+}
 #appSidebar{
     background-color:var(--theme-primary-dark);
     width: 60px;

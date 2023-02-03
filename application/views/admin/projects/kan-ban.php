@@ -54,14 +54,15 @@ overflow: hidden;
 text-overflow: ellipsis;
 white-space: nowrap;
 width: 1%;">
-            <p class="heading pointer" <?php if($is_admin){ ?> dat data-order="<?php echo $status['statusorder']; ?>" data-color="<?php echo $status['color']; ?>" data-name="<?php echo $status['name']; ?>" onclick="edit_status(this,<?php echo $status['id']; ?>); return false;" <?php } ?> title="<?php echo $status['name'].' ('.$total_projects.')'; ?>" data-title="<?php echo $status['name']; ?>">
+            <p class="heading pointer" <?php if($is_admin){ ?> dat data-order="<?php echo $status['statusorder']; ?>" data-color="<?php echo $status['color']; ?>" data-name="<?php echo $status['name']; ?>" <?php } ?> title="<?php echo $status['name'].' ('.$total_projects.')'; ?>" data-title="<?php echo $status['name']; ?>">
 		          <?php echo $status['name']; ?>
             </p>
             </div>
             <div class="text-right" style="white-space: nowrap;">
               <span class="kanban-stage-deal-count"><?php echo $total_projects ?></span>
-              <a href ="javascript:init_deal_model('<?php echo 'pipelines='.$this->session->userdata('pipelines').'&stage=' .$status['id'] ?>')" style="color:var(--theme-info-dark)" class="mleft4"><i class="fa fa-plus" aria-hidden="true"></i></a>
-
+              <?php if (has_permission('projects', '', 'create')): ?>
+              <a href ="#" onclick="setDealStage('<?php echo $status['id'] ?>','<?php echo $status['name']; ?>')" data-toggle="modal" data-target="#newDealModal" style="color:var(--theme-info-dark)" class="mleft4"><i class="fa fa-plus" aria-hidden="true"></i></a>
+              <?php endif; ?>
             </div>
           </div>
           <p style="margin:0px" class="text-muted"><?php echo $base_currency->symbol;?> <?php echo number_format($tot_amt,2); ?></p>

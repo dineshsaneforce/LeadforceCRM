@@ -24,7 +24,7 @@
 						<div class="col-md-3">
 							<div class="_buttons">
 								<?php if (has_permission('projects', '', 'create')) { ?>
-									<a href="<?php echo admin_url('projects/project'); ?>" class="btn btn-info pull-left display-block mright5">
+									<a data-toggle="modal" data-target="#newDealModal" class="btn btn-info pull-left display-block mright5">
 										<?php echo _l('new_project'); ?>
 									</a>
 								<?php }
@@ -91,53 +91,54 @@
 								<a href="<?php echo $approval_url; ?>" data-toggle="tooltip" title="<?php echo _l('deal_approval_list'); ?>" class="btn <?php echo isset($_GET['approvalList']) ? 'btn-primary' : 'btn-default' ?> "><i class="fa fa-check-square-o" aria-hidden="true"></i></a>
 							</div>
 						</div>
-						<div class="col-md-1">
-							<h4><?php echo _l('filter_by'); ?></h4>
-						</div>
-						<?php echo form_open(admin_url('projects/kanban_noscroll'), array('method' => 'get', 'id' => 'ganttFiltersForm')); ?>
-						<div class="col-md-2 pipeselect">
-							<select class="selectpicker" data-none-selected-text="<?php echo _l('all'); ?>" name="pipelines" id="pipeline_id" data-width="100%">
-								<?php foreach ($pipelines as $status) {
-								?>
-									<option value="<?php echo $status['id']; ?>" <?php if ($selected_statuses == $status['id']) {
-																						echo ' selected';
-																					} ?>>
-										<?php echo $status['name']; ?>
-									</option>
-								<?php } ?>
-							</select>
-						</div>
-						<?php
-						/**
-						 * Only show this filter if user has permission for projects view otherwise
-						 * wont need this becuase by default this filter will be applied
-						 */
-						$mandatory_fields = '';
-						$fields = get_option('deal_fields');
-						$need_fields = array();
-						if (!empty($fields) && $fields != 'null') {
-							$need_fields = json_decode($fields);
-						}
-						if (has_permission('projects', '', 'view') /*&& !empty($need_fields) && in_array("members", $need_fields)*/) { ?>
-							<div class="col-md-2">
-								<?php if (!$selectedMember) {
-									$selectedMember = array();
-								} ?>
-								<select multiple class="selectpicker" data-live-search="true" data-title="All Members" name="member[]" id="staff_id" data-width="100%">
-									<?php foreach ($project_members as $member) { ?>
-										<option value="<?php echo $member['staff_id']; ?>" <?php if (in_array($member['staff_id'], $selectedMember)) {
-																								echo 'selected';
-																							} ?>>
-											<?php echo $member['firstname'] . ' ' . $member['lastname']; ?>
+						<div class="col-md-9">
+						<div class="row">
+							<?php echo form_open(admin_url('projects/kanban_noscroll'), array('method' => 'get', 'id' => 'ganttFiltersForm')); ?>
+							<div class="col-md-2 pipeselect">
+								<select class="selectpicker" data-none-selected-text="<?php echo _l('all'); ?>" name="pipelines" id="pipeline_id" data-width="100%">
+									<?php foreach ($pipelines as $status) {
+									?>
+										<option value="<?php echo $status['id']; ?>" <?php if ($selected_statuses == $status['id']) {
+																							echo ' selected';
+																						} ?>>
+											<?php echo $status['name']; ?>
 										</option>
 									<?php } ?>
 								</select>
 							</div>
-						<?php } ?>
-						<div class="col-md-1">
-							<button type="submit" class="btn btn-default"><?php echo _l('apply'); ?></button>
+							<?php
+							/**
+							 * Only show this filter if user has permission for projects view otherwise
+							 * wont need this becuase by default this filter will be applied
+							 */
+							$mandatory_fields = '';
+							$fields = get_option('deal_fields');
+							$need_fields = array();
+							if (!empty($fields) && $fields != 'null') {
+								$need_fields = json_decode($fields);
+							}
+							if (has_permission('projects', '', 'view') /*&& !empty($need_fields) && in_array("members", $need_fields)*/) { ?>
+								<div class="col-md-2">
+									<?php if (!$selectedMember) {
+										$selectedMember = array();
+									} ?>
+									<select multiple class="selectpicker" data-live-search="true" data-title="All Members" name="member[]" id="staff_id" data-width="100%">
+										<?php foreach ($project_members as $member) { ?>
+											<option value="<?php echo $member['staff_id']; ?>" <?php if (in_array($member['staff_id'], $selectedMember)) {
+																									echo 'selected';
+																								} ?>>
+												<?php echo $member['firstname'] . ' ' . $member['lastname']; ?>
+											</option>
+										<?php } ?>
+									</select>
+								</div>
+							<?php } ?>
+							<div class="col-md-1">
+								<button type="submit" class="btn btn-default"><?php echo _l('apply'); ?></button>
+							</div>
+							<?php echo form_close(); ?>
 						</div>
-						<?php echo form_close(); ?>
+						</div>
 					</div>
 
 				</div>
@@ -157,7 +158,7 @@
 			<div class="modal" id="newDealModal" style="display: none; z-index: 1050;">
 				<div class="modal-dialog">
 					<div class="modal-header">
-						<span class="title">New Deal</span>
+						<span class="title"><?php echo _l('new_project'); ?></span>
 						<button type="button" class="close" data-dismiss="modal">×</button>
 					</div>
 					<div class="modal-content">
@@ -166,14 +167,18 @@
 					</div>
 				</div>
 			</div>
-
+			<?php $this->load->view('admin/projects/modals_project') ?>																			
 
 		<?php init_tail(); ?>
 		<script>
 			$(function() {
 				project_kanban();
+				init_deal_model('<?php echo 'pipelines='.$this->session->userdata('pipelines').'&stage=0'?>');
 			});
-
+			function  setDealStage(stageId,stageName){
+				$('#project_form [name="pipeline_id"]').val(<?php echo $this->session->userdata('pipelines')?>).selectpicker('refresh');
+				loadpiplinestages(stageId);
+			}
 			// Edit status function which init the data to the modal
 			function edit_status(invoker, id) {
 				$('#additional').append(hidden_input('id', id));
@@ -185,6 +190,7 @@
 			}
 		</script>
 		<script>
+			
 			var maxHeight = function(elems){
 				return Math.max.apply(null, elems.map(function ()
 				{

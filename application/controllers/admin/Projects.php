@@ -318,7 +318,8 @@ class Projects extends AdminController
                 }
                 if ($id) {
                     set_alert('success', _l('added_successfully', _l('project')));
-                    redirect(admin_url('projects/view/' . $id));
+                    redirect($_SERVER['HTTP_REFERER']);
+                    // redirect(admin_url('projects/view/' . $id));
                 }
             } else {
                 
@@ -336,7 +337,11 @@ class Projects extends AdminController
                 }
                 $this->projects_model->add_edit_contacts($project_contacts, $id);
                 $this->projects_model->add_primary_contacts($primary_contact, $id);
-                redirect(admin_url('projects/view/' . $id));
+
+
+
+
+                 redirect(admin_url('projects/view/' . $id));
             }
 
            

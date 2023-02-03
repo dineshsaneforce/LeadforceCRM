@@ -187,9 +187,6 @@
                     </div>
                 </div>
                 <?php if (!empty($need_fields) && in_array("pipeline_id", $need_fields)) { ?>
-                    <?php if ($this->input->get('pipelines')) : ?>
-                        <input type="hidden" name="pipeline_id" value="<?php echo $this->input->get('pipelines') ?>">
-                    <?php else : ?>
                         <div class="row">
                             <div class="col-md-12 pipelineid ">
                                 <?php
@@ -204,16 +201,11 @@
                             </div>
 
                         </div>
-                    <?php endif; ?>
-
                 <?php }
                 if (!empty($need_fields) && in_array("status", $need_fields)) { ?>
-                    <?php if ($this->input->get('stage')) : ?>
-                        <input type="hidden" name="status" value="<?php echo $this->input->get('stage') ?>">
-                    <?php else : ?>
                         <div class='row'>
                             <div class="col-md-12 form_status">
-                                <div class="form-group select-placeholder">
+                                <div class="form-group">
                                     <label for="status"><?php if (!empty($need_fields) && in_array("status", $need_fields) && !empty($mandatory_fields) && in_array("status", $mandatory_fields)) { ?> <small class="req text-danger">* </small><?php } ?><?php echo _l('project_status'); ?>
                                             <?php if (!empty($important_fields) && in_array("status", $important_fields)) { ?>
                                                 <span style="color: #d2be19;margin-left: 5px;" title="<?php if (!empty($important_messages->status)) {
@@ -234,7 +226,6 @@
                                 </div>
                             </div>
                         </div>
-                    <?php endif; ?>
                 <?php
                 }
                 $exp = explode('admin/projects/project', $this->uri->uri_string());
@@ -292,11 +283,11 @@
 
                                 if (isset($project)) {
                                     if (in_array(get_staff_user_id(), $ownerHierarchy) || $project->teamleader == get_staff_user_id() || is_admin(get_staff_user_id()))
-                                        echo render_select('project_members[]', $staff, array('staffid', array('firstname', 'lastname')), 'project_members', $selected, array('multiple' => true, 'class' => 'formassigned', 'data-actions-box' => true), array('id' => 'project_members', 'app-field-wrapper' => 'project_members11'), 'project_members1', '', false);
+                                        echo render_select('project_members[]', $staff, array('staffid', array('firstname', 'lastname')), 'project_members', $selected, array('multiple' => true, 'class' => 'selectpicker formassigned'), array('id' => 'project_members', 'app-field-wrapper' => 'project_members11'), 'project_members1', '', false);
                                     else
-                                        echo render_select('project_members[]', $staff, array('staffid', array('firstname', 'lastname')), 'project_members', $selected, array('multiple' => true, 'class' => 'formassigned', 'data-actions-box' => true, 'disabled' => true), array('id' => 'project_members', 'app-field-wrapper' => 'project_members11'), 'project_members1', '', false);
+                                        echo render_select('project_members[]', $staff, array('staffid', array('firstname', 'lastname')), 'project_members', $selected, array('multiple' => true, 'class' => 'selectpicker formassigned' ,'disabled' => true), array('id' => 'project_members', 'app-field-wrapper' => 'project_members11'), 'project_members1', '', false);
                                 } else {
-                                    echo render_select('project_members[]', $staff, array('staffid', array('firstname', 'lastname')), 'project_members', $selected, array('multiple' => true, 'class' => 'formassigned', 'data-actions-box' => true), array('id' => 'project_members', 'app-field-wrapper' => 'project_members11'), 'project_members1', '', false);
+                                    echo render_select('project_members[]', $staff, array('staffid', array('firstname', 'lastname')), 'project_members', $selected, array('multiple' => true, 'class' => 'selectpicker formassigned'), array('id' => 'project_members', 'app-field-wrapper' => 'project_members11'), 'project_members1', '', false);
                                 }
 
                                 ?>
@@ -640,92 +631,6 @@
 </div>
 </div>
 
-
-<div class="modal fade" id="clientid_add_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button group="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel">
-                    <span class="edit-title"><?php echo _l('add_new', _l('proposal_for_customer')); ?></span>
-                </h4>
-            </div>
-            <?php echo form_open('admin/clients/ajax_client', array('id' => 'clientid_add_group_modal')); ?>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-12">
-                        <?php $attrs = array('autofocus' => true, 'required' => true); ?>
-                        <?php echo render_input('company', 'client_company', '', 'text', $attrs); ?>
-                        <div id="companyname_exists_info" class="hide"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button group="button" class="btn btn-default" data-dismiss="modal"><?php echo _l('close'); ?></button>
-                <button group="submit" class="btn btn-info"><?php echo _l('submit'); ?></button>
-
-            </div>
-            <?php echo form_close(); ?>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="project_contacts_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button group="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel">
-                    <span class="edit-title"><?php echo _l('add_new', _l('contact')); ?></span>
-                </h4>
-            </div>
-            <?php echo form_open('admin/clients/form_contact/undefined', array('id' => 'project_contacts_add')); ?>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-12">
-                        <?php echo form_hidden('clientid', ''); ?>
-                        <?php $attrs = array('autofocus' => true, 'required' => true); ?>
-                        <?php echo render_input('firstname', 'client_firstname', '', '', $attrs); ?>
-                        <div id="contact_exists_info" class="hide"></div>
-                        <?php echo render_input('title', 'contact_position', ''); ?>
-
-                        <div class="form-group" app-field-wrapper="email">
-
-                            <label for="email" class="control-label">Email </label>
-                            <div class="input-group">
-                                <input type="email" id="email" name="email" class="form-control" value="">
-                                <div class="input-group-addon"><span class="add_field_button_ae pointer "><i class="fa fa fa-plus"></i></span></div>
-                            </div>
-                        </div>
-
-                        <div class="input_fields_wrap_ae">
-
-                        </div>
-
-
-                        <div class="form-group" app-field-wrapper="phonenumber">
-                            <label for="phonenumber" class="control-label">Phone </label>
-                            <div class="input-group">
-                                <input type="text" id="phonenumber" name="phonenumber" class="form-control" autocomplete="off" value="">
-                                <div class="input-group-addon"><span class="add_field_button_ap pointer "><i class="fa fa fa-plus"></i></span></div>
-                            </div>
-                        </div>
-
-                        <div class="input_fields_wrap_ap">
-
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button group="button" class="btn btn-default" data-dismiss="modal"><?php echo _l('close'); ?></button>
-                <button group="submit" class="btn btn-info"><?php echo _l('submit'); ?></button>
-
-            </div>
-            <?php echo form_close(); ?>
-        </div>
-
         <script>
             function ch_project_member(a) {
                 var cur_name = a.value;
@@ -1045,6 +950,7 @@
                 });
 
                 $('select[name="status"]').on('change', function() {
+                    alert($(this).val());
                     var status = $(this).val();
                     var mark_all_tasks_completed = $('.mark_all_tasks_as_completed');
                     var notify_project_members_status_change = $('.notify_project_members_status_change');
@@ -1167,11 +1073,36 @@
             function check_all_val() {
 
             }
+            function check_all_val1() {
+
+            }
+
+            function loadpiplinestages(selectStage){
+                var pipeline_id = $('#project_form #pipeline_id').val();
+                $.ajax({
+                    url: admin_url + 'leads/changepipeline',
+                    type: 'POST',
+                    data: {
+                        'pipeline_id': pipeline_id
+                    },
+                    dataType: 'json',
+                    success: function success(result) {
+                        $('#project_form [name="status"]').html(result.statuses).selectpicker('refresh');
+                        console.log(selectStage);
+                        $('#project_form [name="status"]').val(selectStage).selectpicker('refresh');
+                        $('.formteamleader').selectpicker('destroy');
+                        $('.formteamleader').html(result.teamleaders).selectpicker('refresh');
+                        $('.formassigned').selectpicker('destroy');
+                        $('.formassigned').html(result.followers).selectpicker('refresh');
+                        $('#teamleader-error').hide();
+                    }
+                });
+            }
             $(function() {
                 $('.selectpicker').selectpicker('refresh');
                 init_ajax_search("customer", "#clientid.ajax-search");
                 if ($('#status').length > 0) {
-                    $('.form_status .selectpicker').addClass("formstatus");
+                    // $('.form_status .selectpicker').addClass("formstatus");
                 }
                 if ($('.form_assigned .selectpicker').length > 0) {
                     $('.form_assigned .selectpicker').addClass("formassigned");
@@ -1181,9 +1112,8 @@
                     $('.form_teamleader .selectpicker').addClass("formteamleader");
                 }
 
-                $('body').change('#pipeline_id', function() {
-                    $('.formstatus').selectpicker('destroy');
-                    $('.formstatus').html('').selectpicker('refresh');
+                $('body').on('change','#project_form #pipeline_id', function() {
+                    $('#project_form [name="status"]').html('').selectpicker('refresh');
 
                     $('.formassigned').selectpicker('destroy');
                     $('.formassigned').html('').selectpicker('refresh');
@@ -1191,33 +1121,13 @@
                     $('.formteamleader').selectpicker('destroy');
                     $('.formteamleader').html('').selectpicker('refresh');
 
-                    var pipeline_id = $('#pipeline_id').val();
-                    $.ajax({
-                        url: admin_url + 'leads/changepipeline',
-                        type: 'POST',
-                        data: {
-                            'pipeline_id': pipeline_id
-                        },
-                        dataType: 'json',
-                        success: function success(result) {
-                            $('.formstatus').selectpicker('destroy');
-                            $('.formstatus').html(result.statuses).selectpicker('refresh');
-
-
-                            $('.formteamleader').selectpicker('destroy');
-                            $('.formteamleader').html(result.teamleaders).selectpicker('refresh');
-
-                            $('.formassigned').selectpicker('destroy');
-                            $('.formassigned').html(result.followers).selectpicker('refresh');
-                            $('#teamleader-error').hide();
-                        }
-                    });
+                    loadpiplinestages();
                 });
 
                 $('#teamleader').change(function() {
                     $('.formassigned').selectpicker('destroy');
                     $('.formassigned').html('').selectpicker('refresh');
-                    var pipeline_id = $('#pipeline_id').val();
+                    var pipeline_id = $('#project_form #pipeline_id').val();
                     var teamleader = $('#teamleader').val();
                     $.ajax({
                         url: admin_url + 'leads/getpipelineteamember',
@@ -1236,9 +1146,9 @@
                 });
                 var pipelines_count = <?php echo count((array)$pipelines); ?>;
                 if (pipelines_count == 1) {
-                    $('#pipeline_id option[value="<?php echo $pipelines[0]['id']; ?>"]').attr('selected', 'selected')
-                    $('#pipeline_id').selectpicker('refresh');
-                    $('#pipeline_id').trigger('change');
+                    $('#project_form #pipeline_id option[value="<?php echo $pipelines[0]['id']; ?>"]').attr('selected', 'selected')
+                    $('#project_form #pipeline_id').selectpicker('refresh');
+                    $('#project_form #pipeline_id').trigger('change');
                 }
 
                 $('#company').on('keyup', function() {

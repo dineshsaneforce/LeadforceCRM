@@ -3470,6 +3470,7 @@ class Projects_model extends App_Model
             $this->db->order_by($sort['sort_by'], $sort['sort']);
         } else {
             $this->db->order_by(db_prefix() . 'projects.project_created','Desc');
+            $this->db->order_by(db_prefix() . 'projects.project_modified','Desc');
             // $this->db->order_by($default_projects_kanban_sort, $default_projects_kanban_sort_type);
         }
         $this->db->group_by(db_prefix() . 'projects.id`');
