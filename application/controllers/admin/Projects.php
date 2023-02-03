@@ -1264,16 +1264,39 @@ class Projects extends AdminController
         }
     }
     public function header_gsearch()
-    {
+    { 
         $gsearch   = $this->input->post('globalsearch');
+        if(strlen($gsearch)<3){
+            $data['all_html'] = '';
+            if(!empty($gsearch)) {
+    
+                } else {
+                    $data['all_count'] = $data['projects_count'] = $data['clients_count'] = $data['contacts_count'] = $data['leads_count'] = 0;
+                    $data['contacts'] = $data['clients'] = $data['projects'] = $data['leads'] = '';
+                    $data['all_html'] = $data['projects_html'] = $data['clients_html'] = $data['contacts_html'] = $data['leads_html'] ='';
+                }
+                 echo json_encode($data);
+                 exit();
+        }
         $my_staffids = $this->staff_model->get_my_staffids();
         $data = array();
-		$project_fields = "id,name,description,status,pipeline_id,clientid,teamleader,billing_type,start_date,deadline,project_created,created_by,project_modified,modified_by,date_finished,progress,progress_from_tasks,project_cost,project_rate_per_hour,estimated_hours,addedfrom,stage_of,stage_on,loss_reason,loss_remark,deleted_status,project_currency,imported_id,lead_id";
+        $lead_fields = "id,name,phonenumber,email,company";
+        // $lead_fields = "id,hash,name,title,company,description,country,zip,city,state,address,teamleader,assigned,dateadded,from_form_id,status,source,pipeline_id,lastcontact,dateassigned,last_status_change,addedfrom,email,website,leadorder,phonenumber,date_converted,lost,junk,last_lead_status,is_imported_from_email_integration,email_integration_uid,is_public,default_language,startdate,enddate,currency,rate,client_id,project_id,deleted_status,query_id,phone_country_code,lead_currency,lead_cost"
+        if(!is_admin(get_staff_user_id())) {
+            if($my_staffids) {
+                $data['leads'] = $this->db->query('SELECT '.$lead_fields.' FROM tblleads where ((assigned  in (' . implode(',',$my_staffids) . ')) OR id IN (select id from tblleads where id in (' . implode(',',$my_staffids) . '))) AND name like "%'.$gsearch.'%" ')->result_array();
+            } else {
+                $data['leads'] = $this->db->query('SELECT '.$lead_fields.' FROM tblleads where ((assigned  = "'.get_staff_user_id().'") OR id IN (select id from tblleads where id="'.get_staff_user_id().'")) AND name like "%'.$gsearch.'%" ')->result_array();
+            }
+        } else {
+            $data['leads'] = $this->db->query('SELECT '.$lead_fields.' FROM tblleads WHERE id like "%'.$gsearch.'%" OR name like "%'.$gsearch.'%" OR email like"%'.$gsearch.'%" OR phonenumber like "%'.$gsearch.'%" ')->result_array();            
+        }
+        $project_fields = "id,name,description,status,pipeline_id,clientid,teamleader,billing_type,start_date,deadline,project_created,created_by,project_modified,modified_by,date_finished,progress,progress_from_tasks,project_cost,project_rate_per_hour,estimated_hours,addedfrom,stage_of,stage_on,loss_reason,loss_remark,deleted_status,project_currency,imported_id,lead_id";
         if(!is_admin(get_staff_user_id())) {
             if($my_staffids) {
                 $data['projects'] = $this->db->query('SELECT '.$project_fields.' FROM tblprojects where ((teamleader in (' . implode(',',$my_staffids) . ')) OR id IN (select project_id from tblproject_members where staff_id in (' . implode(',',$my_staffids) . '))) AND name like "%'.$gsearch.'%" ')->result_array();
             } else {
-                $data['projects'] = $this->db->query('SELECT '.$project_fields.' FROM tblprojects where ((teamleader = "'.get_staff_user_id().'") OR id IN (select project_id from tblproject_members where staff_id="'.get_staff_user_id().'")) AND name like "%'.$gsearch.'%" ')->result_array();
+                $data['projects'] = $this->db->query('SELECT '.$project_fields.' FROM tblprojects where ((teamleader = "'.get_staff_user_id().'") OR id IN (select project_id from tblproject_members where staff_id="'.get_staff_user_id().'")) AND name like "%'.$gsearch.'%" ');
             }
         } else {
             $data['projects'] = $this->projects_model->get('',[
@@ -1312,69 +1335,86 @@ class Projects extends AdminController
                         
             }
             $data['contacts'] = $this->db->query($where_summary_inactiveperson_qry)->result_array();
-        } else {
-            $data['contacts'] = $this->clients_model->get_contacts('',[
-                db_prefix() .'contacts.active' => 1," (".
-                db_prefix() ."contacts.firstname like '%".$gsearch."%' OR ".
-                db_prefix() ."contacts.email like '%".$gsearch."%' OR " .
-                db_prefix() ."contacts.phonenumber like '%".$gsearch."%'".") and ".db_prefix()."contacts.firstname != " => "",
-            ]);
-        }
-
+            } else {
+                $data['contacts'] = $this->clients_model->get_contacts('',[
+                    db_prefix() .'contacts.active' => 1," (".
+                    db_prefix() ."contacts.firstname like '%".$gsearch."%' OR ".
+                    db_prefix() ."contacts.email like '%".$gsearch."%' OR " .
+                    db_prefix() ."contacts.phonenumber like '%".$gsearch."%'".") and ".db_prefix()."contacts.firstname != " => "",
+                ]);
+            }
+       
 			$data['projects_count'] = count($data['projects']);
+            $data['leads_count'] = count($data['leads']);
 			$data['clients_count'] = count($data['clients']);
 			$data['contacts_count'] = count($data['contacts']);
-			$data['all_count'] = $data['contacts_count'] + $data['clients_count'] + $data['projects_count'];
+			$data['all_count'] = $data['contacts_count'] + $data['clients_count'] + $data['projects_count'] + $data['leads_count'];
 			
-			$data['all_html'] = $data['projects_html'] = $data['clients_html'] = $data['contacts_html'] = '';
-			
-			foreach($data['clients'] as $client){ 
-				$data['clients_html'] .= '<li class="relative notification-wrapper thsr-client">
-		<div class="media">
-			<div class="media-body">
-			 <h5 class="media-heading mtop5">
-				<a href="'.admin_url('clients/client/'.$client["userid"]).'">'.$client['company'].'</a>
-			 </h5>
-			</div>
+			$data['all_html'] = $data['projects_html'] = $data['clients_html'] = $data['contacts_html'] = $data['leads_html'] ='';
+			foreach($data['leads'] as $lead)
+            {  
+                $lead['name'] = highlightSearchTerm($lead['name'],$gsearch);
+                $data['leads_html'] .= '<li class="relative notification-wrapper thsr-lead">
+                    <div class="media">
+                        <div class="media-body">
+                             <h5 class="media-heading mtop5">
+                                <a href="'.admin_url('leads/lead/'.$lead["id"]).'">'.$lead['name'].'</a>                                
+                             </h5>
+                        </div>
 		</div>
 	</li>';
-			}
-			
-			$data['all_html'] .= $data['clients_html'];
-
-			foreach($data['projects'] as $project){ 
+            }			
+			$data['all_html'] .= $data['leads_html'];
+			foreach($data['projects'] as $project)
+            {   
+                $project['name'] = highlightSearchTerm($project['name'],$gsearch);
 				$data['projects_html'] .= '<li class="relative notification-wrapper thsr-client">
-		<div class="media">
-			<div class="media-body">
-			 <h5 class="media-heading mtop5">
-				<a href="'.admin_url('projects/view/'.$project["id"]).'">'.$project['name'].'</a>
-			 </h5>
-			</div>
+                    <div class="media">
+                        <div class="media-body">
+                            <h5 class="media-heading mtop5">
+                                 <a href="'.admin_url('projects/view/'.$project["id"]).'">'.$project['name'].'</a>
+                            </h5>
+                        </div>
 		</div>
 	</li>';
-			}
-			
+			}	
+
 			$data['all_html'] .= $data['projects_html'];
+            foreach($data['clients'] as $client)
+            {   
+                $client['company'] = highlightSearchTerm($client['company'],$gsearch);
+                $data['clients_html'] .= '<li class="relative notification-wrapper thsr-client">
+                    <div class="media">
+                        <div class="media-body">
+                            <h5 class="media-heading mtop5">
+                                <a href="'.admin_url('clients/client/'.$client["userid"]).'">'.$client['company'].'</a>
+                            </h5>
+                        </div>
+                    </div></li>';
+            }
+            $data['all_html'] .= $data['clients_html'];
             
-			foreach($data['contacts'] as $contact){ 
+			foreach($data['contacts'] as $contact)
+            {   
+                $contact['firstname'] = highlightSearchTerm($contact['firstname'],$gsearch);
 				$data['contacts_html'] .= '<li class="relative notification-wrapper thsr-client">
-		<div class="media">
-			<div class="media-body">
-			 <h5 class="media-heading mtop5">
-				<a href="'.admin_url('clients/view_contact/'.$contact["id"]).'">'.get_contact_full_name($contact['id']).'</a>
-			 </h5>
-			</div>
+                <div class="media">
+                    <div class="media-body">
+                        <h5 class="media-heading mtop5">
+                            <a href="'.admin_url('clients/view_contact/'.$contact["id"]).'">'.$contact['firstname'].'</a>
+                        </h5>
+                     </div>
 		</div>
 	</li>';
-			}
-			
+            }
+
 			$data['all_html'] .= $data['contacts_html'];
-            if(!empty($gsearch)) {
+        if(!empty($gsearch)) {
 
             } else {
-                $data['all_count'] = $data['projects_count'] = $data['clients_count'] = $data['contacts_count'] = 0;
-                $data['contacts'] = $data['clients'] = $data['projects'] = '';
-                $data['all_html'] = $data['projects_html'] = $data['clients_html'] = $data['contacts_html'] = '';
+                $data['all_count'] = $data['projects_count'] = $data['clients_count'] = $data['contacts_count'] = $data['leads_count'] = 0;
+                $data['contacts'] = $data['clients'] = $data['projects'] = $data['leads'] = '';
+                $data['all_html'] = $data['projects_html'] = $data['clients_html'] = $data['contacts_html'] = $data['leads_html'] ='';
             }
 			
 			 echo json_encode($data);

@@ -65,8 +65,9 @@ if(get_option('pusher_realtime_notifications') == 1){ ?>
 		   $("#THall").hide().removeClass('in');
 		   $("#THprojects").hide().removeClass('in');
 		   $("#THclients").hide().removeClass('in');
-		   
-		   $("ul.nav.nav-tabs li").removeClass('active');
+       $("#THleads").hide().removeClass('in');
+		  //  $("ul.nav.nav-tabs li").removeClass('active');
+		   $(".nav-tabs li").removeClass('active');
 		   $(this).parent().addClass('active');
 		   
 		  var getname = $(this).attr("href");
@@ -104,11 +105,13 @@ if(get_option('pusher_realtime_notifications') == 1){ ?>
                           $("#THall").html(msg.all_html);
                           $("#THprojects").html(msg.projects_html);
                           $("#THclients").html(msg.clients_html);
+                          $("#THleads").html(msg.leads_html);
                           
-                            $("#THccontacts").html(msg.contacts_count);
+                           $("#THccontacts").html(msg.contacts_count);
                           $("#THcall").html(msg.all_count);
                           $("#THcprojects").html(msg.projects_count);
                           $("#THcclients").html(msg.clients_count);
+                          $("#THcleads").html(msg.leads_count);
                             setTimeout(function(){  
                               $( "li.header-search.timer-button" ).addClass('open');
                                   }, 200);
