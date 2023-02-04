@@ -5,7 +5,6 @@ $i = 0;
 foreach ($statuses as $status) {
   
   $total_pages = ceil($this->projects_model->do_kanban_query($status['id'],$this->input->get('search'),1,array(),true)/get_option('projects_kanban_limit'));
-
   $settings = '';
   foreach(get_system_favourite_colors() as $color){
     $color_selected_class = 'cpicker-small';
@@ -23,6 +22,7 @@ foreach ($statuses as $status) {
         if(!empty($status["color"])){
           $status_color = 'style="border-top:5px solid '.$status['color'].';"';
         }
+       
 		    $projects = $this->projects_model->do_kanban_query_count($status['id'],$this->input->get('search'),1,array('sort_by'=>$this->input->get('sort_by'),'sort'=>$this->input->get('sort')));
 			$tot_amt = array_sum(array_column($projects, 'project_cost'));
 			

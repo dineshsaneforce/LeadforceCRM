@@ -3364,13 +3364,44 @@ class Projects_model extends App_Model
         }else{
             $this->db->where(db_prefix() . 'projects.pipeline_id', $pipeline);
         }
-
+        
         if (isset($sort['sort_by']) && $sort['sort_by'] && isset($sort['sort']) && $sort['sort']) {
-            $this->db->order_by($sort['sort_by'], $sort['sort']);
+            
+            $sortorder =($sort['sort']=='desc'|| $sort['sort']=='asc')?$sort['sort']:'asc';
+            switch($sort['sort_by']){
+                
+                case 'name':
+                    
+                    $this->db->order_by(db_prefix() . 'projects.name',$sortorder);
+                    break;
+                case 'value':
+                    $this->db->order_by(db_prefix() . 'projects.project_cost',$sortorder);
+                    break;
+                case 'date_created':
+                    $this->db->order_by(db_prefix() . 'projects.project_created',$sortorder);
+                    break;
+                case 'date_modified':
+                    $this->db->order_by(db_prefix() . 'projects.project_modified',$sortorder);
+                    break;
+                case 'deadline':
+                    $this->db->order_by(db_prefix() . 'projects.deadline',$sortorder);
+                    break;
+                default:
+                    $this->db->order_by(db_prefix() . 'projects.project_created','Desc');
+                    $this->db->order_by(db_prefix() . 'projects.project_modified','Desc');
+                    break;
+                
+            }
+            
+            
         } else {
-            $this->db->order_by($default_projects_kanban_sort, $default_projects_kanban_sort_type);
+            $this->db->order_by(db_prefix() . 'projects.project_created','Desc');
+            $this->db->order_by(db_prefix() . 'projects.project_modified','Desc');
+            // $this->db->order_by($default_projects_kanban_sort, $default_projects_kanban_sort_type);
         }
+        
         $this->db->group_by(db_prefix() . 'projects.id`');
+        
         if ($count == false) {
             if ($page > 1) {
                 $page--;
@@ -3383,16 +3414,17 @@ class Projects_model extends App_Model
 
         
         if ($count == false) {
+            
             return $result = $this->db->get()->result_array();
 
         }
+       
         //echo $this->db->last_query(); exit;
         return $this->db->count_all_results();
     }
 
 
     public function do_kanban_query($status, $search = '', $page = 1, $sort = [], $count = false) {
-                
         // ROle based records
 		$my_id = get_staff_user_id();
 		if(empty($my_id)){
@@ -3467,7 +3499,31 @@ class Projects_model extends App_Model
         // }
 
         if (isset($sort['sort_by']) && $sort['sort_by'] && isset($sort['sort']) && $sort['sort']) {
-            $this->db->order_by($sort['sort_by'], $sort['sort']);
+            
+            $sortorder =($sort['sort']=='desc'|| $sort['sort']=='asc')?$sort['sort']:'asc';
+            switch($sort['sort_by']){
+                case 'name':
+                    $this->db->order_by(db_prefix() . 'projects.name',$sortorder);
+                    break;
+                case 'value':
+                    $this->db->order_by(db_prefix() . 'projects.project_cost',$sortorder);
+                    break;
+                case 'date_created':
+                    $this->db->order_by(db_prefix() . 'projects.project_created',$sortorder);
+                    break;
+                case 'date_modified':
+                    $this->db->order_by(db_prefix() . 'projects.project_modified',$sortorder);
+                    break;
+                case 'deadline':
+                    $this->db->order_by(db_prefix() . 'projects.deadline',$sortorder);
+                    break;
+                default:
+                    $this->db->order_by(db_prefix() . 'projects.project_created','Desc');
+                    $this->db->order_by(db_prefix() . 'projects.project_modified','Desc');
+                    break;
+                
+            }
+            
         } else {
             $this->db->order_by(db_prefix() . 'projects.project_created','Desc');
             $this->db->order_by(db_prefix() . 'projects.project_modified','Desc');
@@ -3486,12 +3542,13 @@ class Projects_model extends App_Model
  
         
         if ($count == false) {
-			
             return $result = $this->db->get()->result_array();
        
         }
+        
         //echo $this->db->last_query(); exit;
-        return $this->db->count_all_results(); 
+        
+         $this->db->count_all_results(); 
     }
 	public function do_kanban_forecast_query($intervel, $which, $year, $count = false, $search = '', $page = 1, $sort = []) {
                 //pre($_SESSION);
