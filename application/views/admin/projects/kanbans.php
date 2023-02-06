@@ -18,6 +18,95 @@
 		background: transparent;
 	}
 </style>
+<style>
+			ul.projects-status{
+				display: flex;
+    			flex-direction: column;
+			}
+			.ui-sortable-placeholder:last-child  {
+				margin-bottom: auto;
+				min-height: 100%;
+			}
+			.kan-ban-col {
+				width: calc(100%/<?php echo count($statuses); ?>);
+			}
+
+			ul.dropdown-menu li:first-child {
+				display: block !important;
+			}
+		</style>
+		<style>
+			.deal-kanban-call-btn {
+				color: green !important;
+			}
+
+			.text-bold {
+				font-weight: 500;
+			}
+
+			.kanban-stage-deal-count {
+				padding: 5px;
+				background-color: #eaeef1;
+				border-radius: 5px;
+				font-weight: 500;
+			}
+
+			.panel-heading-bg .heading.pointer {
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				display: block;
+				float: left;
+				width: 100%;
+				font-weight: 500;
+				margin-bottom: 0px;
+			}
+
+			.panel-heading-bg .pointer {
+				float: left;
+			}
+
+			.panel-heading-bg.primary-bg {
+				height: 39px;
+			}
+
+			.projects-kan-ban {
+				background-color: transparent;
+				min-height: 500px;
+			}
+
+			#kan-ban .panel-heading-bg {
+				position: absolute;
+				padding: 9px;
+				width: calc((100%/<?php echo count($statuses); ?>) - 10px);
+				z-index: 2;
+				background-color: aliceblue;
+			}
+
+			.kan-ban-content {
+				position: relative;
+				padding: 70px 2px 2px 2px;
+			}
+
+			.projects-kan-ban {
+				height: 100%;
+			}
+
+			#kan-ban {
+				display: flex;
+			}
+
+			.kan-ban-col-wrapper,
+			.kan-ban-col-wrapper>.panel_s,
+			.kan-ban-content-wrapper,
+			.kan-ban-content,
+			.projects-status {
+				height: 100%;
+			}
+			.kan-ban-content-wrapper{
+				overflow: unset;
+			}
+		</style>
 <div id="wrapper">
 	<div class="content">
 		<div class="panel_s">
@@ -149,7 +238,7 @@
 											<div class="row">
 												<div class="col-xs-6">
 													<select name="sort_type" id="sort_type" class="form-control">
-														<option value="">Nothing Selected</option>
+														<option value="">Default</option>
 														<option value="name" <?php echo $this->input->get('sort_type')=='name'?'selected':""?>>Name</option>
 														<option value="value" <?php echo $this->input->get('sort_type')=='value'?'selected':""?>>Value</option>
 														<option value="date_created" <?php echo $this->input->get('sort_type')=='date_created'?'selected':""?>>Date Created</option>
@@ -157,7 +246,7 @@
 														<option value="deadline" <?php echo $this->input->get('sort_type')=='deadline'?'selected':""?>>Expected Closing Date</option>
 													</select>
 												</div>
-												<div class="col-xs-6">
+												<div class="col-xs-6" id="sort-wrapper" style="<?php echo !$this->input->get('sort_type')?'display:none':""?>">
 													<select name="sort" id="sort" class="form-control">
 														<option value="asc" <?php echo $this->input->get('sort')=='asc'?'selected':""?>>ASC</option>
 														<option value="desc" <?php echo $this->input->get('sort')=='desc'?'selected':""?>>DESC</option>
@@ -394,95 +483,18 @@
 			$('#openNewProject').click(function(){
 				$('#project_form [name="pipeline_id"').val('').selectpicker("refresh");
 			})
+
+			$('[name="sort_type"]').change(function(){
+				if($(this).val()==''){
+					$('#sort-wrapper').hide();
+				} else{
+					$('#sort-wrapper').show();	
+				}
+			});
+
 		</script>
 		</body>
 
 		</html>
 
-		<style>
-			.kan-ban-col {
-				width: calc(100%/<?php echo count($statuses); ?>);
-			}
-
-			ul.dropdown-menu li:first-child {
-				display: block !important;
-			}
-		</style>
-		<style>
-			.deal-kanban-call-btn {
-				color: green !important;
-			}
-
-			.text-bold {
-				font-weight: 500;
-			}
-
-			.kanban-stage-deal-count {
-				padding: 5px;
-				background-color: #eaeef1;
-				border-radius: 5px;
-				font-weight: 500;
-			}
-
-			.panel-heading-bg .heading.pointer {
-				white-space: nowrap;
-				overflow: hidden;
-				text-overflow: ellipsis;
-				display: block;
-				float: left;
-				width: 100%;
-				font-weight: 500;
-				margin-bottom: 0px;
-			}
-
-			.panel-heading-bg .pointer {
-				float: left;
-			}
-
-			.panel-heading-bg.primary-bg {
-				height: 39px;
-			}
-
-			.projects-kan-ban {
-				background-color: transparent;
-				min-height: 500px;
-			}
-
-			#kan-ban .panel-heading-bg {
-				position: absolute;
-				padding: 9px;
-				width: calc((100%/<?php echo count($statuses); ?>) - 10px);
-				z-index: 2;
-				background-color: aliceblue;
-			}
-
-			.kan-ban-content {
-				position: relative;
-				padding: 70px 2px 2px 2px;
-			}
-
-			.projects-kan-ban {
-				height: 100%;
-			}
-
-			#kan-ban {
-				display: flex;
-			}
-
-			.kan-ban-col-wrapper,
-			.kan-ban-col-wrapper>.panel_s,
-			.kan-ban-content-wrapper,
-			.kan-ban-content,
-			.projects-status {
-				height: 100%;
-			}
-
-			li.project-kan-ban:last-child {
-				background-color: #FFFFFF;
-				position: sticky;
-				top: 127px;
-			}
-			.kan-ban-content-wrapper{
-				overflow: unset;
-			}
-		</style>
+		
