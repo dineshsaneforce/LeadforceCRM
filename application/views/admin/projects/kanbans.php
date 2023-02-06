@@ -26,7 +26,7 @@
 					<div class="col-md-3">
 						<div class="_buttons">
 							<?php if (has_permission('projects', '', 'create')) { ?>
-								<a data-toggle="modal" data-target="#newDealModal" class="btn btn-info pull-left display-block mright5">
+								<a id="openNewProject" data-toggle="modal" data-target="#newDealModal" class="btn btn-info pull-left display-block mright5">
 									<?php echo _l('new_project'); ?>
 								</a>
 							<?php }
@@ -390,6 +390,10 @@
 				e.preventDefault();
 				$("#sortdropdownToggler").dropdown('toggle');
 			});
+
+			$('#openNewProject').click(function(){
+				$('#project_form [name="pipeline_id"').val('').selectpicker("refresh");
+			})
 		</script>
 		</body>
 
