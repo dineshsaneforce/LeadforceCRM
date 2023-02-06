@@ -481,7 +481,6 @@ echo render_select('teamleader', $teamleaders, array('staffid', array('firstname
     <div class="row">
         <div class="col-md-6">
             <?php $value = (isset($lead) ? $lead->name : ''); ?>
-            <?php $value = (isset($email_data) ? $email_data['from']['email'] : $value); ?>
             <?php echo render_input('name', 'lead_add_edit_name', $value,'text',['onblur'=>'validate_lead_profile_text_input(this.value,\'name\')','maxlength'=>'150']); ?>
         </div>
         <div class="col-md-6">
