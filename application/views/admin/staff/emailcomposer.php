@@ -523,8 +523,8 @@
                         <input type="hidden" name="priority" value="1">
                         <input type="hidden" name="repeat_every_custom" value="1">
                         <input type="hidden" name="repeat_type_custom" value="day">
-                        <input type="hidden" name="rel_type" value="">
-                        <input type="hidden" name="rel_id" value="">
+                        <input type="hidden" name="rel_type" value="<?php echo isset($email_composer_rel_type)?$email_composer_rel_type:''?>">
+                        <input type="hidden" name="rel_id" value="<?php echo isset($email_composer_rel_id)?$email_composer_rel_id:''?>">
                         <input type="hidden" name="parent_id" value="">
                         <input type="hidden" name="tasktype" value="2">
                         <input type="hidden" name="billable" value="on">

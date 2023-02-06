@@ -1895,13 +1895,13 @@ class Imap
 		$this->select_folder($current_folder);
 		$inboxEmails = $this->get_message($_REQUEST['uid']);
 		$req_to = $inboxEmails['from']['email'].',';
-		if(!empty($inboxEmails['to']) && $reply=='all'){
-			foreach($inboxEmails['to'] as $req_mail1){
-				if($req_mail1['email'] != $to_email){
-					$req_to .= $req_mail1['email'].',';
-				}
-			}
-		}
+		// if(!empty($inboxEmails['to']) && $reply=='all'){
+		// 	foreach($inboxEmails['to'] as $req_mail1){
+		// 		if($req_mail1['email'] != $to_email){
+		// 			$req_to .= $req_mail1['email'].',';
+		// 		}
+		// 	}
+		// }
 		if(!empty($inboxEmails['cc'])  && $reply=='all'){
 			foreach($inboxEmails['cc'] as $cc_mail1){
 				if($cc_mail1['email'] != $to_email){
