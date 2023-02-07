@@ -51,7 +51,7 @@ if(get_option('pusher_realtime_notifications') == 1){ ?>
 	   if(performance.navigation.type == 2){
 			//location.reload(true);
 		}
-      $('a.nav-tabs-a').click(function(e) {
+      $('a.search-tabs-a').click(function(e) {
 		  e.stopPropagation();
 		  e.preventDefault();
 		  
@@ -66,8 +66,9 @@ if(get_option('pusher_realtime_notifications') == 1){ ?>
 		   $("#THprojects").hide().removeClass('in');
 		   $("#THclients").hide().removeClass('in');
        $("#THleads").hide().removeClass('in');
-		  //  $("ul.nav.nav-tabs li").removeClass('active');
-		   $(".nav-tabs li").removeClass('active');
+		  //  $("ul.nav.search-tabs li").removeClass('active');
+       $('.search-tabs li').removeClass('active');
+
 		   $(this).parent().addClass('active');
 		   
 		  var getname = $(this).attr("href");

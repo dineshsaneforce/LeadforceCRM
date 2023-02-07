@@ -22,12 +22,13 @@
     margin-bottom: 25px;
     background: 0 0;
     border-radius: 1px;
-    padding-left: 0;
-    padding-right: 0;
-    border-top: 1px solid #f0f0f0;
-    border-bottom: 1px solid #f0f0f0;
     overflow-y: hidden;
     display: flex;
+}
+p {
+    color: #65686f;
+    margin: 0 0 10px;
+    font-size: 12px;
 }
 </style>
 <div class="nav-container">
@@ -61,8 +62,8 @@
 </div>
 
 <div class="tab-content">
-  <div id="THall" class="tab-pane fade in active"></div>
-  <div id="THleads" class="tab-pane fade"> </div>
+  <!-- <div id="THall" class="tab-pane fade in active"></div> -->
+  <div id="THleads" class="tab-pane fade in active"> </div>
   <div id="THprojects" class="tab-pane fade"> </div>
   <div id="THclients" class="tab-pane fade"> </div>
   <div id="THcontacts" class="tab-pane fade"> </div>
