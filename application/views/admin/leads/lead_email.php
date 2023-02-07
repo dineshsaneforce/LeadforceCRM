@@ -98,10 +98,11 @@ $emails =$this->leads_model->get_emails($lead->id);
 <?php $this->load->view("admin/staff/emailcomposer") ?>
 
 <script>
-	function add_content(uid) {
+	function add_content(uid,folder) {
         document.getElementById('overlay').style.display = '';
         $.post(admin_url + 'company_mail/content', {
-                uid: uid
+                uid: uid,
+				folder: folder
             },
             function(data, status) {
                 var json = $.parseJSON(data);
@@ -117,7 +118,11 @@ $emails =$this->leads_model->get_emails($lead->id);
                 // check_email('', 'forward_toemail');
                 $('#f_getFile').val('');
                 $('#forward_subject').val('Fwd: ' + json.subject);
-                tinyMCE.get('forward_description').setContent(json.message);
+				if(json.message){
+					tinyMCE.get('forward_description').setContent(json.message);
+				}else{
+					tinyMCE.get('forward_description').setContent('');
+				}
                 $('#forward-modal').modal('show');
                 document.getElementById('overlay').style.display = 'none';
 
