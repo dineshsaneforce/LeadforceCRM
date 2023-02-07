@@ -37,10 +37,10 @@
 							 $approval_url = admin_url('projects/index_list?approvalList=1&pipelines=&member=&gsearch=');
 							 if(!is_admin(get_staff_user_id())) {
 								//$list_url = admin_url('projects/index_list?pipelines='.$pipelines[0]['id'].'&member='.get_staff_user_id().'&gsearch=');
-								$list_url = admin_url('projects/index_list?pipelines=&member='.$mem.'&gsearch=');
-								$kanban_onscroll_url = admin_url('projects/kanban_noscroll?pipelines='.$pipelines[0]['id'].'&member='.$mem.'&gsearch='.$gsearch);
-								// $kanban_url = admin_url('projects/kanbans?pipelines='.$pid.'&member='.$mem.'&gsearch='.$gsearch);
-								$forecast_url = admin_url('projects/kanbans_forecast?pipelines='.$pid.'&member='.$mem.'&gsearch='.$gsearch);
+								$list_url = admin_url('projects/index_list?pipelines=&member=&gsearch=');
+								$kanban_onscroll_url = admin_url('projects/kanban_noscroll?pipelines='.$pipelines[0]['id'].'&member=&gsearch='.$gsearch);
+								// $kanban_url = admin_url('projects/kanbans?pipelines='.$pid.'&member=&gsearch='.$gsearch);
+								$forecast_url = admin_url('projects/kanbans_forecast?pipelines='.$pid.'&member=&gsearch='.$gsearch);
 							}
 							  
 							 ?>
