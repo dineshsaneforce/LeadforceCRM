@@ -31,7 +31,7 @@
 								// 	$gsearch = '';
 								// }
 							 $list_url = admin_url('projects/index_list?pipelines=&member=&gsearch=');
-							 $kanban_onscroll_url = admin_url('projects/kanban_noscroll?pipelines=&member='.$pipelines[0]['id'].'&gsearch='.$gsearch);
+							 $kanban_onscroll_url = admin_url('projects/kanban_noscroll?pipelines='.$pipelines[0]['id'].'&member=&gsearch='.$gsearch);
 							//$kanban_url = admin_url('projects/kanbans?pipelines='.$pid.'&member='.$mem.'&gsearch='.$gsearch);
 							 $forecast_url = admin_url('projects/kanbans_forecast?pipelines='.$pipelines[0]['id'].'&member='.$mem.'&gsearch='.$gsearch);
 							 $approval_url = admin_url('projects/index_list?approvalList=1&pipelines=&member=&gsearch=');
