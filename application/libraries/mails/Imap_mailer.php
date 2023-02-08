@@ -249,10 +249,15 @@ class Imap_mailer
                 'attachment_id'=>'',
                 'body_html'=>$email['body']['html'],
                 'body_plain'=>$email['body']['plain'],
-                'folder'=>'Sent_mail',
                 'mail_by'=>'',
                 'lead_id'=>0,
             );
+
+            if(isset($email['folder'])){
+                $data['folder']=$email['folder'];
+            }else{
+                $data['folder']='Sent_mail';
+            }
             if($this->rel_type =='project')
                 $data['project_id']	= $this->rel_id;
             elseif($this->rel_type =='lead')

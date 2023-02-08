@@ -1076,7 +1076,6 @@ class Imap
 		$this->mailbox = '{' . $imapconf['host'] . ':'.$imapconf['port'].'/imap/ssl/novalidate-cert}';
 		$this->stream  = imap_open($this->mailbox, $imapconf['username'], $imapconf['password'])or die('Cannot connect to mail: ' . pr(imap_errors()));
 		$req_s = $this->get_compay_folders($imapconf);
-		$req_s = $this->get_compay_folders($imapconf);
 		
 		$this->select_folder('[Gmail]/Sent Mail');
 		$uids = $this->search();
@@ -1996,9 +1995,9 @@ class Imap
 					</div>
 					<div class="col-md-6">';
 						$reply ='<div class="button-group">
-							<button type="button" data-toggle="tooltip" data-original-title="Forward" class="btn btn-default pull-right" data-toggle="modal" data-target="#forward-modal" onclick="add_content('.$add_content.')"><i class="fa fa-share" aria-hidden="true"></i></button>
-							<button type="button" data-toggle="tooltip" data-original-title="Reply" class="btn btn-default pull-right" data-toggle="modal" data-target="#reply-modal" onclick="add_to('.$add_content.')" style="margin-right:5px;"><i class="fa fa-reply" ></i></button>
-							<button type="button" data-toggle="tooltip" data-original-title="Reply All" class="btn btn-default pull-right" data-toggle="modal" data-target="#reply-modal" onclick="add_reply_all('.$add_content.')" style="margin-right:5px;"><i class="fa fa-reply-all" aria-hidden="true"></i></button>
+							<button type="button" data-toggle="tooltip" data-original-title="Forward" class="btn btn-default pull-right" data-toggle="modal" data-target="#forward-modal" onclick="add_content('.$add_content.',\''.$current_folder.'\')"><i class="fa fa-share" aria-hidden="true"></i></button>
+							<button type="button" data-toggle="tooltip" data-original-title="Reply" class="btn btn-default pull-right" data-toggle="modal" data-target="#reply-modal" onclick="add_to('.$add_content.',\''.$current_folder.'\')" style="margin-right:5px;"><i class="fa fa-reply" ></i></button>
+							<button type="button" data-toggle="tooltip" data-original-title="Reply All" class="btn btn-default pull-right" data-toggle="modal" data-target="#reply-modal" onclick="add_reply_all('.$add_content.',\''.$current_folder.'\')" style="margin-right:5px;"><i class="fa fa-reply-all" aria-hidden="true"></i></button>
 						</div>';
 					$output .=$reply;
 					$output .='</div>
@@ -2390,6 +2389,7 @@ class Imap
 			'size'        => (int)$header->Size,
 			'attachments' => (array)$this->_get_attachments($uid, imap_fetchstructure($this->stream, $id)),
 			'body'        => $this->get_body($uid),
+			'folder'        => $this->folder,
 		];
 
 		$email = $this->embed_images($email);

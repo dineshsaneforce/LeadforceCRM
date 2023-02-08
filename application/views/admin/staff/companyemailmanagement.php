@@ -613,10 +613,11 @@ table.body {
         $(".grid-title").html(titleHeader);
     });
     //});
-    function add_content(uid) {
+    function add_content(uid,folder) {
         document.getElementById('overlay').style.display = '';
         $.post(admin_url + 'company_mail/content', {
-                uid: uid
+                uid: uid,
+				folder: folder
             },
             function(data, status) {
                 var json = $.parseJSON(data);
@@ -633,16 +634,18 @@ table.body {
                 $('#f_getFile').val('');
                 $('#forward_subject').val('Fwd: ' + json.subject);
                 tinyMCE.get('forward_description').setContent(json.message);
+                tinymce.get('reply_description').theme.resizeTo("100%", "300px");
                 $('#forward-modal').modal('show');
                 document.getElementById('overlay').style.display = 'none';
 
             });
     }
 
-    function add_to(uid) {
+    function add_to(uid,folder) {
         document.getElementById('overlay').style.display = '';
         $.post(admin_url + 'company_mail/to_mail', {
-                uid: uid
+                uid: uid,
+				folder: folder
             },
             function(data, status) {
                 var json = $.parseJSON(data);
@@ -661,6 +664,7 @@ table.body {
                 $('#reply-modal [name="rel_id"]').val(json.rel_data.rel_id);
                 $('#reply-modal [name="parent_id"]').val(json.rel_data.parent_id);
                 tinyMCE.get('reply_description').setContent('<blockquote style="border-left: 2px solid #ccc; padding-left: 10px;">'+json.message+'</blockquote><br><br>');
+                tinymce.get('reply_description').theme.resizeTo("100%", "300px");
                 $('#r_getFile').val('');
                 $('#reply-modal').modal('show');
                 document.getElementById('overlay').style.display = 'none';
@@ -668,10 +672,11 @@ table.body {
             });
     }
 
-    function add_reply_all(uid) {
+    function add_reply_all(uid,folder) {
         document.getElementById('overlay').style.display = '';
         $.post(admin_url + 'company_mail/add_reply_all', {
-                uid: uid
+                uid: uid,
+				folder: folder
             },
             function(data, status) {
                 var json = $.parseJSON(data);
@@ -688,6 +693,7 @@ table.body {
                 $('#rallcnt').val(0);
                 $('#r_file').val('');
                 tinyMCE.get('reply_description').setContent('<blockquote style="border-left: 2px solid #ccc; padding-left: 10px;">'+json.message+'</blockquote><br><br>');
+                tinymce.get('reply_description').theme.resizeTo("100%", "300px");
                 $('#r_getFile').val('');
                 $('#reply-modal').modal('show');
                 document.getElementById('overlay').style.display = 'none';
