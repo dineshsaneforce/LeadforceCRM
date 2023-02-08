@@ -1920,7 +1920,12 @@ class Leads extends AdminController
         $output ='';
         if($local_email){
             $mail_to =json_decode($local_email->mail_to);
-            $add_content = "'".$local_email->uid."'";
+            if(get_option('connect_mail')=='no'){
+                $add_content = "'".$local_email->message_id."'";
+            }else{
+                $add_content = "'".$local_email->uid."'";
+            }
+            
             $output .= '<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button><h4 class="modal-title"><i class="fa fa-envelope"></i> Email Viewer</h4></div>';
 		    $output .= '<div class="modal-body">';
             $output .='<div id="emailViewer">

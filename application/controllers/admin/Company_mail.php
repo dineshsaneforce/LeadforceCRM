@@ -757,6 +757,7 @@ class Company_mail extends AdminController
 				$_POST['deal_id'] =$relarray[1];
 			}
 		}
+
 		if(get_option('connect_mail')=='no'){
 			$redirect_url = admin_url('outlook_mail/connect_outlook');
 		}else{
@@ -773,6 +774,8 @@ class Company_mail extends AdminController
 				$redirect_url = admin_url('leads/lead/'.$_POST['deal_id'].'?group=tab_email');
 			}
 		}
+
+		
 		$this->load->library('mails/imap_mailer');
 		$this->imap_mailer->set_to($this->input->post('toemail', false));
 		$this->imap_mailer->set_subject($this->input->post('name', false));
