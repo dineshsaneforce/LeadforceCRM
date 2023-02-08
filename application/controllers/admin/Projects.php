@@ -1076,6 +1076,9 @@ class Projects extends AdminController
 
         $appliedStatuses = $this->input->get('status');
         $appliedMember   = $this->input->get('member');
+        if(!$this->input->get('member')){
+            $_SESSION['member'] =array();
+            }
         $this->session->set_userdata($_GET);
     
         $data['selected_statuses'] = $this->input->get('pipelines');
