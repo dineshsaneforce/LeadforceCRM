@@ -1894,6 +1894,7 @@ class Imap
 		$this->select_folder($current_folder);
 		$inboxEmails = $this->get_message($_REQUEST['uid']);
 		$req_to = $inboxEmails['from']['email'].',';
+		$cc ='';
 		// if(!empty($inboxEmails['to']) && $reply=='all'){
 		// 	foreach($inboxEmails['to'] as $req_mail1){
 		// 		if($req_mail1['email'] != $to_email){
@@ -1904,13 +1905,14 @@ class Imap
 		if(!empty($inboxEmails['cc'])  && $reply=='all'){
 			foreach($inboxEmails['cc'] as $cc_mail1){
 				if($cc_mail1['email'] != $to_email){
-					$req_to .= $cc_mail1['email'].',';
+					$cc .= $cc_mail1['email'].',';
 				}
 			}
 		}
 		$req_to = rtrim($req_to,',');
+		$cc = rtrim($cc,',');
 		
-		$data = array('subject'=>$inboxEmails['subject'],'message'=>($inboxEmails['body']['html'])?$inboxEmails['body']['html']:$inboxEmails['body']['plain'],'from_address'=>$inboxEmails['from']['email'],'to_address'=>$req_to,'uid'=>$_REQUEST['uid']);
+		$data = array('subject'=>$inboxEmails['subject'],'message'=>($inboxEmails['body']['html'])?$inboxEmails['body']['html']:$inboxEmails['body']['plain'],'from_address'=>$inboxEmails['from']['email'],'to_address'=>$req_to,'cc'=>$cc,'uid'=>$_REQUEST['uid']);
 		return $data; 
 		exit;
 	}

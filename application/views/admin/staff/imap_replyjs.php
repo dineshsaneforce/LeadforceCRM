@@ -76,7 +76,7 @@
 
                 $('.ch_files_r').html('');
                 $('#r_files').html('');
-                $('#reply_ccemail').val('');
+                $('#reply_ccemail').val(json.cc);
                 $('#reply_bccemail').val('');
                 $('#ftotcnt').val(1);
                 $('#rfilecnt').val(1);

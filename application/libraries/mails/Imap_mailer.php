@@ -472,7 +472,7 @@ class Imap_mailer
             ),
             'to'=>$to,
             'cc'=>$cc,
-            'bcc'=>$cc,
+            'bcc'=>$bcc,
             'reply_to'=>$outlookmessage['ReplyTo'],
             'message_id'=>$outlookmessage['Id'],
             'in_reply_to'=>json_encode($outlookmessage['ReplyTo']),

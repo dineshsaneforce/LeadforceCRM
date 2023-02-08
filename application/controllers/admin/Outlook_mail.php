@@ -197,6 +197,7 @@ class Outlook_mail extends AdminController
 
 		$ToRecipients =array();
 		$FromRecipients =array($response['From']['EmailAddress']['Address']);
+		$ReplyCcRecipients =array($response['From']['EmailAddress']['Address']);
 		foreach($response['ToRecipients'] as $ToRecipient){
 			$ToRecipients[] =$ToRecipient['ToRecipients']['Address'];
 		}
@@ -204,11 +205,12 @@ class Outlook_mail extends AdminController
 		$CcRecipients =array();
 		foreach($response['CcRecipients'] as $CcRecipient){
 			if(isset($_REQUEST['reply']) && $_REQUEST['reply'] =='all'){
-				$FromRecipients[] =$CcRecipient['EmailAddress']['Address'];
+				$ReplyCcRecipients[] =$CcRecipient['EmailAddress']['Address'];
 			}
 			$CcRecipients[] ='<a>'.$CcRecipient['EmailAddress']['Address'].'</a>';
 		}
 		$mailList['from_address'] =implode(',',$FromRecipients);
+		$mailList['cc'] =implode(',',$ReplyCcRecipients);
 		$BccRecipients =array();
 		foreach($response['BccRecipients'] as $BccRecipient){
 			$BccRecipients[] ='<a>'.$BccRecipient['EmailAddress']['Address'].'</a>';

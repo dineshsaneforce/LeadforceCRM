@@ -1013,13 +1013,27 @@ function get_smtp_setings1(){
 }
 function search_email_address($staffid,$table,$term=''){
 	$CI   = &get_instance();
+	$CI->load->model('staff_model');
+	$my_staffids = $CI->staff_model->get_my_staffids();
+	$view_ids = $CI->staff_model->getFollowersViewList();
+	$isAdmin =is_admin(get_staff_user_id());
 	$cond = array('deleted_status='=>0);
+	$CI->db->where($cond);
+	if(!$isAdmin){
+		if(empty($my_staffids)){
+			$CI->db->where_in('addedfrom', $my_staffids);
+		}else{
+			$CI->db->where('addedfrom', get_staff_user_id());
+		}
+	}
+	
 	if(!empty($term)){
 		$cond_like['email'] = $term;
-		$searches = $CI->db->where($cond)->like($cond_like)->get($table)->result_array();
+		$CI->db->like($cond_like);
+		$searches = $CI->db->get($table)->result_array();
 	}
 	else{
-		$searches = $CI->db->where($cond)->get($table)->result_array();
+		$searches = $CI->db->get($table)->result_array();
 	}
 	if(!empty($searches))
 		return $searches;
