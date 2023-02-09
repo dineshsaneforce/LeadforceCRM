@@ -3364,13 +3364,44 @@ class Projects_model extends App_Model
         }else{
             $this->db->where(db_prefix() . 'projects.pipeline_id', $pipeline);
         }
-
+        
         if (isset($sort['sort_by']) && $sort['sort_by'] && isset($sort['sort']) && $sort['sort']) {
-            $this->db->order_by($sort['sort_by'], $sort['sort']);
+            
+            $sortorder =($sort['sort']=='desc'|| $sort['sort']=='asc')?$sort['sort']:'asc';
+            switch($sort['sort_by']){
+                
+                case 'name':
+                    
+                    $this->db->order_by(db_prefix() . 'projects.name',$sortorder);
+                    break;
+                case 'value':
+                    $this->db->order_by(db_prefix() . 'projects.project_cost',$sortorder);
+                    break;
+                case 'date_created':
+                    $this->db->order_by(db_prefix() . 'projects.project_created',$sortorder);
+                    break;
+                case 'date_modified':
+                    $this->db->order_by(db_prefix() . 'projects.project_modified',$sortorder);
+                    break;
+                case 'deadline':
+                    $this->db->order_by(db_prefix() . 'projects.deadline',$sortorder);
+                    break;
+                default:
+                    $this->db->order_by(db_prefix() . 'projects.project_created','Desc');
+                    $this->db->order_by(db_prefix() . 'projects.project_modified','Desc');
+                    break;
+                
+            }
+            
+            
         } else {
-            $this->db->order_by($default_projects_kanban_sort, $default_projects_kanban_sort_type);
+            $this->db->order_by(db_prefix() . 'projects.project_created','Desc');
+            $this->db->order_by(db_prefix() . 'projects.project_modified','Desc');
+            // $this->db->order_by($default_projects_kanban_sort, $default_projects_kanban_sort_type);
         }
+        
         $this->db->group_by(db_prefix() . 'projects.id`');
+        
         if ($count == false) {
             if ($page > 1) {
                 $page--;
@@ -3383,16 +3414,17 @@ class Projects_model extends App_Model
 
         
         if ($count == false) {
+            
             return $result = $this->db->get()->result_array();
 
         }
+       
         //echo $this->db->last_query(); exit;
         return $this->db->count_all_results();
     }
 
 
     public function do_kanban_query($status, $search = '', $page = 1, $sort = [], $count = false) {
-                
         // ROle based records
 		$my_id = get_staff_user_id();
 		if(empty($my_id)){
@@ -3404,11 +3436,13 @@ class Projects_model extends App_Model
         $default_projects_kanban_sort_type = get_option('default_projects_kanban_sort_type');
         $has_permission_view = has_permission('projects', '', 'view');
 
-        $this->db->select("".db_prefix() . 'projects.id` as id,count('.db_prefix() . 'tasks.rel_id) as taskscount,'.db_prefix() . 'projects.deadline` as deadline,projects.start_date as start_date,'.db_prefix() . 'clients.company as title ,' . db_prefix() . 'clients.website, ' . db_prefix() . 'clients.address, ' . db_prefix() . 'clients.city, ' . db_prefix() . 'clients.state, ' . db_prefix() . 'clients.country, ' . db_prefix() . 'clients.zip, ' . db_prefix() . 'projects.name as project_name,' . db_prefix() . 'pipeline.name as pipeline_name,' . db_prefix() . 'clients.company,' . db_prefix() . 'projects.status, (SELECT COUNT(id) FROM ' . db_prefix() . 'files WHERE rel_id=' . db_prefix() . 'projects.id AND rel_type="project") as total_files, (SELECT COUNT(id) FROM ' . db_prefix() . 'notes WHERE rel_id=' . db_prefix() . 'projects.id AND rel_type="project") as total_notes,(SELECT GROUP_CONCAT(name SEPARATOR ",") FROM ' . db_prefix() . 'taggables JOIN ' . db_prefix() . 'tags ON ' . db_prefix() . 'taggables.tag_id = ' . db_prefix() . 'tags.id WHERE rel_id = ' . db_prefix() . 'projects.id and rel_type="project" ORDER by tag_order ASC) as tags, '.db_prefix() . 'projects.project_cost as project_cost,'.db_prefix() . 'projects.project_currency as project_currency');
+        $this->db->select("".db_prefix() . 'projects.id` as id,count('.db_prefix() . 'tasks.rel_id) as taskscount,'.db_prefix() . 'projects.deadline` as deadline,projects.start_date as start_date,'.db_prefix() . 'clients.company as title ,' . db_prefix() . 'clients.website, ' . db_prefix() . 'clients.address, ' . db_prefix() . 'clients.city, ' . db_prefix() . 'clients.state, ' . db_prefix() . 'clients.country, ' . db_prefix() . 'clients.zip, ' . db_prefix() . 'projects.name as project_name,' . db_prefix() . 'pipeline.name as pipeline_name,' . db_prefix() . 'clients.company,' . db_prefix() . 'projects.status, (SELECT COUNT(id) FROM ' . db_prefix() . 'files WHERE rel_id=' . db_prefix() . 'projects.id AND rel_type="project") as total_files, (SELECT COUNT(id) FROM ' . db_prefix() . 'notes WHERE rel_id=' . db_prefix() . 'projects.id AND rel_type="project") as total_notes,(SELECT GROUP_CONCAT(name SEPARATOR ",") FROM ' . db_prefix() . 'taggables JOIN ' . db_prefix() . 'tags ON ' . db_prefix() . 'taggables.tag_id = ' . db_prefix() . 'tags.id WHERE rel_id = ' . db_prefix() . 'projects.id and rel_type="project" ORDER by tag_order ASC) as tags, '.db_prefix() . 'projects.project_cost as project_cost,'.db_prefix() . 'projects.project_currency as project_currency,'.db_prefix() . 'projects.teamleader` as teamleader,CONCAT('.db_prefix() . 'contacts.firstname," ",'.db_prefix() . 'contacts.lastname) as contact_name,'.db_prefix() . 'contacts.phonenumber as contact_phonenumber,'.db_prefix() . 'contacts.id as contact_id,'.db_prefix() . 'contacts.phone_country_code as contacts_phone_country_code');
         $this->db->from(db_prefix() . 'projects');
         $this->db->join(db_prefix() . 'project_members', db_prefix() . 'project_members.project_id=' . db_prefix() . 'projects.id', 'left');
 		$this->db->join(db_prefix() . 'tasks', db_prefix() . 'tasks.rel_id=' . db_prefix() . 'projects.id and ' . db_prefix() . 'tasks.rel_type="project"', 'left');
         $this->db->join(db_prefix() . 'clients', db_prefix() . 'clients.userid=' . db_prefix() . 'projects.clientid', 'left');
+        $this->db->join(db_prefix() . 'project_contacts', db_prefix() . 'project_contacts.project_id=' . db_prefix() . 'projects.id AND '.db_prefix() . 'project_contacts.is_primary=1', 'left');
+        $this->db->join(db_prefix() . 'contacts', db_prefix() . 'contacts.id=' . db_prefix() . 'project_contacts.contacts_id', 'left');
         $this->db->join(db_prefix() . 'staff', db_prefix() . 'staff.staffid=' . db_prefix() . 'project_members.staff_id', 'left');
         $this->db->join(db_prefix() . 'pipeline', db_prefix() . 'pipeline.id=' . db_prefix() . 'projects.pipeline_id', 'left');
         $this->db->where(db_prefix() . 'projects.status', $status);
@@ -3465,9 +3499,35 @@ class Projects_model extends App_Model
         // }
 
         if (isset($sort['sort_by']) && $sort['sort_by'] && isset($sort['sort']) && $sort['sort']) {
-            $this->db->order_by($sort['sort_by'], $sort['sort']);
+            
+            $sortorder =($sort['sort']=='desc'|| $sort['sort']=='asc')?$sort['sort']:'asc';
+            switch($sort['sort_by']){
+                case 'name':
+                    $this->db->order_by(db_prefix() . 'projects.name',$sortorder);
+                    break;
+                case 'value':
+                    $this->db->order_by(db_prefix() . 'projects.project_cost',$sortorder);
+                    break;
+                case 'date_created':
+                    $this->db->order_by(db_prefix() . 'projects.project_created',$sortorder);
+                    break;
+                case 'date_modified':
+                    $this->db->order_by(db_prefix() . 'projects.project_modified',$sortorder);
+                    break;
+                case 'deadline':
+                    $this->db->order_by(db_prefix() . 'projects.deadline',$sortorder);
+                    break;
+                default:
+                    $this->db->order_by(db_prefix() . 'projects.project_created','Desc');
+                    $this->db->order_by(db_prefix() . 'projects.project_modified','Desc');
+                    break;
+                
+            }
+            
         } else {
-            $this->db->order_by($default_projects_kanban_sort, $default_projects_kanban_sort_type);
+            $this->db->order_by(db_prefix() . 'projects.project_created','Desc');
+            $this->db->order_by(db_prefix() . 'projects.project_modified','Desc');
+            // $this->db->order_by($default_projects_kanban_sort, $default_projects_kanban_sort_type);
         }
         $this->db->group_by(db_prefix() . 'projects.id`');
         if ($count == false) {
@@ -3482,12 +3542,13 @@ class Projects_model extends App_Model
  
         
         if ($count == false) {
-			
             return $result = $this->db->get()->result_array();
        
         }
+        
         //echo $this->db->last_query(); exit;
-        return $this->db->count_all_results(); 
+        
+         $this->db->count_all_results(); 
     }
 	public function do_kanban_forecast_query($intervel, $which, $year, $count = false, $search = '', $page = 1, $sort = []) {
                 //pre($_SESSION);
