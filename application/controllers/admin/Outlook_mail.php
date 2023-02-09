@@ -175,19 +175,14 @@ class Outlook_mail extends AdminController
 		$response = explode("\n", trim($response));
 		$response = $response[count($response) - 1];
 		$response = json_decode($response, true);
-		//pre($response);
 		$mailList = array();
 		$mailList['subject'] 		= $response['Subject'];
 		$mailList['message'] 		= $response['Body']['Content'];
-		$mailList['from_address']	= $response['From']['EmailAddress']['Address'];
-		$mailList['to_address'] 	= $response['To']['EmailAddress']['Address'];
 		$mailList['msg_id'] 		= $msg_id;
 		$output = '';
 		$add_content = "'".$_REQUEST['msg_id']."'";
 		$output .= '<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button><h4 class="modal-title"><i class="fa fa-envelope"></i> '.$response['Subject'].'</h4></div>';
 		$output .= '<div class="modal-body"><div class="email-app"><main class="message"><div class="details">';
-
-
 		if($_REQUEST['folder'] == 'Sent Items'){
 			$from_address = '';
 			if(!empty($response['ToRecipients'])){
@@ -199,6 +194,28 @@ class Outlook_mail extends AdminController
 		}else{
 			$from_address =$response['From']['EmailAddress']['Address'];
 		}
+
+		$ToRecipients =array();
+		$FromRecipients =array($response['From']['EmailAddress']['Address']);
+		$ReplyCcRecipients =array();
+		foreach($response['ToRecipients'] as $ToRecipient){
+			$ToRecipients[] =$ToRecipient['ToRecipients']['Address'];
+		}
+		$mailList['to_address'] =implode(',',$ToRecipients);
+		$CcRecipients =array();
+		foreach($response['CcRecipients'] as $CcRecipient){
+			if(isset($_REQUEST['reply']) && $_REQUEST['reply'] =='all'){
+				$ReplyCcRecipients[] =$CcRecipient['EmailAddress']['Address'];
+			}
+			$CcRecipients[] ='<a>'.$CcRecipient['EmailAddress']['Address'].'</a>';
+		}
+		$mailList['from_address'] =implode(',',$FromRecipients);
+		$mailList['cc'] =implode(',',$ReplyCcRecipients);
+		$BccRecipients =array();
+		foreach($response['BccRecipients'] as $BccRecipient){
+			$BccRecipients[] ='<a>'.$BccRecipient['EmailAddress']['Address'].'</a>';
+		}
+		
 		$this->db->where('message_id',$response['Id']);
 		if(!$this->db->get(db_prefix().'localmailstorage')->row()){
 
@@ -238,8 +255,14 @@ class Outlook_mail extends AdminController
 				<div class="row">
 					<div class="col-md-6">
 						<p class="no-margin" style="font-size: 13px;">From : <a>'.$response['From']['EmailAddress']['Address'].'</a></p>
-						<p class="no-margin" style="font-size: 13px;">To : <a>'.$response['ToRecipients'][0]['EmailAddress']['Address'].'</a></p>
-						<p class="no-margin" style="font-size: 13px;">'.date("d-M-Y H:i A",$response['udate']).'</p>
+						<p class="no-margin" style="font-size: 13px;">To : <a>'.$response['ToRecipients'][0]['EmailAddress']['Address'].'</a></p>';
+						if($CcRecipients){
+							$output .='<p class="no-margin" style="font-size: 13px;">CC : '.implode(',',$CcRecipients).'</p>';
+						}
+						if($BccRecipients){
+							$output .='<p class="no-margin" style="font-size: 13px;">BCC : '.implode(',',$BccRecipients).'</p>';
+						}
+						$output .='<p class="no-margin" style="font-size: 13px;">'.date("d-M-Y H:i A",strtotime($response['SentDateTime'])).'</p>
 					</div>
 					<div class="col-md-6">';
 						$reply ='<div class="button-group">
