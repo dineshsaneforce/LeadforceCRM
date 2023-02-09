@@ -17,6 +17,11 @@
 	.kan-ban-content {
 		background: transparent;
 	}
+	.single-line{
+		text-overflow: ellipsis; 
+		overflow: hidden; 
+		white-space: nowrap;
+	}
 </style>
 <style>
 			ul.projects-status{

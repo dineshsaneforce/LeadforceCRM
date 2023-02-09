@@ -35,13 +35,13 @@ if ($project['status'] == $status['id']) { ?>
 						?>
 						<?php
 							if($overdue == '' && $today == '' && $upcoming == ''){
-								echo '<span style="color: #d2be19;" title="'._l('no_tasks_found').'" class="pull-right"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></span>';
+								echo '<span style="color: #d2be19;" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="'._l('no_tasks_found').'" class="pull-right"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></span>';
 							}elseif(!empty($overdue)){
-								echo '<span style="color: red; " title="'._l('overdue_deal').'" class="pull-right"><i class="fa fa-arrow-circle-left" aria-hidden="true"></i></span>';
+								echo '<span style="color: red; " data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="'._l('overdue_deal').'" class="pull-right"><i class="fa fa-arrow-circle-left" aria-hidden="true"></i></span>';
 							}elseif($overdue == '' && !empty($today)){
-								echo '<span style="color: green; " title="'._l('today_deal').'" class="pull-right"><i class="fa fa-arrow-circle-right" aria-hidden="true"></i></span>';
+								echo '<span style="color: green; " data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="'._l('today_deal').'" class="pull-right"><i class="fa fa-arrow-circle-right" aria-hidden="true"></i></span>';
 							}elseif($overdue == '' && $today == '' && !empty($upcoming)){
-								echo '<span style="color: #ccc; " title="'._l('future_deal').'" class="pull-right"><i class="fa fa-arrow-circle-right" aria-hidden="true"></i></span>';
+								echo '<span style="color: #ccc; " data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="'._l('future_deal').'"  class="pull-right"><i class="fa fa-arrow-circle-right" aria-hidden="true"></i></span>';
 							}
 						?>
 					</div>
@@ -53,20 +53,20 @@ if ($project['status'] == $status['id']) { ?>
 			</div>
 			<?php endif;?>
 			<?php if($project['company']): ?>
-			<div class="col-md-12 text-muted">
-				<span  class="text-dark"><i class="fa fa-building-o mright5"></i><?php echo $project['company']; ?></span>
+			<div class="col-md-12 text-muted single-line">
+				<span  class="text-dark" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="<?php echo $project['company']; ?>"><i class="fa fa-building-o mright5"></i><?php echo $project['company']; ?></span>
 			</div>
 			<?php endif;?>
 			<?php if($project['contact_name']): ?>
 				<div class="col-md-12 text-muted">
 					<div class="row">
-						<div class="col-xs-10">
-							<span  class="text-dark"><i class="fa fa-id-card-o mright5"></i><?php echo $project['contact_name'];?></span>
+						<div class="col-xs-10 single-line">
+							<span  class="text-dark" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="<?php echo $project['contact_name'];?>"><i class="fa fa-id-card-o mright5"></i><?php echo $project['contact_name'];?></span>
 						</div>
 						<div class="col-xs-2">
 							<?php if(isset($project['contact_phonenumber']) && !empty($project['contact_phonenumber']) && $staff_allowed_to_call == 1) { 
 								$calling_code =$this->callsettings_model->getCallingCode($project['contacts_phone_country_code']);
-								echo '<a class="deal-kanban-call-btn pull-right" href="#" onclick="callfromdeal('.$project['contact_id'].','.$project['id'].','.$project['contact_phonenumber'].',\'deal\',\''.$calling_code.'\');" title="Call Now"><i class="fa fa-phone" aria-hidden="true"></i></a>';
+								echo '<a class="deal-kanban-call-btn pull-right" href="#" onclick="callfromdeal('.$project['contact_id'].','.$project['id'].','.$project['contact_phonenumber'].',\'deal\',\''.$calling_code.'\');" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="Call now"><i class="fa fa-phone" aria-hidden="true"></i></a>';
 							}?>
 						</div>
 					</div>
@@ -74,11 +74,11 @@ if ($project['status'] == $status['id']) { ?>
 				</div>
 			<?php endif;?>
 			<?php if($team_leader =get_staff_full_name($project['teamleader'])): ?>
-			<div class="col-md-12 text-muted">
-				<span  class="text-dark"><i class="fa fa-user mright5"></i><?php echo $team_leader; ?></span>
+			<div class="col-md-12 text-muted single-line">
+				<span  class="text-dark" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="<?php echo $team_leader; ?>"><i class="fa fa-user mright5"></i><?php echo $team_leader; ?></span>
 			</div>
 			<?php endif;?>
-			<?php if($project['deadline']): ?>
+			<?php if(false && $project['deadline']): ?>
 			<div class="col-md-12 text-muted">
 				<?php $date=date_create($project['deadline']);
                 	$deadline =date_format($date,"M d , Y");
