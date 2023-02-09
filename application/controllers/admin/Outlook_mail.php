@@ -197,7 +197,7 @@ class Outlook_mail extends AdminController
 
 		$ToRecipients =array();
 		$FromRecipients =array($response['From']['EmailAddress']['Address']);
-		$ReplyCcRecipients =array($response['From']['EmailAddress']['Address']);
+		$ReplyCcRecipients =array();
 		foreach($response['ToRecipients'] as $ToRecipient){
 			$ToRecipients[] =$ToRecipient['ToRecipients']['Address'];
 		}
