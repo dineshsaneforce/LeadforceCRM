@@ -11,9 +11,9 @@ class Tasks extends AdminController
         $this->load->model('tasktype_model');
         $this->load->model('callsettings_model');
 		$this->load->library('session');
-        unset($_SESSION['pipelines']);
-        unset($_SESSION['member']);
-        unset($_SESSION['gsearch']);
+        // unset($_SESSION['pipelines']);
+        // unset($_SESSION['member']);
+        // unset($_SESSION['gsearch']);
     }
 
     /* Open also all taks if user access this /tasks url */
