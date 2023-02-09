@@ -142,7 +142,7 @@ class Company_mail extends AdminController
         $this->load->library('imap');
         $imapconf = get_imap_setting();
         $this->imap->connect($imapconf);
-        $folders = $this->imap->company_content();
+        $folders = $this->imap->company_content('','',$_REQUEST['folder']);
         echo json_encode($folders);
         exit;
     }
@@ -187,7 +187,7 @@ class Company_mail extends AdminController
         $staff = $this->db->get(db_prefix() . 'staff')->row();
         $this->imap->connect($imapconf);
 
-        $folders = $this->imap->company_content($staff->email,'');
+        $folders = $this->imap->company_content($staff->email,'',$_REQUEST['folder']);
 		$email = $this->imap->get_message($_REQUEST['uid']);
 		
 		$this->db->where('message_id',$email['message_id']);
@@ -224,7 +224,7 @@ class Company_mail extends AdminController
 		$this->db->where('staffid ', $staffid);
         $staff = $this->db->get(db_prefix() . 'staff')->row();
         $this->imap->connect($imapconf);
-        $folders = $this->imap->company_content($staff->email,'all');
+        $folders = $this->imap->company_content($staff->email,'all',$_REQUEST['folder']);
         echo json_encode($folders);
         exit;
     }
@@ -757,6 +757,7 @@ class Company_mail extends AdminController
 				$_POST['deal_id'] =$relarray[1];
 			}
 		}
+
 		if(get_option('connect_mail')=='no'){
 			$redirect_url = admin_url('outlook_mail/connect_outlook');
 		}else{
@@ -773,6 +774,8 @@ class Company_mail extends AdminController
 				$redirect_url = admin_url('leads/lead/'.$_POST['deal_id'].'?group=tab_email');
 			}
 		}
+
+		
 		$this->load->library('mails/imap_mailer');
 		$this->imap_mailer->set_to($this->input->post('toemail', false));
 		$this->imap_mailer->set_subject($this->input->post('name', false));

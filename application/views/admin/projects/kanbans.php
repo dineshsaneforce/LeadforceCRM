@@ -123,68 +123,43 @@
 								<a id="openNewProject" data-toggle="modal" data-target="#newDealModal" class="btn btn-info pull-left display-block mright5">
 									<?php echo _l('new_project'); ?>
 								</a>
-							<?php }
-							if (isset($_SESSION['pipelines'])) {
-								$pid = $_SESSION['pipelines'];
-							} else {
-								$pid = $pipelines[0]['id'];
-							}
-							if (isset($_SESSION['member'])) {
-								$mem = $_SESSION['member'];
-							} else {
-								$mem = get_staff_user_id();
-							}
-							if (isset($_SESSION['gsearch'])) {
-								$gsearch = $_SESSION['gsearch'];
-							} else {
-								$gsearch = '';
-							}
-							//  $list_url = admin_url('projects/index_list?pipelines=&member=&gsearch=');
-							//  $kanban_onscroll_url = admin_url('projects/kanban_noscroll?pipelines='.$pid.'&member='.$mem.'&gsearch='.$gsearch);
-							// //  $kanban_url = admin_url('projects/kanbans?pipelines='.$pid.'&member='.$mem.'&gsearch='.$gsearch);
-							//  $forecast_url = admin_url('projects/kanbans_forecast?pipelines='.$pid.'&member='.$mem.'&gsearch='.$gsearch);
-							//  $approval_url = admin_url('projects/index_list?approvalList=1&pipelines=&member=&gsearch=');
-							//  if(!is_admin(get_staff_user_id())) {
-							// 	//$list_url = admin_url('projects/index_list?pipelines='.$pipelines[0]['id'].'&member='.get_staff_user_id().'&gsearch=');
-							// 	$list_url = admin_url('projects/index_list?pipelines=&member='.get_staff_user_id().'&gsearch=');
-							// 	$kanban_onscroll_url = admin_url('projects/kanban_noscroll?pipelines='.$pid.'&member='.$mem.'&gsearch='.$gsearch);
-							// 	// $kanban_url = admin_url('projects/kanbans?pipelines='.$pid.'&member='.$mem.'&gsearch='.$gsearch);
-							// 	$forecast_url = admin_url('projects/kanbans_forecast?pipelines='.$pid.'&member='.$mem.'&gsearch='.$gsearch);
-							// } 
-							$list_url = admin_url('projects/index_list?pipelines=&gsearch=');
-							foreach ($mem as $member) {
-								$list_url .= '&member[]=' . $member;
-							}
-
-							$kanban_onscroll_url = admin_url('projects/kanban_noscroll?pipelines=' . $pid . '&gsearch=' . $gsearch);
-							foreach ($mem as $member) {
-								$kanban_onscroll_url .= '&member[]=' . $member;
-							}
-
-							$forecast_url = admin_url('projects/kanbans_forecast?pipelines=' . $pipelines[0]['id'] . '&gsearch=' . $gsearch);
-							foreach ($mem as $member) {
-								$forecast_url .= '&member[]=' . $member;
-							}
-
-							$approval_url = admin_url('projects/index_list?approvalList=1&pipelines=&gsearch=');
-							foreach ($mem as $member) {
-								$approval_url .= '&member[]=' . $member;
-							}
-							if (!is_admin(get_staff_user_id())) {
+							  <?php }
+								// if(isset($_SESSION['pipelines'])) {
+								// 	$pid = $_SESSION['pipelines'];
+								// } else {
+								// 	$pid = $pipelines[0]['id'];
+								// }
+								// if(isset($_SESSION['member'])) {
+								// 	$mem = $_SESSION['member'];
+								// } else {
+								// 	$mem = get_staff_user_id();
+								// }
+								// if(isset($_SESSION['gsearch'])) {
+								// 	$gsearch = $_SESSION['gsearch'];
+								// } else {
+								// 	$gsearch = '';
+								// }
+							 $list_url = admin_url('projects/index_list?pipelines=&member=&gsearch=');
+							 $kanban_onscroll_url = admin_url('projects/kanban_noscroll?pipelines='.$pipelines[0]['id'].'&member=&gsearch='.$gsearch);
+							//$kanban_url = admin_url('projects/kanbans?pipelines='.$pid.'&member='.$mem.'&gsearch='.$gsearch);
+							 $forecast_url = admin_url('projects/kanbans_forecast?pipelines='.$pipelines[0]['id'].'&member='.$mem.'&gsearch='.$gsearch);
+							 $approval_url = admin_url('projects/index_list?approvalList=1&pipelines=&member=&gsearch=');
+							 if(!is_admin(get_staff_user_id())) {
 								//$list_url = admin_url('projects/index_list?pipelines='.$pipelines[0]['id'].'&member='.get_staff_user_id().'&gsearch=');
-								$list_url = admin_url('projects/index_list?pipelines=&member=' . get_staff_user_id() . '&gsearch=');
-								$kanban_onscroll_url = admin_url('projects/kanban_noscroll?pipelines=' . $pid . '&member=' . $mem . '&gsearch=' . $gsearch);
-								// $kanban_url = admin_url('projects/kanbans?pipelines='.$pid.'&member='.$mem.'&gsearch='.$gsearch);
-								$forecast_url = admin_url('projects/kanbans_forecast?pipelines=' . $pid . '&member=' . $mem . '&gsearch=' . $gsearch);
+								$list_url = admin_url('projects/index_list?pipelines=&member=&gsearch=');
+								$kanban_onscroll_url = admin_url('projects/kanban_noscroll?pipelines='.$pipelines[0]['id'].'&member=&gsearch='.$gsearch);
+								// $kanban_url = admin_url('projects/kanbans?pipelines='.$pid.'&member=&gsearch='.$gsearch);
+								$forecast_url = admin_url('projects/kanbans_forecast?pipelines='.$pid.'&member=&gsearch='.$gsearch);
 							}
-
-							?>
-							<a href="<?php echo $list_url; ?>" data-toggle="tooltip" title="<?php echo _l('projects'); ?>" class="btn btn-default"><i class="fa fa-list" aria-hidden="true"></i></a>
-							<!-- <a href="<?php echo admin_url('projects/gantt?pipelines=' . $pipelines[0]['id'] . '&member=&gsearch='); ?>" data-toggle="tooltip" title="<?php echo _l('project_gant'); ?>" class="btn btn-default"><i class="fa fa-align-left" aria-hidden="true"></i></a> -->
-							<a href="<?php echo $kanban_onscroll_url; ?>" data-toggle="tooltip" title="<?php echo _l('leads_switch_to_kanban_noscroll'); ?>" class="btn btn-primary"><i class="fa fa-th" aria-hidden="true"></i></a>
-							<!-- <a href="<?php echo $kanban_url; ?>" data-toggle="tooltip" title="<?php echo _l('leads_switch_to_kanban'); ?>" class="btn btn-default"><i class="fa fa-th-large" aria-hidden="true"></i></a> -->
-							<a href="<?php echo $forecast_url; ?>" data-toggle="tooltip" title="<?php echo _l('leads_switch_to_forecast'); ?>" class="btn btn-default"><i class="fa fa-line-chart" aria-hidden="true"></i></a>
-							<a href="<?php echo $approval_url; ?>" data-toggle="tooltip" title="<?php echo _l('deal_approval_list'); ?>" class="btn <?php echo isset($_GET['approvalList']) ? 'btn-primary' : 'btn-default' ?> "><i class="fa fa-check-square-o" aria-hidden="true"></i></a>
+							  
+							 ?>
+							  <a href="<?php echo $list_url; ?>" data-toggle="tooltip" title="<?php echo _l('projects'); ?>" class="btn btn-default"><i class="fa fa-list" aria-hidden="true"></i></a>
+							  <!-- <a href="<?php echo admin_url('projects/gantt?pipelines='.$pipelines[0]['id'].'&member=&gsearch='); ?>" data-toggle="tooltip" title="<?php echo _l('project_gant'); ?>" class="btn btn-default"><i class="fa fa-align-left" aria-hidden="true"></i></a> -->
+							  <a href="<?php echo $kanban_onscroll_url; ?>" data-toggle="tooltip" title="<?php echo _l('leads_switch_to_kanban_noscroll'); ?>" class="btn btn-primary"><i class="fa fa-th" aria-hidden="true"></i></a>
+							  <!-- <a href="<?php echo $kanban_url; ?>" data-toggle="tooltip" title="<?php echo _l('leads_switch_to_kanban'); ?>" class="btn btn-default"><i class="fa fa-th-large" aria-hidden="true"></i></a> -->
+							  <a href="<?php echo $forecast_url; ?>" data-toggle="tooltip" title="<?php echo _l('leads_switch_to_forecast'); ?>" class="btn btn-default"><i class="fa fa-line-chart" aria-hidden="true"></i></a>
+							  <a href="<?php echo $approval_url; ?>" data-toggle="tooltip" title="<?php echo _l('deal_approval_list'); ?>" class="btn <?php echo isset($_GET['approvalList'])?'btn-primary':'btn-default' ?> "><i class="fa fa-check-square-o" aria-hidden="true"></i></a>
+							</div>
 						</div>
 					</div>
 					<div class="col-md-9">

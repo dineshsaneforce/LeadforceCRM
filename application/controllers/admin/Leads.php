@@ -1920,7 +1920,25 @@ class Leads extends AdminController
         $output ='';
         if($local_email){
             $mail_to =json_decode($local_email->mail_to);
-            $add_content = "'".$local_email->uid."'";
+            $cc_mails =json_decode($local_email->cc,true);
+            $cc =array();
+            if($cc_mails){
+                foreach($cc_mails as $cc_mail){
+                    $cc[] ='<a>'.$cc_mail['email'].'</a>';
+                }
+            }
+            $bcc_mails =json_decode($local_email->bcc,true);
+            $bcc =array();
+            if($bcc_mails){
+                foreach($bcc_mails as $bcc_mail){
+                    $bcc[] ='<a>'.$bcc_mail['email'].'</a>';
+                }
+            }
+            if(get_option('connect_mail')=='no'){
+                $add_content = "'".$local_email->message_id."'";
+            }else{
+                $add_content = "'".$local_email->uid."'";
+            }
             $output .= '<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button><h4 class="modal-title"><i class="fa fa-envelope"></i> Email Viewer</h4></div>';
 		    $output .= '<div class="modal-body">';
             $output .='<div id="emailViewer">
@@ -1931,14 +1949,20 @@ class Leads extends AdminController
 				<div class="row">
 					<div class="col-md-6">
 						<p class="no-margin" style="font-size: 13px;">From : <a>'.$local_email->from_email.'</a></p>
-						<p class="no-margin" style="font-size: 13px;">To : <a>'.$mail_to[0]->email.'</a></p>
-						<p class="no-margin" style="font-size: 13px;">'.date("d-M-Y H:i A",$local_email->udate).'</p>
+						<p class="no-margin" style="font-size: 13px;">To : <a>'.$mail_to[0]->email.'</a></p>';
+                        if($cc){
+                            $output .='<p class="no-margin" style="font-size: 13px;">Cc : <a>'.implode(',',$cc).'</a></p>';
+                        }
+                        if($bcc){
+                            $output .='<p class="no-margin" style="font-size: 13px;">Bcc : <a>'.implode(',',$bcc).'</a></p>';
+                        }
+						$output .='<p class="no-margin" style="font-size: 13px;">'.date("d-M-Y H:i A",$local_email->udate).'</p>
 					</div>
 					<div class="col-md-6">';
 						$reply ='<div class="button-group">
-							<button type="button" data-toggle="tooltip" data-original-title="Forward" class="btn btn-default pull-right" data-toggle="modal" data-target="#forward-modal" onclick="add_content('.$add_content.')"><i class="fa fa-share" aria-hidden="true"></i></button>
-							<button type="button" data-toggle="tooltip" data-original-title="Reply" class="btn btn-default pull-right" data-toggle="modal" data-target="#reply-modal" onclick="add_to('.$add_content.')" style="margin-right:5px;"><i class="fa fa-reply" ></i></button>
-							<button type="button" data-toggle="tooltip" data-original-title="Reply All" class="btn btn-default pull-right" data-toggle="modal" data-target="#reply-modal" onclick="add_reply_all('.$add_content.')" style="margin-right:5px;"><i class="fa fa-reply-all" aria-hidden="true"></i></button>
+							<button type="button" data-toggle="tooltip" data-original-title="Forward" class="btn btn-default pull-right" data-toggle="modal" data-target="#forward-modal" onclick="add_content('.$add_content.',\''.$local_email->folder.'\')"><i class="fa fa-share" aria-hidden="true"></i></button>
+							<button type="button" data-toggle="tooltip" data-original-title="Reply" class="btn btn-default pull-right" data-toggle="modal" data-target="#reply-modal" onclick="add_to('.$add_content.',\''.$local_email->folder.'\')" style="margin-right:5px;"><i class="fa fa-reply" ></i></button>
+							<button type="button" data-toggle="tooltip" data-original-title="Reply All" class="btn btn-default pull-right" data-toggle="modal" data-target="#reply-modal" onclick="add_reply_all('.$add_content.',\''.$local_email->folder.'\')" style="margin-right:5px;"><i class="fa fa-reply-all" aria-hidden="true"></i></button>
 						</div>';
                     $output .=$reply;
 					$output .='</div>
