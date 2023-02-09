@@ -1951,6 +1951,14 @@ class Imap
 		$output = '';		
 		$this->select_folder($current_folder);
 		$inboxEmails = $this->get_message($_REQUEST['uid']);
+		$cc =$bcc =array();
+		foreach($inboxEmails['cc'] as $ccmails){
+			$cc[] ='<a>'.$ccmails['email'].'</a>';
+		}
+		foreach($inboxEmails['bcc'] as $bccmails){
+			$bcc[] ='<a>'.$bccmails['email'].'</a>';
+		}
+		
 		$add_content = "'".$_REQUEST['uid']."'";	
 		$output .= '<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button><h4 class="modal-title"><i class="fa fa-envelope"></i> '.$inboxEmails['subject'].'</h4></div>';
 		$output .= '<div class="modal-body">';
@@ -1992,8 +2000,14 @@ class Imap
 				<div class="row">
 					<div class="col-md-6">
 						<p class="no-margin" style="font-size: 13px;">From : <a>'.$inboxEmails['from']['email'].'</a></p>
-						<p class="no-margin" style="font-size: 13px;">To : <a>'.$inboxEmails['to'][0]['email'].'</a></p>
-						<p class="no-margin" style="font-size: 13px;">'.date("d-M-Y H:i A",$inboxEmails['udate']).'</p>
+						<p class="no-margin" style="font-size: 13px;">To : <a>'.$inboxEmails['to'][0]['email'].'</a></p>';
+						if($cc){
+							$output .='<p class="no-margin" style="font-size: 13px;">Cc : '.implode(',',$cc).'</p>';
+						}
+						if($bcc){
+							$output .='<p class="no-margin" style="font-size: 13px;">Bcc : '.implode(',',$bcc).'</p>';
+						}
+						$output .='<p class="no-margin" style="font-size: 13px;">'.date("d-M-Y H:i A",$inboxEmails['udate']).'</p>
 					</div>
 					<div class="col-md-6">';
 						$reply ='<div class="button-group">
