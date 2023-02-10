@@ -11,7 +11,7 @@
             <img src="<?php echo base_url('uploads/company/logo1.png?v=1.0'); ?>" class="" alt="<?php echo html_escape(get_option('companyname')); ?>">
         </a>
     </div>
-
+    
     <ul class="sidebarApps">
         <?php 
             $isActive = false;

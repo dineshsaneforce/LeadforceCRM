@@ -514,7 +514,7 @@
                         </div> -->
                 <?php } ?>
                 <div class="text-right">
-                    <a href="<?php echo admin_url('projects') ?>" class="btn btn-default">Cancel</a>
+                    <a data-dismiss="modal" class="btn btn-default">Cancel</a>
                     <button type="submit" data-form="#project_form" class="btn btn-info" autocomplete="off" data-loading-text="<?php echo _l('wait_text'); ?>"><?php echo _l('submit'); ?></button>
                 </div>
     </div>
