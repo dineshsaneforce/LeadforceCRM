@@ -64,7 +64,7 @@ a:hover{
     padding-top: 25px;
     max-height: calc( 100% - 60px );
     overflow-y: auto;
-    position: absolute;
+    /* position: absolute; */
 }
 
 #appSidebar .sidebarApp{
