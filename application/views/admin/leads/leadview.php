@@ -1,5 +1,38 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed'); ?>
+<?php if($lead->deleted_status ==1): ?>
+   <?php  
+      $this->db->where('lead_id',$lead->id);
+      $this->db->where('deleted_status',0);
+      $deal =$this->db->get(db_prefix().'projects')->row();
+   ?>
+
+   <?php init_head(); ?>
+   <div id="wrapper">
+      <div class="content">
+      <div class="container">
+         <div class="text-center" style="height:100%">
+            <div style="margin:10vh 0px">
+               <?php if($deal):?>
+                  <i class="fa fa-handshake-o  fa-fw fa-lg" style="font-size:100px;"></i>
+                  <h3>This lead has been converted as deal.</h3>
+                  <a class="btn btn-info" href="<?php echo admin_url('projects/view/'.$deal->id) ?>">Open Deal</a>
+               <?php else: ?>
+                  <i class="fa fa-trash  fa-fw fa-lg" style="font-size:100px;"></i>
+                  <h3>This lead has been already deleted.</h3>
+                  <a class="btn btn-info" href="<?php echo admin_url('leads') ?>">Go to Leads</a>
+               <?php endif; ?>
+            </div>
+         </div>
+      </div>
+      </div>
+   </div>
+   <?php init_tail(); ?>
+   </body>
+   </html>
+<?php else: ?>
 <?php init_head(); ?>
+
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.13/css/intlTelInput.css">
 <div id="wrapper">
    <div class="content">
@@ -618,7 +651,31 @@
 </div>
 <?php hooks()->do_action('lead_modal_profile_bottom',(isset($lead) ? $lead->id : '')); ?>
 
+<?php if(isset($lead->id)):?>
+<div class="modal" id="newDealModal" style="display: none; z-index: 1050;">
+    <div class="modal-dialog">
+        <div class="modal-header">
+            <span class="title"><?php echo _l('new_project'); ?></span>
+            <button type="button" class="close" data-dismiss="modal">×</button>
+        </div>
+        <div class="modal-content">
+            <div class="modal-body" id="newDealModalContent">
+            </div>
+        </div>
+    </div>
+</div>
+<?php $this->load->view('admin/projects/modals_project') ?>
+<?php endif; ?>
+
 <?php init_tail(); ?>
+
+<?php if(isset($lead->id)):?>
+<script>
+    $(function () {
+        init_deal_model('<?php echo 'lead_id=' . $lead->id; ?>');
+    });
+</script>
+<?php endif; ?>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.13/js/intlTelInput-jquery.min.js"></script>
 <script>
 
@@ -687,3 +744,5 @@
 
 </body>
 </html>
+
+<?php endif; ?>

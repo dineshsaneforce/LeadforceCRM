@@ -51,15 +51,20 @@ a:hover{
 #appSidebar{
     background-color:var(--theme-primary-dark);
     width: 60px;
-    height: 100vh;
-    position: sticky;
+    min-height: 100vh;
+    max-height: 100vh;
+    position: fixed;
     top: 0;
     z-index: 10;
+    overflow: none;
 }
 
 #appSidebar .sidebarApps{
     width: 100%;
     padding-top: 25px;
+    max-height: calc( 100% - 60px );
+    overflow-y: auto;
+    position: absolute;
 }
 
 #appSidebar .sidebarApp{
@@ -247,6 +252,7 @@ a:hover{
 }
 #page-body-wrapper{
     width: 100%;
+    margin-left: 60px;
 }
 #setup-menu li .nav-second-level li.active a{
     border-radius: 5px;
@@ -298,4 +304,7 @@ a:hover{
 
 .dropzone .dz-preview .dz-error-message {
     color: white !important;
+}
+.lead {
+  margin-bottom: 0px !important;
 }

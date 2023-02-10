@@ -10,7 +10,7 @@
 	}
 
 	#kan-ban-tab {
-		height: 600px;
+		height: 550px;
 		background: transparent;
 	}
 
