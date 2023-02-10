@@ -942,7 +942,7 @@ class Projects extends AdminController
                 $data['other_projects'] = $this->projects_model->get('', $other_projects_where);
             }
 			$data['req_staff_id'] = get_staff_user_id();
-            $data['title']          = $data['project']->name;
+            $data['title'] = _l('project');
             $data['bodyclass'] .= 'project invoices-total-manual estimates-total-manual';
             $data['project_status'] = get_project_status_by_id($project->status);
             $data['projectcost'] = $data['project']->project_cost;
