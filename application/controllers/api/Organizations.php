@@ -21,7 +21,8 @@ class Organizations extends BaseController
         $deal =$this->db->get(db_prefix() .'projects')->row();
         if($deal){
             if($deal->clientid){
-                $organization =$this->db->get(db_prefix() .'clients', ['userid' => $deal->clientid,'active' => 1])->row();
+                $this->db->where(['userid' => $deal->clientid,'active' => 1]);
+                $organization =$this->db->get(db_prefix() .'clients')->row();
                 if($organization){
                     $this->api_model->response_ok(true,$organization,'');
                 }else{
