@@ -455,8 +455,11 @@ class Projects extends AdminController
         ]);
     }
 
-    public function savedealproducts() {
+    public function savedealproducts($deal_id =0) {
         $data = $this->input->post();
+        if($deal_id !=0){
+            $data['project_id'] =$deal_id;
+        }
         $products = array();
         if(isset($data['product']) && !empty($data['product'])) {
             $products['product'] = $data['product'];
@@ -491,11 +494,9 @@ class Projects extends AdminController
                 $currency = $this->currencies_model->get_base_currency();
                 $cur = $currency->name;
             }
-            $success = $this->products_model->save_deals_products($products, $data['project_id'], $cur); 
-            if ($success) {
-                set_alert('success', _l('updated_successfully', _l('project')));
-            }
-            redirect(admin_url('projects/view/' . $data['project_id'])); 
+            $count = $this->products_model->save_deals_products($products, $data['project_id'], $cur); 
+            echo json_encode(array('success'=>true,'msg'=>'Items updated successfully','itemscount'=>$count));
+
         } else {
             $this->db->where('projectid',$data['project_id']);
             $success = $this->db->delete(db_prefix() . 'project_products');
@@ -985,10 +986,12 @@ class Projects extends AdminController
             $data['project_timeline_count'] = $this->projects_model->get_logs_count($project->id);
             $data['emails_count'] = $this->projects_model->get_emails_count($project->id);
             $data['project_tasks_count'] = $this->projects_model->get_activities_count($project->id);
-            $data['calls_count'] = $this->projects_model->get_calls_count($project->id);
-            $data['proposal_count'] = $this->projects_model->get_proposal_count($project->id);
+            $data['project_tasks_bycall_count'] = $this->projects_model->get_calls_count($project->id);
+            $data['project_proposal_count'] = $this->projects_model->get_proposal_count($project->id);
             $data['project_files_count'] = $this->projects_model->get_files_count($project->id);
             $data['project_notes_count'] = $this->projects_model->get_notes_count($project->id);
+            $data['project_items_count'] = $data['dealproducts']?count($data['dealproducts']):0;
+            $data['project_invoice_count'] = $this->projects_model->get_invoice_count($project->id);
             $this->load->view('admin/projects/view', $data);
         } else {
             access_denied('Project View');

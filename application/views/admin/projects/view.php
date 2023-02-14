@@ -344,7 +344,7 @@ $hasApprovalFlow = $this->workflow_model->getflows('deal_approval', 0, ['service
                     <?php } */ ?>
                         <div class="panel_s" style="margin-bottom: 0px;">
                             <div class="panel-body" id="projectTabContentWrapper">
-                                <?php echo $this->load->view(($project->approved == 1 && $tab['view'] ? $tab['view'] : 'admin/projects/project_overview')); ?>
+                                <?php echo $this->load->view(($project->approved == 1 && $tab['view'] ? $tab['view'] : 'admin/projects/project_approval')); ?>
                             </div>
                         </div>
                     </div>
@@ -2950,34 +2950,6 @@ echo form_hidden('project_percent', $percent);
 </style>
 
 <style>
-    .css-table {
-        display: table;
-        width: 100%;
-    }
-
-    .css-table-header {
-        display: table-header-group;
-    }
-
-    .css-table-body {
-        display: table-row-group;
-    }
-
-    .css-table-row {
-        display: table-row;
-    }
-
-    .css-table-header div,
-    .css-table-row div {
-        display: table-cell;
-        padding: 0 6px;
-    }
-
-    .css-table-header div {
-        text-align: left;
-        border: 1px solid rgb(255, 255, 255);
-    }
-
     .data_display {
         padding-bottom: 5px;
         cursor: pointer;

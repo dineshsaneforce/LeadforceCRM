@@ -5057,6 +5057,14 @@ public function all_activiites()
     {
         return $this->get_tabs_count($project_id,'proposals');
     }
+
+    public function get_invoice_count($project_id)
+    {
+        $this->db->where('project_id',$project_id);
+        $this->db->select('COUNT(id) as count');
+        $count =$this->db->get(db_prefix().'invoices')->row();
+        return $count->count;
+    }
     
     public function get_files_count($project_id)
     {
