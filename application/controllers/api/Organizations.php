@@ -17,7 +17,8 @@ class Organizations extends BaseController
     // get staffs
     public function getbydeal($id)
     {
-        $deal =$this->db->get(db_prefix() .'projects', ['id' => $id])->row();
+        $this->db->where('id',$id);
+        $deal =$this->db->get(db_prefix() .'projects')->row();
         if($deal){
             if($deal->clientid){
                 $organization =$this->db->get(db_prefix() .'clients', ['userid' => $deal->clientid,'active' => 1])->row();
