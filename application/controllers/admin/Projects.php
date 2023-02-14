@@ -17,6 +17,7 @@ class Projects extends AdminController
         $this->load->helper('upload');
         $this->load->library('user_agent');
         $this->load->helper('approval_helper');
+        $this->load->helper('timeline_helper');
     }
 
     public function set_session_url()
@@ -316,7 +317,7 @@ class Projects extends AdminController
                 if($this->input->post('lead_id')){
                     $this->leads_model->convert_to_deal($this->input->post('lead_id'),$id,$primary_contact);
                 }
-                if ($id) {
+                if ($id) {  
                     set_alert('success', _l('added_successfully', _l('project')));
                     redirect($_SERVER['HTTP_REFERER']);
                     // redirect(admin_url('projects/view/' . $id));
@@ -573,6 +574,9 @@ class Projects extends AdminController
 
     public function view($id)
     {
+        if(!$this->input->get('group')){
+            $_GET['group'] ='project_tasks';
+        }
         if (has_permission('projects', '', 'view') || $this->projects_model->is_member($id)) {
             close_setup_menu();
             $project = $this->projects_model->get($id);
@@ -598,6 +602,8 @@ class Projects extends AdminController
 				$data['need_fields'] = array();
 				$data['need_fields'] = json_decode($fields);
 			}
+
+            $data['deal_need_fields'] =$data['need_fields'];
             $allcurrency = $this->projects_model->get_allcurrency();
             $data['allcurrency'] = $allcurrency;
             $discount_value = 0;
@@ -724,67 +730,66 @@ class Projects extends AdminController
 					}
 				}
 			}
-            if ($group == 'project_overview') {
-                $data['members'] = $this->projects_model->get_project_members($id);
-                $data['contacts'] = $this->projects_model->get_project_contacts($id);
-                $data['pipeline'] = $this->pipeline_model->getpipelinebyId($data['project']->pipeline_id);
-                $data['teamleader'] = $this->staff_model->get($data['project']->teamleader);
-                
+            $data['members'] = $this->projects_model->get_project_members($id);
+            $data['contacts'] = $this->projects_model->get_project_contacts($id);
+            $data['pipeline'] = $this->pipeline_model->getpipelinebyId($data['project']->pipeline_id);
+            $data['teamleader'] = $this->staff_model->get($data['project']->teamleader);
+            
 
-                foreach ($data['members'] as $key => $member) {
-                    $data['members'][$key]['total_logged_time'] = 0;
-                    $member_timesheets                          = $this->tasks_model->get_unique_member_logged_task_ids($member['staff_id'], ' AND task_id IN (SELECT id FROM ' . db_prefix() . 'tasks WHERE rel_type="project" AND rel_id="' . $id . '")');
+            foreach ($data['members'] as $key => $member) {
+                $data['members'][$key]['total_logged_time'] = 0;
+                $member_timesheets                          = $this->tasks_model->get_unique_member_logged_task_ids($member['staff_id'], ' AND task_id IN (SELECT id FROM ' . db_prefix() . 'tasks WHERE rel_type="project" AND rel_id="' . $id . '")');
 
-                    foreach ($member_timesheets as $member_task) {
-                        $data['members'][$key]['total_logged_time'] += $this->tasks_model->calc_task_total_time($member_task->task_id, ' AND staff_id=' . $member['staff_id']);
-                    }
+                foreach ($member_timesheets as $member_task) {
+                    $data['members'][$key]['total_logged_time'] += $this->tasks_model->calc_task_total_time($member_task->task_id, ' AND staff_id=' . $member['staff_id']);
                 }
-                $data['statuses'] = $this->pipeline_model->getPipelineleadstatus((isset($data['project'])?$data['project']->pipeline_id:0));
-                $data['project_total_days']        = round((human_to_unix($data['project']->deadline . ' 00:00') - human_to_unix($data['project']->start_date . ' 00:00')) / 3600 / 24);
-                $data['project_days_left']         = $data['project_total_days'];
-                $data['project_time_left_percent'] = 100;
-                if ($data['project']->deadline) {
-                    if (human_to_unix($data['project']->start_date . ' 00:00') < time() && human_to_unix($data['project']->deadline . ' 00:00') > time()) {
-                        $data['project_days_left']         = round((human_to_unix($data['project']->deadline . ' 00:00') - time()) / 3600 / 24);
-                        $data['project_time_left_percent'] = $data['project_days_left'] / $data['project_total_days'] * 100;
-                        $data['project_time_left_percent'] = round($data['project_time_left_percent'], 2);
-                    }
-                    if (human_to_unix($data['project']->deadline . ' 00:00') < time()) {
-                        $data['project_days_left']         = 0;
-                        $data['project_time_left_percent'] = 0;
-                    }
+            }
+            $data['statuses'] = $this->pipeline_model->getPipelineleadstatus((isset($data['project'])?$data['project']->pipeline_id:0));
+            $data['project_total_days']        = round((human_to_unix($data['project']->deadline . ' 00:00') - human_to_unix($data['project']->start_date . ' 00:00')) / 3600 / 24);
+            $data['project_days_left']         = $data['project_total_days'];
+            $data['project_time_left_percent'] = 100;
+            if ($data['project']->deadline) {
+                if (human_to_unix($data['project']->start_date . ' 00:00') < time() && human_to_unix($data['project']->deadline . ' 00:00') > time()) {
+                    $data['project_days_left']         = round((human_to_unix($data['project']->deadline . ' 00:00') - time()) / 3600 / 24);
+                    $data['project_time_left_percent'] = $data['project_days_left'] / $data['project_total_days'] * 100;
+                    $data['project_time_left_percent'] = round($data['project_time_left_percent'], 2);
                 }
-
-                $__total_where_tasks = 'rel_type = "project" AND rel_id=' . $id;
-                if (!has_permission('tasks', '', 'view')) {
-                    $__total_where_tasks .= ' AND ' . db_prefix() . 'tasks.id IN (SELECT taskid FROM ' . db_prefix() . 'task_assigned WHERE staffid = ' . get_staff_user_id() . ')';
-
-                    if (get_option('show_all_tasks_for_project_member') == 1) {
-                        $__total_where_tasks .= ' AND (rel_type="project" AND rel_id IN (SELECT project_id FROM ' . db_prefix() . 'project_members WHERE staff_id=' . get_staff_user_id() . '))';
-                    }
+                if (human_to_unix($data['project']->deadline . ' 00:00') < time()) {
+                    $data['project_days_left']         = 0;
+                    $data['project_time_left_percent'] = 0;
                 }
+            }
 
-                $__total_where_tasks = hooks()->apply_filters('admin_total_project_tasks_where', $__total_where_tasks, $id);
+            $__total_where_tasks = 'rel_type = "project" AND rel_id=' . $id;
+            if (!has_permission('tasks', '', 'view')) {
+                $__total_where_tasks .= ' AND ' . db_prefix() . 'tasks.id IN (SELECT taskid FROM ' . db_prefix() . 'task_assigned WHERE staffid = ' . get_staff_user_id() . ')';
 
-                $where = ($__total_where_tasks == '' ? '' : $__total_where_tasks . ' AND ') . 'status != ' . Tasks_model::STATUS_COMPLETE;
+                if (get_option('show_all_tasks_for_project_member') == 1) {
+                    $__total_where_tasks .= ' AND (rel_type="project" AND rel_id IN (SELECT project_id FROM ' . db_prefix() . 'project_members WHERE staff_id=' . get_staff_user_id() . '))';
+                }
+            }
 
-                $data['tasks_not_completed'] = total_rows(db_prefix() . 'tasks', $where);
-                $total_tasks                 = total_rows(db_prefix() . 'tasks', $__total_where_tasks);
-                $data['total_tasks']         = $total_tasks;
+            $__total_where_tasks = hooks()->apply_filters('admin_total_project_tasks_where', $__total_where_tasks, $id);
 
-                $where = ($__total_where_tasks == '' ? '' : $__total_where_tasks . ' AND ') . 'status = ' . Tasks_model::STATUS_COMPLETE . ' AND rel_type="project" AND rel_id="' . $id . '"';
+            $where = ($__total_where_tasks == '' ? '' : $__total_where_tasks . ' AND ') . 'status != ' . Tasks_model::STATUS_COMPLETE;
 
-                $data['tasks_completed'] = total_rows(db_prefix() . 'tasks', $where);
+            $data['tasks_not_completed'] = total_rows(db_prefix() . 'tasks', $where);
+            $total_tasks                 = total_rows(db_prefix() . 'tasks', $__total_where_tasks);
+            $data['total_tasks']         = $total_tasks;
 
-                $data['tasks_not_completed_progress'] = ($total_tasks > 0 ? number_format(($data['tasks_completed'] * 100) / $total_tasks, 2) : 0);
-                $data['tasks_not_completed_progress'] = round($data['tasks_not_completed_progress'], 2);
+            $where = ($__total_where_tasks == '' ? '' : $__total_where_tasks . ' AND ') . 'status = ' . Tasks_model::STATUS_COMPLETE . ' AND rel_type="project" AND rel_id="' . $id . '"';
 
-                @$percent_circle        = $percent / 100;
-                $data['percent_circle'] = $percent_circle;
+            $data['tasks_completed'] = total_rows(db_prefix() . 'tasks', $where);
+
+            $data['tasks_not_completed_progress'] = ($total_tasks > 0 ? number_format(($data['tasks_completed'] * 100) / $total_tasks, 2) : 0);
+            $data['tasks_not_completed_progress'] = round($data['tasks_not_completed_progress'], 2);
+
+            @$percent_circle        = $percent / 100;
+            $data['percent_circle'] = $percent_circle;
 
 
-                $data['project_overview_chart'] = $this->projects_model->get_project_overview_weekly_chart_data($id, ($this->input->get('overview_chart') ? $this->input->get('overview_chart'):'this_week'));
-            } elseif ($group == 'project_invoices') {
+            $data['project_overview_chart'] = $this->projects_model->get_project_overview_weekly_chart_data($id, ($this->input->get('overview_chart') ? $this->input->get('overview_chart'):'this_week'));
+            if ($group == 'project_invoices') {
                 $this->load->model('invoices_model');
 
                 $data['invoiceid']   = '';
@@ -952,7 +957,7 @@ class Projects extends AdminController
             $primarycontact = "";
             foreach($orgcontacts as $val) {
                 if($val['is_primary'] > 0) {
-                    $primarycontact = $val['firstname']." ".$val['lastname']." - ";
+                    $primarycontact = $val['firstname']." ".$val['lastname'];
                 }
             }
             $data['primarycont'] =  $primarycontact;
@@ -976,6 +981,14 @@ class Projects extends AdminController
             else
                 $data['deal_rejected'] =0;
             $data['staff_hierarchy'] =$this->approval_model->getDealReportingLevels($project->teamleader);
+
+            $data['project_timeline_count'] = $this->projects_model->get_logs_count($project->id);
+            $data['emails_count'] = $this->projects_model->get_emails_count($project->id);
+            $data['project_tasks_count'] = $this->projects_model->get_activities_count($project->id);
+            $data['calls_count'] = $this->projects_model->get_calls_count($project->id);
+            $data['proposal_count'] = $this->projects_model->get_proposal_count($project->id);
+            $data['project_files_count'] = $this->projects_model->get_files_count($project->id);
+            $data['project_notes_count'] = $this->projects_model->get_notes_count($project->id);
             $this->load->view('admin/projects/view', $data);
         } else {
             access_denied('Project View');
@@ -1078,7 +1091,6 @@ class Projects extends AdminController
         $selectedMember    = null;
         $pipelines   = $this->input->get('pipelines');
         $data['statuses']  = $this->projects_model->get_project_statuses($pipelines);
-
         $appliedStatuses = $this->input->get('status');
         $appliedMember   = $this->input->get('member');
         if(!$this->input->get('member')){
@@ -3998,5 +4010,19 @@ class Projects extends AdminController
         if(!$hasHistory){
             hooks()->do_action('after_add_project_approval', $deal_id);
         }
+    }
+
+    public function load_more_activities($deal_id)
+    {
+        
+        if(isset($_GET['page'])){
+            $activities =render_timeline_activities('project',$deal_id,$_GET['page']);
+            if($activities){
+                echo json_encode(array('success'=>true,'content'=>$activities));
+                die;
+            }
+        }
+        echo json_encode(array('success'=>true,'content'=>false));
+        
     }
 }

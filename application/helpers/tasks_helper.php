@@ -688,16 +688,16 @@ $table_data = array();
         }
     }
 
-    if ($table_attributes['data-new-rel-type'] == 'project') {
+    if ( $table_attributes['data-new-rel-type'] == 'project') {
         
 		//echo "<a href='" . admin_url('tasks/detailed_overview?project_id=' . $table_attributes['data-new-rel-id']) . "' class='btn btn-success pull-right mbot25'>" . _l('detailed_overview') . '</a>';
        
 		echo '<a href="#" onclick="new_task_from_relation(undefined,'."'project'".','.$table_attributes['data-new-rel-id'].'); return false;" class="btn btn-info pull-left mbot25 mright5">'._l('new_task').'</a>';
-        echo "<a href='" . admin_url('tasks/list_tasks?project_id=' . $table_attributes['data-new-rel-id'] . '&kanban=true') . "' class='btn btn-default pull-left mbot25 mright5 hidden-xs'>" . _l('view_kanban') . '</a>';
-        echo '<div class="clearfix"></div>';
-        echo $CI->load->view('admin/tasks/_bulk_actions', ['table' => '.table-rel-tasks'], true);
-        echo $CI->load->view('admin/tasks/_summary', ['rel_id' => $table_attributes['data-new-rel-id'], 'rel_type' => 'project', 'table' => $table_name], true);
-        echo '<a href="#" data-toggle="modal" data-target="#tasks_bulk_actions" class="hide bulk-actions-btn table-btn" data-table=".table-rel-tasks">' . _l('bulk_actions') . '</a>';
+        // echo "<a href='" . admin_url('tasks/list_tasks?project_id=' . $table_attributes['data-new-rel-id'] . '&kanban=true') . "' class='btn btn-default pull-left mbot25 mright5 hidden-xs'>" . _l('view_kanban') . '</a>';
+        // echo '<div class="clearfix"></div>';
+        // echo $CI->load->view('admin/tasks/_bulk_actions', ['table' => '.table-rel-tasks'], true);
+        // echo $CI->load->view('admin/tasks/_summary', ['rel_id' => $table_attributes['data-new-rel-id'], 'rel_type' => 'project', 'table' => $table_name], true);
+        // echo '<a href="#" data-toggle="modal" data-target="#tasks_bulk_actions" class="hide bulk-actions-btn table-btn" data-table=".table-rel-tasks">' . _l('bulk_actions') . '</a>';
     } elseif ($table_attributes['data-new-rel-type'] == 'customer') { /*
         echo '<div class="clearfix"></div>';
         echo '<div id="tasks_related_filter">';

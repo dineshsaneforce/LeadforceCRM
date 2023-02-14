@@ -195,6 +195,19 @@ class Download extends App_Controller
             }
 
             $path = get_upload_path_by_type('lead') . $attachment->rel_id . '/' . $attachment->file_name;
+        }elseif ($folder_indicator == 'project_attachment') {
+            if (!is_staff_logged_in()) {
+                show_404();
+            }
+            $this->db->where('id', $attachmentid);
+
+
+            $attachment = $this->db->get(db_prefix().'project_files')->row();
+
+            if (!$attachment) {
+                show_404();
+            }
+            $path = get_upload_path_by_type('project') . $attachment->project_id . '/' . $attachment->file_name;
         }  elseif ($folder_indicator == 'client') {
             $this->db->where('attachment_key', $attachmentid);
             $attachment = $this->db->get(db_prefix().'files')->row();

@@ -38,12 +38,12 @@ function app_init_project_tabs()
 {
     $CI = &get_instance();
 
-    $CI->app_tabs->add_project_tab('project_overview', [
-        'name'     => _l('project_overview'),
-        'icon'     => 'fa fa-th',
-        'view'     => 'admin/projects/project_overview',
-        'position' => 5,
-    ]);
+    // $CI->app_tabs->add_project_tab('project_overview', [
+    //     'name'     => _l('project_overview'),
+    //     'icon'     => 'fa fa-th',
+    //     'view'     => 'admin/projects/project_overview',
+    //     'position' => 5,
+    // ]);
 
     $CI->app_tabs->add_project_tab('project_tasks', [
         'name'                      => _l('tasks'),
@@ -164,6 +164,15 @@ function app_init_project_tabs()
         'position'                  => 55,
         'linked_to_customer_option' => ['view_activity_log'],
     ]);
+
+    $CI->app_tabs->add_project_tab('project_timeline', [
+        'name'                      => _l('timeline'),
+        'icon'                      => 'fa fa-exclamation',
+        'view'                      => 'admin/projects/project_timeline',
+        'position'                  => 55,
+        'linked_to_customer_option' => ['view_timeline_log'],
+    ]);
+
 	$CI->app_tabs->add_project_tab('project_email', [
         'name'                      => _l('project_email'),
         'icon'                      => 'fa fa-envelope ',
