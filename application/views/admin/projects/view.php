@@ -36,6 +36,39 @@ $hasApprovalFlow = $this->workflow_model->getflows('deal_approval', 0, ['service
         overflow-y: auto;
         margin-bottom: 0px;
     }
+
+    .deal-field-update-dropdown{
+        display: none;
+        min-width: 260px;
+        margin: 0;
+        margin-top: 0px;
+        margin-top: 5px;
+        padding: 0;
+        border-radius: 6px;
+        z-index: 9000;
+        -webkit-box-shadow: 1px 2px 3px rgba(0,0,0,.125);
+        box-shadow: 1px 2px 3px rgba(0,0,0,.125);
+        border-color: #bfcbd9;
+        right: auto;
+        left: 0;
+        position: absolute;
+        top: 100%;
+        float: left;
+        font-size: 14px;
+        text-align: left;
+        list-style: none;
+        background-color: #fff;
+        background-clip: padding-box;
+        border: 1px solid #ccc;
+        border: 1px solid rgba(0,0,0,.15);
+    }
+    .deal-field-update-dropdown .input-group{
+        width: 100%;
+    }
+
+    .data_display_btn{
+        color: var(--theme-info-dark);
+    }
 </style>
 <div id="wrapper">
     <?php echo form_hidden('project_id', $project->id) ?>
@@ -50,108 +83,120 @@ $hasApprovalFlow = $this->workflow_model->getflows('deal_approval', 0, ['service
                         <div class="row">
                             <div class="col-md-7 project-heading">
                                 <h3 class="hide project-name"><?php echo $project->name; ?></h3>
-                                <div id="project_view_name" class="pull-left">
-                                    <?php
-                                    if ($productscnt > 0) {
-                                        if ($productscnt == 1)
-                                            $projectcnt = ' - <a data-toggle="modal" data-target="#dealproduct_Modal">' . $productscnt . ' Items</a>';
-                                        else
-                                            $projectcnt = ' - <a data-toggle="modal" data-target="#dealproduct_Modal">' . $productscnt . ' Items</a>';
-                                    } else {
-                                        $projectcnt = ' - <a data-toggle="modal" data-target="#dealproduct_Modal">0 item</a>';
-                                    }
-                                    if ($can_user_edit == false) {
-                                        $projectcnt = ' - ' . $productscnt . ' Items';
-                                    }
-                                    ?>
-                                    <div class="" style="display:flex;">
-                                        <div class="name">
-                                            <div class="data_display">
-                                                <span class="h4 updated_text">
-                                                    <?php echo $project->name; ?>
-                                                </span>
-                                                <?php if ($can_user_edit == true) { ?>
-                                                    <a class="data_display_btn" data-val="name"><i class="fa fa-pencil"></i></a>
-                                                <?php } ?>
-                                            </div>
-                                            <div class="data_edit" style=" display:none;">
-                                                <div class="input-group date">
-                                                    <input type="text" id="name" name="name" class="form-control" value=" <?php echo (isset($project) ? $project->name : 'Deal '); ?>" autocomplete="off" aria-invalid="false">
-                                                    <div class="input-group-addon" style="opacity: 1;">
-                                                        <a class="data_edit_btn" data-val="name"><i class="fa fa-check"></i></a>
+                                <?php
+                                if ($productscnt > 0) {
+                                    if ($productscnt == 1)
+                                        $projectcnt = ' - <a data-toggle="modal" data-target="#dealproduct_Modal">' . $productscnt . ' Items</a>';
+                                    else
+                                        $projectcnt = ' - <a data-toggle="modal" data-target="#dealproduct_Modal">' . $productscnt . ' Items</a>';
+                                } else {
+                                    $projectcnt = ' - <a data-toggle="modal" data-target="#dealproduct_Modal">0 item</a>';
+                                }
+                                if ($can_user_edit == false) {
+                                    $projectcnt = ' - ' . $productscnt . ' Items';
+                                }
+                                ?>
+                                <div class="" style="display:flex;">
+                                    <div class="data_display dropdown">
+                                        <span class="h4 updated_text">
+                                            <?php echo $project->name; ?>
+                                        </span>
+                                        <?php if ($can_user_edit == true) { ?>
+                                            <a href="#" class="data_display_btn">
+                                                <i class="fa fa-pencil"></i>
+                                            </a>
+                                            <div class="deal-field-update-dropdown" >
+                                                <div class="panel_s no-mbot">
+                                                    <div class="panel-body">
+                                                        <p class="text-muted">Update Deal Name</p>
+                                                        <div class="input-group date">
+                                                            <input type="text" id="name" name="name" class="form-control" value="<?php echo (isset($project) ? $project->name : 'Deal '); ?>" autocomplete="off" aria-invalid="false">
+                                                        </div>
+                                                        <div id="company_exists_info" class="hide"></div>
+                                                        <br>
+                                                        <a class="btn btn-info pull-right data_edit_btn" data-val="name">Save Changes</a>
+                                                        <button  class="btn pull-right mright5 close-dropdown">Cancel</button>
                                                     </div>
                                                 </div>
-                                                <div id="company_exists_info" class="hide"></div>
                                             </div>
-                                        </div>
-                                        <?php if (!empty($deal_need_fields) && in_array("project_cost", $deal_need_fields)) : ?>
-                                            <div class="project_total_cost mleft15">
-                                                <div class="data_display">
-                                                    <span class="h4 updated_text">
-                                                        <?php echo app_format_money($project->project_cost, $currency); ?>
-                                                    </span>
-                                                    <?php if ($can_user_edit == true) { ?>
-                                                        <a class="data_display_btn" data-val="project_total_cost"><i class="fa fa-pencil"></i></a>
-                                                    <?php } ?>
-                                                </div>
-                                                <div class="data_edit" style=" display:none;">
+                                        <?php } ?>
+                                    </div>
 
-
-                                                    <div class="input-group date">
-                                                        <input type="text" id="project_cost" name="project_cost" class="form-control" value="<?php echo (isset($project) ? $project->project_cost : ''); ?>" autocomplete="off" aria-invalid="false">
-                                                        <div class="input-group-addon" style="opacity: 1;">
-                                                            <a class="data_edit_btn" data-val="project_cost"><i class="fa fa-check"></i></a>
+                                    <?php if (!empty($deal_need_fields) && in_array("project_cost", $deal_need_fields)) : ?>
+                                        <div class="data_display mleft15 dropdown">
+                                            <span class="h4 updated_text">
+                                                <?php echo app_format_money($project->project_cost, $currency); ?>
+                                            </span>
+                                            <?php if ($can_user_edit == true) { ?>
+                                                <a href="#" class="data_display_btn">
+                                                    <i class="fa fa-pencil"></i>
+                                                </a>
+                                                <div class="deal-field-update-dropdown" >
+                                                    <div class="panel_s no-mbot">
+                                                        <div class="panel-body">
+                                                            <p class="text-muted">Update Deal Value</p>
+                                                            <div class="input-group date">
+                                                                <input type="text" id="project_cost" name="project_cost" class="form-control" value="<?php echo (isset($project) ? $project->project_cost : ''); ?>" autocomplete="off" aria-invalid="false">
+                                                            </div>
+                                                            <br>
+                                                            <a class="btn btn-info pull-right data_edit_btn" data-val="project_cost">Save Changes</a>
+                                                            <button  class="btn pull-right mright5 close-dropdown">Cancel</button>
                                                         </div>
                                                     </div>
-
                                                 </div>
-                                            </div>
-                                        <?php endif; ?>
-                                    </div>
-                                    <div style="display:flex;">
-                                        <div class="teamleader">
-                                            <div class="data_display mright5">
-                                                <span class="h5 text-muted">
-                                                    <i class="fa fa-user mright5" aria-hidden="true"></i><?php echo (isset($teamleader) && isset($teamleader->firstname)) ? ($teamleader->firstname . ' ' . $teamleader->lastname) : ''; ?>
-                                                </span>
-                                                <?php if ($can_user_edit == true) { ?>
-                                                    <a class="data_display_btn" data-val="teamleader"><i class="fa fa-pencil"></i></a>
-                                                <?php } ?>
-                                            </div>
-                                            <div class="data_edit" style=" display:none;">
-                                                <div class="form-group select-placeholder form-group-select-input-groups_in[] input-group-select">
-                                                    <div class="input-group input-group-select select-groups_in[]">
-
-                                                        <select id="teamleader" name="teamleader" data-live-search="true" data-width="100%" class=" selectpicker _select_input_group">
-                                                            <?php
-                                                            foreach ($teamleaders as $pikay => $pival) {
-                                                                $selected = '';
-                                                                $teamleader = (isset($project) ? $project->teamleader : '');
-                                                                if ($teamleader == $pival['staffid']) {
-                                                                    $selected = 'selected="selected"';
-                                                                }
-                                                                echo '<option value="' . $pival['staffid'] . '" ' . $selected . '>' . $pival['firstname'] . ' ' . $pival['lastname'] . '</option>';
-                                                            }
-                                                            ?>
-                                                        </select>
-                                                        <div class="input-group-addon" style="opacity: 1;"><a class="data_edit_btn" data-val="teamleader"><i class="fa fa-check"></i></a></div>
-                                                    </div>
-
-                                                </div>
-                                            </div>
+                                            <?php } ?>
                                         </div>
-
-                                        <?php if (!empty($deal_need_fields) && in_array("pipeline_id", $deal_need_fields)) : ?>
-                                            <div class="data_display">
-                                                <span class="text-muted h5">
-                                                    |<i class="fa fa-bar-chart mleft5 mright5 fa-flip-vertical fa-rotate-180" aria-hidden="true"></i><?php echo (isset($pipeline) && isset($pipeline->name)) ? $pipeline->name : ''; ?>
-                                                </span>
-                                                <?php if ($can_user_edit == true) { ?>
-                                                    <a onclick="changeStage()" class="data_display_btn"><i class="fa fa-pencil"></i></a>
-                                                <?php } ?>
+                                    <?php endif; ?>
+                                </div>
+                                <div style="display:flex;">
+                                    <div class="data_display mright5 dropdown">
+                                        <span class="h5 text-muted">
+                                            <i class="fa fa-user mright5" aria-hidden="true"></i><?php echo (isset($teamleader) && isset($teamleader->firstname)) ? ($teamleader->firstname . ' ' . $teamleader->lastname) : ''; ?>
+                                        </span>
+                                        <?php if ($can_user_edit == true) { ?>
+                                            <a href="#" class="data_display_btn">
+                                                <i class="fa fa-pencil"></i>
+                                            </a>
+                                            <div class="deal-field-update-dropdown">
+                                                <div class="panel_s no-mbot">
+                                                    <div class="panel-body">
+                                                        <p class="text-muted">Update Deal Owner</p>
+                                                        <div class="select-placeholder form-group-select-input-groups_in[] input-group-select">
+                                                            <div style="width: 100%;" class="input-group input-group-select select-groups_in[]">
+                                                                <select id="teamleader" name="teamleader" data-live-search="true" data-width="100%" class=" selectpicker _select_input_group">
+                                                                    <?php
+                                                                    if($teamleaders){
+                                                                        foreach ($teamleaders as $pikay => $pival) {
+                                                                            $selected = '';
+                                                                            $teamleader = (isset($project) ? $project->teamleader : '');
+                                                                            if ($teamleader == $pival['staffid']) {
+                                                                                $selected = 'selected="selected"';
+                                                                            }
+                                                                            echo '<option value="' . $pival['staffid'] . '" ' . $selected . '>' . $pival['firstname'] . ' ' . $pival['lastname'] . '</option>';
+                                                                        }
+                                                                    }
+                                                                    ?>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <br>
+                                                        <a class="btn btn-info pull-right data_edit_btn" data-val="teamleader">Save Changes</a>
+                                                        <button  class="btn pull-right mright5 close-dropdown">Cancel</button>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        <?php endif; ?>
+                                        <?php } ?>
                                     </div>
+                                    <?php if (!empty($deal_need_fields) && in_array("pipeline_id", $deal_need_fields)) : ?>
+                                        <div class="data_display">
+                                            <span class="text-muted h5">
+                                                |<i class="fa fa-bar-chart mleft5 mright5 fa-flip-vertical fa-rotate-180" aria-hidden="true"></i><?php echo (isset($pipeline) && isset($pipeline->name)) ? $pipeline->name : ''; ?>
+                                            </span>
+                                            <?php if ($can_user_edit == true) { ?>
+                                                <a onclick="changeStage()" class="data_display_btn"><i class="fa fa-pencil"></i></a>
+                                            <?php } ?>
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
                                 <div class="visible-xs">
                                     <div class="clearfix"></div>
@@ -271,7 +316,7 @@ $hasApprovalFlow = $this->workflow_model->getflows('deal_approval', 0, ['service
                             </div>
                             <?php if (!empty($need_fields) && in_array("status", $need_fields) && (is_admin(get_staff_user_id()) || $project->teamleader == get_staff_user_id() || in_array(get_staff_user_id(), $ownerHierarchy) || (!empty($my_staffids) && in_array($project->teamleader, $my_staffids) && !in_array($project->teamleader, $viewIds))) && $project->deleted_status == 0 && $project->approved == 1) : ?>
 
-                                
+
                                 <div class="col-xs-12">
                                     <ul class="arrow-progress">
                                         <?php $activestatus = true; ?>
@@ -2666,6 +2711,18 @@ echo form_hidden('project_percent', $percent);
             }
         });
     }
+
+    $('.data_display_btn').on('click', function(event) {
+        $('.deal-field-update-dropdown').hide();
+        $(this).parents('.dropdown').find('.deal-field-update-dropdown').show();
+    });
+
+
+    
+
+    $('.deal-field-update-dropdown .close-dropdown').click(function(e) {
+        $(this).parents('.dropdown').find('.deal-field-update-dropdown').hide();
+    });
 </script>
 </body>
 
