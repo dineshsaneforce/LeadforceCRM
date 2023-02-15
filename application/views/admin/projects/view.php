@@ -270,23 +270,14 @@ $hasApprovalFlow = $this->workflow_model->getflows('deal_approval', 0, ['service
 
                                 
                                 <div class="col-xs-12">
-                                    <ul class="steps">
+                                    <ul class="arrow-progress">
                                         <?php $activestatus = true; ?>
                                         <?php foreach ($statuses as $status) : ?>
                                             <li data-toggle="tooltip" data-title="<?php echo $status['name']; ?>" class="<?php echo $activestatus ? 'active' : '' ?>" onclick="changeProjectStatus(<?php echo $project->id ?>,<?php echo $status['id'] ?>)">
                                                 <?php if ($project->status == $status['id']) {
                                                     $activestatus = false;
                                                 } ?>
-                                                <div>
-                                                    <span></span>
-                                                    <span></span>
-                                                    <span></span>
-                                                    <span></span>
-                                                    <span></span>
-                                                    <span></span>
-                                                    <span></span>
-                                                    <span><?php echo $status['name']; ?></span>
-                                                </div>
+                                                <p><?php echo $status['name']; ?></p>
                                             </li>
                                         <?php endforeach; ?>
                                     </ul>
