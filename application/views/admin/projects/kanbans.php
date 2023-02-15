@@ -265,11 +265,12 @@
 
 	<div class="modal" id="newDealModal" style="display: none; z-index: 1050;">
 		<div class="modal-dialog">
-			<div class="modal-header">
-				<span class="title"><?php echo _l('new_project'); ?></span>
-				<button type="button" class="close" data-dismiss="modal">×</button>
-			</div>
 			<div class="modal-content">
+				<div class="modal-header">
+					<span class="title"><?php echo _l('new_project'); ?></span>
+					<button type="button" class="close" data-dismiss="modal">×</button>
+				</div>
+				
 				<div class="modal-body" id="newDealModalContent">
 				</div>
 			</div>

@@ -44,51 +44,61 @@ function app_init_project_tabs()
     //     'view'     => 'admin/projects/project_overview',
     //     'position' => 5,
     // ]);
+    if (has_permission('tasks', '', 'view')) {
 
-    $CI->app_tabs->add_project_tab('project_tasks', [
-        'name'                      => _l('tasks'),
-        'icon'                      => 'fa fa-check-circle',
-        'view'                      => 'admin/projects/project_tasks',
-        'position'                  => 5,
-        'linked_to_customer_option' => ['view_tasks'],
-    ]);
-
-    $CI->app_tabs->add_project_tab('project_items', [
-        'name'                      => _l('items'),
-        'icon'                      => 'fa fa-exclamation',
-        'view'                      => 'admin/projects/project_items',
-        'position'                  => 10,
-        'linked_to_customer_option' => ['view_timeline_log'],
-    ]);
-
-    $CI->app_tabs->add_project_tab('project_email', [
-        'name'                      => _l('project_email'),
-        'icon'                      => 'fa fa-envelope ',
-        'view'                      => 'admin/projects/project_email',
-        'position'                  => 15,
-        'linked_to_customer_option' => ['view_activity_email'],
-    ]);
-    $CI->app_tabs->add_project_tab('project_proposal', [
-        'name'                      => _l('proposal'),
-        'icon'                      => 'fa fa-exclamation',
-        'view'                      => 'admin/projects/project_proposal',
-        'position'                  => 20,
-        'linked_to_customer_option' => ['view_proposals'],
-    ]);
-    $CI->app_tabs->add_project_tab('project_invoice', [
-        'name'                      => _l('invoice'),
-        'icon'                      => 'fa fa-exclamation',
-        'view'                      => 'admin/projects/project_invoice',
-        'position'                  => 25,
-        'linked_to_customer_option' => ['view_invoices'],
-    ]);
-    $CI->app_tabs->add_project_tab('project_tasks_bycall', [
-        'name'                      => 'Calls',
-        'icon'                      => 'fa fa-check-circle',
-        'view'                      => 'admin/projects/project_tasks_bycall',
-        'position'                  => 30,
-        'linked_to_customer_option' => ['view_tasks'],
-    ]);
+        $CI->app_tabs->add_project_tab('project_tasks', [
+            'name'                      => _l('tasks'),
+            'icon'                      => 'fa fa-check-circle',
+            'view'                      => 'admin/projects/project_tasks',
+            'position'                  => 5,
+            'linked_to_customer_option' => ['view_tasks'],
+        ]);
+    }
+    if (has_permission('items', '', 'view')) {
+        $CI->app_tabs->add_project_tab('project_items', [
+            'name'                      => _l('items'),
+            'icon'                      => 'fa fa-exclamation',
+            'view'                      => 'admin/projects/project_items',
+            'position'                  => 10,
+            'linked_to_customer_option' => ['view_timeline_log'],
+        ]);
+    }
+    if (has_permission('email', '', 'view')) {
+        $CI->app_tabs->add_project_tab('project_email', [
+            'name'                      => _l('project_email'),
+            'icon'                      => 'fa fa-envelope ',
+            'view'                      => 'admin/projects/project_email',
+            'position'                  => 15,
+            'linked_to_customer_option' => ['view_activity_email'],
+        ]);
+    }
+    if (has_permission('proposals', '', 'view')) {
+        $CI->app_tabs->add_project_tab('project_proposal', [
+            'name'                      => _l('proposal'),
+            'icon'                      => 'fa fa-exclamation',
+            'view'                      => 'admin/projects/project_proposal',
+            'position'                  => 20,
+            'linked_to_customer_option' => ['view_proposals'],
+        ]);
+    }
+    if (has_permission('invoices', '', 'view')) {
+        $CI->app_tabs->add_project_tab('project_invoice', [
+            'name'                      => _l('invoice'),
+            'icon'                      => 'fa fa-exclamation',
+            'view'                      => 'admin/projects/project_invoice',
+            'position'                  => 25,
+            'linked_to_customer_option' => ['view_invoices'],
+        ]);
+    }
+    if (has_permission('tasks', '', 'view')) {
+        $CI->app_tabs->add_project_tab('project_tasks_bycall', [
+            'name'                      => 'Calls',
+            'icon'                      => 'fa fa-check-circle',
+            'view'                      => 'admin/projects/project_tasks_bycall',
+            'position'                  => 30,
+            'linked_to_customer_option' => ['view_tasks'],
+        ]);
+    }
     $CI->app_tabs->add_project_tab('project_files', [
         'name'                      => _l('project_files'),
         'icon'                      => 'fa fa-files-o',

@@ -40,6 +40,9 @@ $hasApprovalFlow = $this->workflow_model->getflows('deal_approval', 0, ['service
 <div id="wrapper">
     <?php echo form_hidden('project_id', $project->id) ?>
     <div class="content">
+        <div id="overlay" class="overlay" style="display:none">
+            <div class="spinner"></div>
+        </div>
         <div class="row">
             <div class="col-md-12">
                 <div class="panel_s project-top-panel panel-full">
@@ -75,7 +78,7 @@ $hasApprovalFlow = $this->workflow_model->getflows('deal_approval', 0, ['service
                                                 <div class="input-group date">
                                                     <input type="text" id="name" name="name" class="form-control" value=" <?php echo (isset($project) ? $project->name : 'Deal '); ?>" autocomplete="off" aria-invalid="false">
                                                     <div class="input-group-addon" style="opacity: 1;">
-                                                        <a class=" data_edit_btn" data-val="name"><i class="fa fa-check"></i></a>
+                                                        <a class="data_edit_btn" data-val="name"><i class="fa fa-check"></i></a>
                                                     </div>
                                                 </div>
                                                 <div id="company_exists_info" class="hide"></div>
@@ -97,7 +100,7 @@ $hasApprovalFlow = $this->workflow_model->getflows('deal_approval', 0, ['service
                                                     <div class="input-group date">
                                                         <input type="text" id="project_cost" name="project_cost" class="form-control" value="<?php echo (isset($project) ? $project->project_cost : ''); ?>" autocomplete="off" aria-invalid="false">
                                                         <div class="input-group-addon" style="opacity: 1;">
-                                                            <a class=" data_edit_btn" data-val="project_cost"><i class="fa fa-check"></i></a>
+                                                            <a class="data_edit_btn" data-val="project_cost"><i class="fa fa-check"></i></a>
                                                         </div>
                                                     </div>
 
@@ -131,7 +134,7 @@ $hasApprovalFlow = $this->workflow_model->getflows('deal_approval', 0, ['service
                                                             }
                                                             ?>
                                                         </select>
-                                                        <div class="input-group-addon" style="opacity: 1;"><a class=" data_edit_btn" data-val="teamleader"><i class="fa fa-check"></i></a></div>
+                                                        <div class="input-group-addon" style="opacity: 1;"><a class="data_edit_btn" data-val="teamleader"><i class="fa fa-check"></i></a></div>
                                                     </div>
 
                                                 </div>
@@ -141,7 +144,7 @@ $hasApprovalFlow = $this->workflow_model->getflows('deal_approval', 0, ['service
                                         <?php if (!empty($deal_need_fields) && in_array("pipeline_id", $deal_need_fields)) : ?>
                                             <div class="data_display">
                                                 <span class="text-muted h5">
-                                                    |<i class="fa fa-filter mleft5 mright5" aria-hidden="true"></i><?php echo (isset($pipeline) && isset($pipeline->name)) ? $pipeline->name : ''; ?>
+                                                    |<i class="fa fa-bar-chart mleft5 mright5 fa-flip-vertical fa-rotate-180" aria-hidden="true"></i><?php echo (isset($pipeline) && isset($pipeline->name)) ? $pipeline->name : ''; ?>
                                                 </span>
                                                 <?php if ($can_user_edit == true) { ?>
                                                     <a onclick="changeStage()" class="data_display_btn"><i class="fa fa-pencil"></i></a>
@@ -436,329 +439,6 @@ echo form_hidden('project_percent', $percent);
                 <div class="modal-footer" style="display:flow-root">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary savePipelineStage">Save changes</button>
-                </div>
-                <?php echo form_close(); ?>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="dealproduct_Modal" tabindex="-1" role="dialog" aria-labelledby="dealproduct_ModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document" style="width:90%;">
-        <div class="modal-content">
-            <form id="Dealproduct_form" method='post' name="Dealproduct_form" action="<?php echo admin_url('projects/savedealproducts'); ?>">
-                <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="deallossreasons_ModalLabel"><?php echo _l('AddItemsToDeal'); ?></h5>
-                </div>
-                <div class="modal-body" style="display:inline-block; width:100%;">
-                    <div class="col-md-12 row" style="padding-bottom:13px;">
-                        <div class="col-md-3" style="display:inline-flex">
-                            <span><?php echo _l('dealcurrency'); ?></span>
-                            <span style="padding-left:10px;">
-                                <select class="form-control currencyswitcher" id="currency" name="currency" style="padding:0px 6px; height:23px;">
-                                    <?php
-                                    foreach ($allcurrency as $ac) {
-                                        $selected = '';
-                                        if ($currency == $ac['name']) {
-                                            $selected = 'selected';
-                                        }
-                                    ?>
-                                        <option value="<?php echo $ac['name']; ?>" <?php echo $selected; ?>><?php echo $ac['name']; ?></option>
-                                    <?php  } ?>
-                                </select></span>
-                        </div>
-                        <?php
-                        $checked = '1';
-                        if (isset($dealproducts)) {
-                            foreach ($dealproducts as $pr) {
-                                $checked = $pr['method'];
-                            }
-                        }
-                        ?>
-                        <?php if (isset($dealproducts) && !empty($dealproducts)) { ?>
-                            <input type="hidden" id="product_index" value="<?php echo $productscnt; ?>">
-                            <input type="hidden" name="method" id="method" value="<?php echo $checked; ?>">
-                        <?php } else { ?>
-                            <input type="hidden" id="product_index" value="1">
-                            <input type="hidden" name="method" id="method" value="1">
-                        <?php } ?>
-                        <input type="hidden" id="discount_value" value="<?php echo $discount_value; ?>">
-                        <input type="hidden" id="discount_option" value="<?php echo $discount_option; ?>">
-                        <input type="hidden" id="prject_id" name="project_id" value="<?php echo $project->id; ?>">
-                        <div class="col-md-2" style="display:inline-flex">
-                            <span><input type="radio" id="notax" name="tax" value="notax" <?php if (isset($checked) && $checked == '1') { ?> checked="checked" <?php } ?>></span>
-                            <span style="padding-left:10px;"><?php echo _l('notax'); ?></span>
-                        </div>
-                        <div class="col-md-2" style="display:inline-flex">
-                            <span><input type="radio" id="intax" name="tax" value="intax" <?php if (isset($checked) && $checked == '2') { ?> checked="checked" <?php } ?>></span>
-                            <span style="padding-left:10px;"><?php echo _l('inclusivetax'); ?></span>
-                        </div>
-                        <div class="col-md-2" style="display:inline-flex">
-                            <span><input type="radio" id="extax" name="tax" value="extax" <?php if (isset($checked) && $checked == '3') { ?> checked="checked" <?php } ?>></span>
-                            <span style="padding-left:10px;"><?php echo _l('exclusivetax'); ?></span>
-                        </div>
-                    </div>
-                    <hr style="clear:both;">
-                    <div class="css-table">
-                        <div style="height:40px;clear:both;" class="css-table-header" id="topheading">
-                            <?php echo get_particular_item_headers($pr['method'], $discount_option, $discount_value); ?>
-                        </div>
-
-                        <div class="field_product_wrapper row css-table-body">
-                            <?php if (isset($dealproducts) && !empty($dealproducts)) { ?>
-
-                                <?php
-                                $subtotal = 0.00;
-                                $discount = '';
-                                $tax_txt = '';
-                                $tax_val = '';
-                                $i = 1;
-                                foreach ($dealproducts as $pr) {
-                                    if ($pr['method'] == 1) {
-                                ?>
-                                        <div style="height:40px;clear:both;" class="productdiv css-table-row" id="<?php echo $i; ?>">
-                                            <div class="wcb">
-                                                <input type="hidden" name="no[]" value="<?php echo $i; ?>">
-                                                <input type="hidden" name="status_<?php echo $i; ?>" value="1" class="form-control cbox" <?php if ($pr['status'] == 1) {
-                                                                                                                                                echo 'checked';
-                                                                                                                                            } ?>>
-                                                <select name="product[]" class="form-control" onchange="getdealprodprice(this,<?php echo $i; ?>)">
-                                                    <option value="">--Select Item--</option>
-                                                    <?php
-                                                    foreach ($products as $prod) {
-                                                        $selected = '';
-                                                        if ($prod['id'] == $pr['productid']) {
-                                                            $selected = 'selected';
-                                                        }
-                                                    ?>
-                                                        <option value="<?php echo $prod['id']; ?>" <?php echo $selected; ?>><?php echo $prod['name']; ?></option>
-                                                    <?php  } ?>
-                                                </select>
-                                            </div>
-                                            <?php echo get_particulars_item_ordered_inputs($i, $pr['productid']) ?>
-                                            <div class="">
-                                                <input type="text" name="price[]" value="<?php echo $pr['price']; ?>" placeholder="Price" step="any" onkeypress="return event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)" onchange="price_update(this,<?php echo $i; ?>)" class="form-control" />
-                                            </div>
-                                            <div class="">
-                                                <input type="number" name="qty[]" step="any" onkeypress="return event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)" min="1" placeholder="Qty" value="<?php echo $pr['quantity']; ?>" onchange="qty_total(this,<?php echo $i; ?>)" class="form-control" />
-                                            </div>
-                                            <?php if ($discount_value == 1 || $discount_option == 1) { ?>
-                                                <div class="">
-                                                    <input type="number" name="discount[]" min="0" placeholder="Discount" value="<?php echo $pr['discount']; ?>" step="any" onkeypress="return event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)" onchange="discount_total(this,<?php echo $i; ?>)" class="form-control" />
-                                                </div>
-                                            <?php } ?>
-                                            <div class="">
-                                                <input type="number" name="total[]" value="<?php echo $pr['total_price']; ?>" placeholder="Total" readonly class="form-control" />
-                                            </div>
-                                            <span class="dropdown open">
-                                                <button type="button" class="btn btn-primary " data-toggle="dropdown" aria-expanded="true">...</button>
-                                                <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-                                                    <li></li>
-                                                    <?php /* <li><a class="dropdown-item" href="#" onClick="gotoprod(<?php echo $i; ?>);">Go to Product</a></li>*/ ?>
-                                                    <li><a class="dropdown-item" href="<?php echo base_url() . 'admin/invoice_items'; ?>">Go to Items</a></li>
-                                                    <li><a href="javascript:void(0);" class="dropdown-item removeproduct_button" title="Remove field">Remove</a></li>
-                                                    <?php /*<li><a class="dropdown-item" id="variationbtn_<?php echo $i; ?>" href="#" onClick="selectVariation(<?php echo $i; ?>);">Select Variation</a></li>*/ ?>
-                                                </ul>
-                                            </span>
-                                            <?php
-                                            if ($pr['variation']) { ?>
-                                                <div class="col-md-2" id="variation_<?php echo $i; ?>" style="width: 23.3%;margin: 4px 19px 15px;clear:both;">
-                                                    <label>VARIATION</label>
-                                                    <select name="variation_<?php echo $i; ?>" class="form-control" onchange="getvariationprodprice(this,<?php echo $i; ?>)">
-                                                        <option value="">--Select Variation--</option>
-
-                                                        <?php
-                                                        $CI = &get_instance();
-                                                        $vari = $CI->prodgetvaraiton($pr['productid'], $pr['currency']);
-                                                        foreach ($vari as $val) {
-                                                            $selected = '';
-                                                            if ($val["id"] == $pr['variation']) {
-                                                                $selected = 'selected';
-                                                            }
-                                                            echo '<option value="' . $val["id"] . '" ' . $selected . '>' . $val["name"] . '</option>';
-                                                        }
-                                                        ?>
-                                                    </select>
-                                                </div>
-
-                                            <?php
-                                                echo '<style>#variationbtn_' . $i . '{pointer-events: none; cursor: default;}</style>';
-                                            }
-                                            ?>
-                                        </div>
-                                    <?php
-
-                                        $i++;
-                                    }
-                                    if ($pr['method'] == 2 || $pr['method'] == 3) {
-                                    ?>
-                                        <div style="height:40px;clear:both;" class="productdiv css-table-row" id="<?php echo $i; ?>">
-                                            <div class="wcb" style="width:20%;">
-                                                <input type="hidden" name="no[]" value="<?php echo $i; ?>">
-                                                <input type="hidden" name="status_<?php echo $i; ?>" value="1" class="form-control cbox" <?php if ($pr['status'] == 1) {
-                                                                                                                                                echo 'checked';
-                                                                                                                                            } ?>>
-                                                <select name="product[]" class="form-control" onchange="getdealprodprice(this,<?php echo $i; ?>)">
-                                                    <option value="">--Select Item--</option>
-                                                    <?php
-                                                    foreach ($products as $prod) {
-                                                        $selected = '';
-                                                        if ($prod['id'] == $pr['productid']) {
-                                                            $selected = 'selected';
-                                                        }
-                                                    ?>
-                                                        <option value="<?php echo $prod['id']; ?>" <?php echo $selected; ?>><?php echo $prod['name']; ?></option>
-                                                    <?php  } ?>
-                                                </select>
-                                            </div>
-                                            <?php echo get_particulars_item_ordered_inputs($i, $pr['productid']) ?>
-                                            <div class="">
-                                                <input type="text" name="price[]" value="<?php echo $pr['price']; ?>" placeholder="Price" step="any" onkeypress="return event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)" onchange="price_update(this,<?php echo $i; ?>)" class="form-control" />
-                                            </div>
-                                            <div class="">
-                                                <input type="number" name="qty[]" min="1" placeholder="Qty" value="<?php echo $pr['quantity']; ?>" onchange="qty_total(this,<?php echo $i; ?>)" class="form-control" />
-                                            </div>
-                                            <div class="">
-                                                <input type="number" name="tax[]" min="0" placeholder="Tax" step="any" onkeypress="return event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)" value="<?php echo $pr['tax']; ?>" onchange="tax_total(this,<?php echo $i; ?>)" class="form-control" />
-                                            </div>
-                                            <?php if ($discount_value == 1 || $discount_option == 1) { ?>
-                                                <div class="">
-                                                    <input type="number" name="discount[]" min="0" placeholder="Discount" step="any" onkeypress="return event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)" value="<?php echo $pr['discount']; ?>" onchange="discount_total(this,<?php echo $i; ?>)" class="form-control" />
-                                                </div>
-                                            <?php } ?>
-                                            <div class="">
-                                                <input type="number" name="total[]" value="<?php echo $pr['total_price']; ?>" placeholder="Total" readonly class="form-control" />
-                                            </div>
-                                            <span class="dropdown open">
-                                                <button type="button" class="btn btn-primary " data-toggle="dropdown" aria-expanded="true">...</button>
-                                                <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-                                                    <li></li>
-                                                    <?php /*  <li><a class="dropdown-item" href="#" onClick="gotoprod(<?php echo $i; ?>);">Go to Product</a></li>*/ ?>
-                                                    <li><a class="dropdown-item" href="<?php echo base_url() . 'admin/invoice_items'; ?>">Go to Items</a></li>
-                                                    <li><a href="javascript:void(0);" class="dropdown-item removeproduct_button" title="Remove field">Remove</a></li>
-                                                    <?php /* <li><a class="dropdown-item" id="variationbtn_<?php echo $i; ?>" href="#" onClick="selectVariation(<?php echo $i; ?>);">Select Variation</a></li>*/ ?>
-                                                </ul>
-                                            </span>
-                                            <?php
-                                            if ($pr['variation']) { ?>
-                                                <div class="" id="variation_<?php echo $i; ?>" style="width: 18.7%;margin: 4px 15px 15px;clear:both;">
-                                                    <label>VARIATION</label>
-                                                    <select name="variation_<?php echo $i; ?>" class="form-control" onchange="getvariationprodprice(this,<?php echo $i; ?>)">
-                                                        <option value="">--Select Variation--</option>
-
-                                                        <?php
-                                                        $CI = &get_instance();
-                                                        $vari = $CI->prodgetvaraiton($pr['productid'], $pr['currency']);
-                                                        foreach ($vari as $val) {
-                                                            $selected = '';
-                                                            if ($val["id"] == $pr['variation']) {
-                                                                $selected = 'selected';
-                                                            }
-                                                            echo '<option value="' . $val["id"] . '" ' . $selected . '>' . $val["name"] . '</option>';
-                                                        }
-                                                        ?>
-                                                    </select>
-                                                </div>
-                                            <?php
-                                                echo '<style>#variationbtn_' . $i . '{pointer-events: none; cursor: default;}</style>';
-                                            }
-                                            ?>
-                                        </div>
-
-                                <?php
-                                        if ($pr['tax'] && $pr['tax'] > 0) {
-                                            $dec1 = ($pr['tax'] / 100); //its convert 10 into 0.10
-                                            $mult1 = $pr['total_price'] * $dec1; // gives the value for subtract from main value
-                                            if ($pr['method'] == 2) {
-                                                $tax_txt .= '<p class="txt_' . $i . '"> Includes Tax (' . $pr['tax'] . '%)</p>';
-                                            }
-                                            if ($pr['method'] == 3) {
-                                                $tax_txt .= '<p class="txt_' . $i . '"> Excludes Tax (' . $pr['tax'] . '%)</p>';
-                                            }
-                                            $tax_val .= '<p class="amt_' . $i . '"> ' . number_format($mult1, 2) . '</p>';
-                                        }
-
-                                        $i++;
-                                    }
-                                    $subtotal = $subtotal + $pr['total_price'];
-                                    if ($pr['discount'] && $pr['discount'] > 0) {
-                                        $dec = ($pr['discount'] / 100); //its convert 10 into 0.10
-                                        $mult = ($pr['price'] * $pr['quantity']) * $dec; // gives the value for subtract from main value
-                                        $discount .= ' ' . number_format($mult, 2) . ',';
-                                    }
-                                } ?>
-
-                                <?php
-                                if ($discount) {
-                                    $discount = '<small>(Includes discount of ' . substr($discount, 0, -1) . ')</small>';
-                                }
-                                $proj_cost = $project->project_cost;
-                            } else {
-                                ?>
-                                <div style="height:40px;clear:both;" class="productdiv css-table-row" id="0">
-                                    <div class="wcb">
-                                        <input type="hidden" name="no[]" value="0">
-                                        <input type="hidden" name="status_0" value="1" class="form-control cbox">
-                                        <select name="product[]" class="form-control" onchange="getdealprodprice(this,0)">
-                                            <option value="">--Select Item--</option>
-                                            <?php
-                                            foreach ($products as $prod) {
-                                            ?>
-                                                <option value="<?php echo $prod['id']; ?>"><?php echo $prod['name']; ?></option>
-                                            <?php  } ?>
-                                        </select>
-                                    </div>
-                                    <?php echo get_particulars_item_ordered_inputs() ?>
-                                    <div class="">
-                                        <input type="text" name="price[]" value="" placeholder="Price" step="any" onkeypress="return event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)" onchange="price_update(this,0)" class="form-control" />
-                                    </div>
-                                    <div class="">
-                                        <input type="number" name="qty[]" min="1" placeholder="Qty" step="any" onkeypress="return event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)" value="" onchange="qty_total(this,0)" class="form-control" />
-                                    </div>
-                                    <?php if ($discount_value == 1 || $discount_option == 1) { ?>
-                                        <div class="">
-                                            <input type="number" name="discount[]" min="0" placeholder="Discount" step="any" onkeypress="return event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)" value="" onchange="discount_total(this,0)" class="form-control" />
-                                        </div>
-                                    <?php } ?>
-                                    <div class="">
-                                        <input type="number" name="total[]" value="" placeholder="Total" readonly class="form-control" />
-                                    </div>
-                                    <!-- <div class="col-md-1">
-                        </div> -->
-                                    <span class="dropdown open">
-                                        <button type="button" class="btn btn-primary " data-toggle="dropdown" aria-expanded="true">...</button>
-                                        <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-                                            <li></li>
-                                            <?php /* <li><a class="dropdown-item" href="#" onClick="gotoprod(0);">Go to Product</a></li>*/ ?>
-                                            <li><a class="dropdown-item" href="<?php echo base_url() . 'admin/invoice_items'; ?>">Go to Items</a></li>
-                                            <li><a href="javascript:void(0);" class="dropdown-item removeproduct_button" title="Remove field">Remove</a></li>
-                                            <?php /* <li><a class="dropdown-item" id="variationbtn_0" href="#" onClick="selectVariation(0);">Select Variation</a></li>*/ ?>
-                                        </ul>
-                                    </span>
-                                </div>
-                            <?php
-                                $proj_cost = 0;
-                            } ?>
-                        </div>
-                        <a href="javascript:void(0);" class="editproduts_notax_btn row" title="Add field" style="position:relative; top:10px; left:15px; clear:both; float:left; height:40px;"><i class="fa fa-plus"></i> Add a new line</a>
-                        <div class="css-table-row" id="particularsrowfooter">
-                            <div class="text-right" style="padding-top:30px">
-                                <span id="stxt">
-                                    <p>Subtotal <?php echo $discount; ?></p>
-                                </span><span id="suptotaltxt"><?php echo $tax_txt; ?></span><b>Total</b>
-                            </div>
-                            <div class="text-right" style="padding-top:30px"><span id="stotal">
-                                    <p><?php echo number_format($subtotal, 2); ?></p>
-                                </span><span id="suptotal"><?php echo $tax_val; ?></span><b><span id="grandtotal"><?php echo number_format($proj_cost, 2); ?></span></b>
-                            </div>
-                        </div>
-                        <input type="hidden" name="grandtotal" id="gtot" value="<?php echo $proj_cost; ?>">
-                    </div>
-
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Save changes</button>
                 </div>
                 <?php echo form_close(); ?>
         </div>
@@ -2723,6 +2403,7 @@ echo form_hidden('project_percent', $percent);
             $('.' + f + ' .data_edit').show();
         });
         $('.data_edit_btn').click(function(e) {
+            document.getElementById('overlay').style.display = '';
             var f = $(this).attr("data-val");
             var data = {
                 project_id: <?php echo ($project->id); ?>,
@@ -2969,6 +2650,7 @@ echo form_hidden('project_percent', $percent);
     });
 
     function changeProjectStatus(projectId, statusId) {
+        document.getElementById('overlay').style.display = '';
         $.ajax({
             type: 'POST',
             url: "<?php echo admin_url('projects/update_project_status') ?>",

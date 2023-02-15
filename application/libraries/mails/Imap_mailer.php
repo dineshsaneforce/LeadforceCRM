@@ -571,6 +571,8 @@ class Imap_mailer
         $selects =array('uid','id','from_email','mail_to','subject','attachements','message_id','mail_by','folder','date','udate','has_attachments');
         if($type =='lead'){
             $this->CI->db->where('lead_id', $type_id);
+        }elseif($type =='project'){
+            $this->CI->db->where('project_id', $type_id);
         }
         $localmailstorageselects =$selects;
         $localmailstorageselects[] ='0 as local_id';
@@ -588,6 +590,8 @@ class Imap_mailer
         
         if($type =='lead'){
             $this->CI->db->where('lead_id', $type_id);
+        }elseif($type =='project'){
+            $this->CI->db->where('project_id', $type_id);
         }
         $this->CI->db->from(db_prefix().'reply');
         $subQuery2 = $this->CI->db->get_compiled_select();

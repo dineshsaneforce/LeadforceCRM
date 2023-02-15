@@ -152,7 +152,7 @@ $hasApprovalFlow = $this->workflow_model->getflows('deal_approval', 0, ['service
                </div>
                <div class="media-body">
 
-                  <h5 class="media-heading mtop5" style="width:auto; float:left;"><a href="<?php echo $can_user_edit ? admin_url('clients/view_contact/' . $contact["contacts_id"]) : '#'; ?>"><?php echo get_contact_full_name($contact['contacts_id']); ?></a>
+                  <h5 class="media-heading mtop5" style="width:auto; float:left;"><a class="h5" href="<?php echo $can_user_edit ? admin_url('clients/view_contact/' . $contact["contacts_id"]) : '#'; ?>"><?php echo get_contact_full_name($contact['contacts_id']); ?></a>
 
                      <?php if ((has_permission('projects', '', 'edit') || has_permission('projects', '', 'create')) && $contact['is_primary'] == 0) { ?>
                         <?php if ($can_user_edit == true) { ?>
@@ -208,9 +208,9 @@ $hasApprovalFlow = $this->workflow_model->getflows('deal_approval', 0, ['service
             </div>
             <div class="media-body">
 
-               <h5 class="media-heading mtop5"><a href="<?php echo $can_user_edit ? admin_url('staff/member/' . $member["staff_id"]) : '#'; ?>"><?php echo get_staff_full_name($member['staff_id']); ?></a>
+               <h5 class="media-heading mtop5"><a class="h5" href="<?php echo $can_user_edit ? admin_url('staff/member/' . $member["staff_id"]) : '#'; ?>"><?php echo get_staff_full_name($member['staff_id']); ?></a>
                   <?php if (has_permission('projects', '', 'create') || $member['staff_id'] == get_staff_user_id()) { ?>
-                     <br /><small class="text-muted"><?php echo _l('total_logged_hours_by_staff') . ': ' . seconds_to_time_format($member['total_logged_time']); ?></small>
+                     <!-- <br /><small class="text-muted"><?php echo _l('total_logged_hours_by_staff') . ': ' . seconds_to_time_format($member['total_logged_time']); ?></small> -->
                   <?php } ?>
 
                   <?php if (has_permission('projects', '', 'edit') || has_permission('projects', '', 'create')) { ?>

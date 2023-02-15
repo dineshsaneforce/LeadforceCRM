@@ -950,7 +950,6 @@
                 });
 
                 $('select[name="status"]').on('change', function() {
-                    alert($(this).val());
                     var status = $(this).val();
                     var mark_all_tasks_completed = $('.mark_all_tasks_as_completed');
                     var notify_project_members_status_change = $('.notify_project_members_status_change');

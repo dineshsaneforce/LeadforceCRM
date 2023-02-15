@@ -3344,6 +3344,8 @@ class Projects_model extends App_Model
         $this->db->join(db_prefix() . 'pipeline', db_prefix() . 'pipeline.id=' . db_prefix() . 'projects.pipeline_id', 'left');
         $this->db->where(db_prefix() . 'projects.status', $status);
         $this->db->where(db_prefix() . 'projects.deleted_status', 0);
+
+        $this->db->where(db_prefix().'projects.approved',1);
         if (empty($_SESSION['member'])) {
             if ($my_staffids){
                 $this->db->where('((' . db_prefix() . 'projects.id IN (SELECT ' . db_prefix() . 'projects.id FROM ' . db_prefix() . 'projects join ' . db_prefix() . 'project_members  on ' . db_prefix() . 'project_members.project_id = ' . db_prefix() . 'projects.id WHERE ' . db_prefix() . 'project_members.staff_id in (' . implode(',',$my_staffids) . '))) OR  ' . db_prefix() . 'projects.teamleader in (' . implode(',',$my_staffids) . '))');
@@ -3449,6 +3451,7 @@ class Projects_model extends App_Model
         $this->db->join(db_prefix() . 'pipeline', db_prefix() . 'pipeline.id=' . db_prefix() . 'projects.pipeline_id', 'left');
         $this->db->where(db_prefix() . 'projects.status', $status);
         $this->db->where(db_prefix() . 'projects.deleted_status', 0);
+        $this->db->where(db_prefix().'projects.approved',1);
         if (empty($_SESSION['member'])) {
             if ($my_staffids){
                 $this->db->where('((' . db_prefix() . 'projects.id IN (SELECT ' . db_prefix() . 'projects.id FROM ' . db_prefix() . 'projects join ' . db_prefix() . 'project_members  on ' . db_prefix() . 'project_members.project_id = ' . db_prefix() . 'projects.id WHERE ' . db_prefix() . 'project_members.staff_id in (' . implode(',',$my_staffids) . '))) OR  ' . db_prefix() . 'projects.teamleader in (' . implode(',',$my_staffids) . '))');
@@ -5124,5 +5127,10 @@ public function all_activiites()
         }
 
         return $count;
+    }
+
+    public function get_emails($lead_id)
+    {
+        return $this->imap_mailer->getLocalMessages('project',$lead_id);
     }
 }

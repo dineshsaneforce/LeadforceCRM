@@ -869,45 +869,18 @@ class Projects extends AdminController
 					$data['default_val'] = $templates[0]['description'];
 				}
 				
-				$ch_emails = $this->projects_model->get_email($id);
-				if(empty($_REQUEST['page_no'])){
-					$data['emails'] = $this->projects_model->get_email($id,$row_per_page,0);
-					$data['email_count'] = $this->projects_model->count_email($staffid,$id,$row_per_page,0);
-				}
-				else{
-					$ch_cur_page = ($_REQUEST['page_no']-1)*$row_per_page;
-					$data['emails'] = $this->projects_model->get_email($id,$row_per_page,$ch_cur_page);
-					$data['email_count'] = $this->projects_model->count_email($staffid,$id,$row_per_page,$ch_cur_page);
-				}
-				$this->load->library('pagination');
-				
-				$allcount = count($ch_emails);
-				$config['base_url'] = base_url().'admin/projects/view/'.$id.'?group=project_email';
-				$config['use_page_numbers'] = TRUE;
-				$config['total_rows'] = $allcount;
-				$config['per_page'] = $row_per_page;
+
 		 
-				$config['full_tag_open']    = '<div class="pagging text-center"><nav><ul class="pagination">';
-				$config['full_tag_close']   = '</ul></nav></div>';
-				$config['num_tag_open']     = '<li class="page-item"><span class="page-link">';
-				$config['num_tag_close']    = '</span></li>';
-				$config['cur_tag_open']     = '<li class="page-item active"><span class="page-link">';
-				$config['cur_tag_close']    = '<span class="sr-only">(current)</span></span></li>';
-				$config['next_tag_open']    = '<li class="page-item"><span class="page-link">';
-				$config['next_tag_close']  = '<span aria-hidden="true"></span></span></li>';
-				$config['prev_tag_open']    = '<li class="page-item"><span class="page-link">';
-				$config['prev_tag_close']  = '</span></li>';
-				$config['first_tag_open']   = '<li class="page-item"><span class="page-link">';
-				$config['first_tag_close'] = '</span></li>';
-				$config['last_tag_open']    = '<li class="page-item"><span class="page-link">';
-				$config['last_tag_close']  = '</span></li>';
-				$config['enable_query_strings'] = TRUE;
-				$config['page_query_string'] = TRUE;
-				 $config['query_string_segment'] = 'page_no';
-				$config['num_links'] = 5;
-		 
-				$this->pagination->initialize($config);
-				$data['pagination'] = $this->pagination->create_links();
+
+
+                $data ['email_composer_rel_type'] ='project';
+                $data ['email_composer_rel_id'] =$project->id;
+                $data ['email_composer_conatct_id'] ='';
+                $data ['email_composer_contact_email'] ='';
+                if($ch_contact){
+                    $data ['email_composer_conatct_id'] =$ch_contact->id;
+                    $data ['email_composer_contact_email'] =$ch_contact->email;
+                }
             }
 
             // Discussions
