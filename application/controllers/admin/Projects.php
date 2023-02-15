@@ -1296,48 +1296,34 @@ class Projects extends AdminController
             if($my_staffids) {
                 $data['projects'] = $this->db->query('SELECT '.$project_fields.' FROM tblprojects where ((teamleader in (' . implode(',',$my_staffids) . ')) OR id IN (select project_id from tblproject_members where staff_id in (' . implode(',',$my_staffids) . '))) AND name like "%'.$gsearch.'%" ')->result_array();
             } else {
-                $data['projects'] = $this->db->query('SELECT '.$project_fields.' FROM tblprojects where ((teamleader = "'.get_staff_user_id().'") OR id IN (select project_id from tblproject_members where staff_id="'.get_staff_user_id().'")) AND name like "%'.$gsearch.'%" ');
+                $data['projects'] = $this->db->query('SELECT '.$project_fields.' FROM tblprojects where ((teamleader = "'.get_staff_user_id().'") OR id IN (select project_id from tblproject_members where staff_id="'.get_staff_user_id().'")) AND name like "%'.$gsearch.'%" ')->result_array();
             }
-        } else {
-            $data['projects'] =$this->db->query("SELECT  country.short_name , clients.company , clients.zip, clients.address,clients.state, clients.country,clients.city,clients.phonenumber
-            FROM `tblclients` as clients
-            LEFT JOIN `tblcountries` country ON clients.country = country.country_id
-            WHERE clients.active = 1 AND (
-              clients.company LIKE '%".$gsearch."%' OR 
-              clients.zip LIKE '%".$gsearch."%' OR 
-              clients.address LIKE '%".$gsearch."%' OR 
-              clients.state LIKE '%".$gsearch."%' OR 
-              clients.country LIKE '%".$gsearch."%' OR 
-              clients.city LIKE '%".$gsearch."%' OR 
-              clients.phonenumber LIKE '%".$gsearch."%'
-            ) AND clients.company != ''")->result_array();
-        }
+        } 
+            $data['projects'] =$this->db->query("SELECT projects.id, projects.name projectname,  projects.teamleader , projects.pipeline_id, projects.clientid,pipeline.name pipelinename, client.company ,staff.firstname, staff.lastname
+            FROM `tblprojects` as projects
+            LEFT JOIN `tblpipeline` pipeline ON projects.pipeline_id = pipeline.id
+            LEFT JOIN `tblclients` AS client ON projects.clientid=client.userid
+            LEFT JOIN `tblstaff` staff ON projects.teamleader= staff.staffid
+            WHERE(( projects.name  LIKE '%".$gsearch."%' OR
+              projects.teamleader LIKE '%".$gsearch."%' OR 
+              projects.pipeline_id LIKE '%".$gsearch."%' OR 
+              projects.clientid LIKE '%".$gsearch."%'
+            ) AND projects.teamleader != '')")->result_array();
         
-    $client_fields = "userid,company,vat,phonenumber,country.short_name,country,city,zip,state,address,website,datecreated,active,leadid,billing_street,billing_city,billing_state,billing_zip,billing_country,shipping_street,shipping_city,shipping_state,shipping_zip,shipping_country,longitude,latitude,default_language,default_currency,show_primary_contact,stripe_id,registration_confirmed,addedfrom,deleted_status";
-    $client_fields1 =  "clients.company,clients.zip ,clients.address,clients.state, clients.country,clients.city, clients.phonenumber";
+    $client_condition ="";
     if(!is_admin(get_staff_user_id())) {
-            if($my_staffids) {
-                $data['clients'] = $this->db->query('SELECT '.$client_fields.' FROM tblclients as clients LEFT JOIN `tblcountries` country ON clients.country = country.country_id where ((addedfrom in (' . implode(',',$my_staffids) . ')) OR userid IN (select clientid from tblprojects where id IN (select project_id from tblproject_members where staff_id in (' . implode(',',$my_staffids) . '))) OR userid IN ( select clientid from tblprojects where teamleader in (' . implode(',',$my_staffids) . '))) AND active = 1 AND '.$client_fields1.'(company LIKE "%'.$gsearch.'%" OR  zip LIKE "%'.$gsearch. '%" OR  address LIKE "%' .$gsearch. '%" OR  state LIKE "%'.$gsearch. '%" OR  country LIKE "%'.$gsearch. '%" OR city LIKE "%'.$gsearch. '%" OR phonenumber LIKE "%'.$gsearch. '%")')->result_array();
-            } else {
-                $data['clients'] = $this->db->query('SELECT '.$client_fields.' FROM tblclients as clients LEFT JOIN `tblcountries` country ON clients.country = country.country_id where ((addedfrom="'.get_staff_user_id().'") OR userid IN (select clientid from tblprojects where id IN (select project_id from tblproject_members where staff_id="'.get_staff_user_id().'")) OR userid IN ( select clientid from tblprojects where teamleader = "'.get_staff_user_id().'")) AND active = 1 AND '.$client_fields1.'(company LIKE "%' .$gsearch. '%" OR  zip LIKE "%'.$gsearch. '%" OR  address LIKE "%'.$gsearch. '%" OR  state LIKE "%'.$gsearch. '%" OR  country LIKE "%'.$gsearch. '%" OR city LIKE "%'.$gsearch. '%" OR phonenumber LIKE "%'.$gsearch. '%")')->result_array();
-            }
-            
-        } else {
+        if($my_staffids) {
+            $client_condition =' AND ((addedfrom in (' . implode(',',$my_staffids) . ')) OR userid IN (select clientid from tblprojects where id IN (select project_id from tblproject_members where staff_id in (' . implode(',',$my_staffids) . '))) OR userid IN ( select clientid from tblprojects where teamleader in (' . implode(',',$my_staffids) . '))) AND active = 1';
 
-            $data['clients'] = $this->db->query("SELECT  country.short_name , clients.company , clients.zip, clients.address,clients.state, clients.country,clients.city,clients.phonenumber
+        } else {            
+            $client_condition =' AND ((addedfrom="'.get_staff_user_id().'") OR userid IN (select clientid from tblprojects where id IN (select project_id from tblproject_members where staff_id="'.get_staff_user_id().'")) OR userid IN ( select clientid from tblprojects where teamleader = "'.get_staff_user_id().'")) AND active = 1';
+        }
+    }
+        $data['clients'] = $this->db->query("SELECT clients.userid, country.short_name , clients.company , clients.zip, clients.address,clients.state, clients.country,clients.city,clients.phonenumber
             FROM `tblclients` as clients
             LEFT JOIN `tblcountries` country ON clients.country = country.country_id
-            WHERE clients.active = 1 AND (
-              clients.company LIKE '%".$gsearch."%' OR 
-              clients.zip LIKE '%".$gsearch."%' OR 
-              clients.address LIKE '%".$gsearch."%' OR 
-              clients.state LIKE '%".$gsearch."%' OR 
-              clients.country LIKE '%".$gsearch."%' OR 
-              clients.city LIKE '%".$gsearch."%' OR 
-              clients.phonenumber LIKE '%".$gsearch."%'
-            ) AND clients.company != ''")->result_array();
+            WHERE (clients.active = 1 AND (clients.company LIKE '%".$gsearch."%' OR clients.zip LIKE '%".$gsearch."%' OR clients.address LIKE '%".$gsearch."%' OR clients.state LIKE '%".$gsearch."%' OR clients.country LIKE '%".$gsearch."%' OR clients.city LIKE '%".$gsearch."%' OR clients.phonenumber LIKE '%".$gsearch."%') AND clients.company != '')".$client_condition)->result_array();
            
-        }
 
 
 
@@ -1360,7 +1346,7 @@ class Projects extends AdminController
             $data['contacts'] = $this->db->query($where_summary_inactiveperson_qry)->result_array();
         } else {
            
-            $data['contacts'] = $this->clients_model->get_contacts('',[
+            $data['contacts'] = $this->clients_model->get_merged_contacts('',[
                 db_prefix() .'contacts.active' => 1," (".
                 db_prefix() ."contacts.firstname like '%".$gsearch."%' OR ".
                 db_prefix() ."contacts.email like '%".$gsearch."%' OR " .
@@ -1384,18 +1370,22 @@ class Projects extends AdminController
               $lead['phonenumber'] = highlightSearchTerm($lead['phonenumber'], $gsearch);
             
               $name = $lead['name'];
-            
+              $lead_company = (!empty($lead['company'])) ? '<i class="fa fa-building mr-2"></i>' ." ".$lead['company'] : '';
               $email = (!empty($lead['email'])) ? '<i class="fa fa-envelope mr-2"></i>' ." ".$lead['email'] : '';
               $phonenumber = (!empty($lead['phonenumber'])) ? '<i class="fa fa-phone mr-2"></i>' . " ".$lead['phonenumber'] : '';
-            
+              $separator = '';
+              if (!empty($email) && !empty($phonenumber)) {
+                  $separator = ' | ';
+              }
+              $contact_details = $email . $separator . $phonenumber;
               $data['leads_html'] .= '<li class="relative notification-wrapper thsr-lead">
                 <div class="media">
                   <div class="media-body">
                     <h5 class="media-heading mtop5">
                       <a href="'.admin_url('leads/lead/'.$lead["id"]).'">'.$name.'</a>                                
                     </h5>
-                    <p>'.$email.'</p>
-                    <p>'.$phonenumber.'</p>
+                    <p>'.$lead_company.'</p>
+                    <p>'.$contact_details.'</p>
               </div>
                 </div>
               </li>';
@@ -1406,19 +1396,19 @@ class Projects extends AdminController
            $projects_html = '';
 
             foreach($data['projects'] as $project) {   
-              $project['name'] = highlightSearchTerm($project['name'],$gsearch);
+              $project['name'] = highlightSearchTerm($project['projectname'],$gsearch);
 
-              $teamleader =(!empty($project['teamleader'])) ? '<i class="fa fa-user" mr-2"></i>' . " ".$project['teamleader']: '';
-              $pipeline_id =(!empty($project['pipeline_id'])) ?$project['pipeline_id']: '';
-              $clientid =(!empty($project['clientid'])) ?'<i class="fa fa-building" mr-2"></i>' . " ".$project['clientid']: '';
+              $teamleader =(!empty($project['teamleader'])) ? '<i class="fa fa-user" mr-2"></i>' . " ".$project['firstname']." ".$project['lastname']: '';
+              $pipeline_id =(!empty($project['pipeline_id'])) ?'<i class="fa fa-industry" mr-2"></i>' . " ".$project['pipelinename']: '';
+              $clientid =(!empty($project['clientid'])) ?'<i class="fa fa-building" mr-2"></i>' . " ".$project['company']: '';
               $data['projects_html'] .= '<li class="relative notification-wrapper thsr-project">
                 <div class="media">
                   <div class="media-body">
                     <h5 class="media-heading mtop5">
                       <a href="'.admin_url('projects/view/'.$project["id"]).'">'.$project['name'].'</a>
                     </h5>
-                    <p>'.$teamleader.'</p>
-                    <p>'.$clientid." ".$pipeline_id.'</p>
+                    <p>'.$clientid.'</p>
+                    <p>'.$teamleader." ".$pipeline_id.'</p>
                     
                   </div>
                 </div>
@@ -1467,23 +1457,28 @@ class Projects extends AdminController
                 $contact['firstname'] = highlightSearchTerm($contact['firstname'], $gsearch);
                 $contact['email'] = highlightSearchTerm($contact['email'], $gsearch);
                 $contact['phonenumber'] = highlightSearchTerm($contact['phonenumber'], $gsearch);
-                $contact_company = $contact['firstname'];
-                $email = (!empty($contact['email'])) ? '<i class="fa fa-envelope mr-2"></i>' ." ".$contact['email'] : '';
-                $phonenumber = (!empty($contact['phonenumber'])) ? '<i class="fa fa-phone mr-2"></i>' . " ".$contact['phonenumber'] : '';
+                $companyname = (!empty($contact['userids'])||!empty($contact['userid']) ) ? '<i class="fa fa-building" mr-2"></i>' . " ".$contact['company']: '';
+                $email = (!empty($contact['email'])) ? '<i class="fa fa-envelope mr-2"></i>' . " " . $contact['email'] : '';
+                $phonenumber = (!empty($contact['phonenumber'])) ? '<i class="fa fa-phone mr-2"></i>' . " " . $contact['phonenumber'] : '';
+                $separator = '';
+                if (!empty($email) && !empty($phonenumber)) {
+                    $separator = ' | ';
+                }
+                $contact_details = $email . $separator . $phonenumber;
                 $data['contacts_html'] .= 
-            '<li class="relative notification-wrapper thsr-contact">
-                <div class="media">
-                    <div class="media-body">
-                        <h5 class="media-heading mtop5">
-                            <a href="'.admin_url('clients/view_contact/'.$contact["id"]).'">'.$contact['firstname'].'</a>
-                        </h5>
-                        <p>'.$email.'</p>
-                        <p>'.$phonenumber.'</p>
-                     </div>
-                </div>
-            </li>';
+                '<li class="relative notification-wrapper thsr-contact">
+                    <div class="media">
+                        <div class="media-body">
+                            <h5 class="media-heading mtop5">
+                                <a href="'.admin_url('clients/view_contact/'.$contact["id"]).'">'.$contact['firstname'].'</a>
+                            </h5>
+                            <p>'.$companyname.'</p>
+                            <p>'.$contact_details.'</p>
+                         </div>
+                    </div>
+                </li>';                
             }
-
+            
 		$data['all_html'] .= $data['contacts_html'];
         if(!empty($gsearch)) {
 

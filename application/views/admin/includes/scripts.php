@@ -66,7 +66,6 @@ if(get_option('pusher_realtime_notifications') == 1){ ?>
 		   $("#THprojects").hide().removeClass('in');
 		   $("#THclients").hide().removeClass('in');
        $("#THleads").hide().removeClass('in');
-		  //  $("ul.nav.search-tabs li").removeClass('active');
        $('.search-tabs li').removeClass('active');
 
 		   $(this).parent().addClass('active');

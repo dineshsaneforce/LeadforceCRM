@@ -88,7 +88,23 @@ class Clients_model extends App_Model {
         return $this->db->get(db_prefix() . 'contacts')->result_array();
     }
 
-    public function get_orgdetails_byname($name = '') {
+    public function get_merged_contacts($customer_id = '', $where = ['active' => 1])
+    {
+        if (!is_admin(get_staff_user_id())) {
+            $this->db->where('(addedfrom = ' . get_staff_user_id() . ' OR userid IN (SELECT userid FROM clients WHERE addedfrom = ' . get_staff_user_id() . ') OR contacts_id IN (SELECT contacts_id FROM project_contacts WHERE project_id IN (SELECT project_id FROM project_members WHERE staff_id = ' . get_staff_user_id() . ')) OR contacts_id IN (SELECT contacts_id FROM project_contacts WHERE project_id IN (SELECT id FROM projects WHERE teamleader = ' . get_staff_user_id() . ')))');
+        }
+        $this->db->where($where);
+        if ($customer_id != '') {
+            $d = "( userid='$customer_id')";
+            $this->db->where($d);
+        }
+        $this->db->select('client.company,contacts.userid,client.userid,contacts.firstname,contacts.email,contacts.phonenumber,contacts.id');
+        $this->db->from(`tblcontacts`);
+        $this->db->join('clients AS client', 'contacts.userids=client.userid', 'left');
+        // pre($this->db->get_compiled_select(db_prefix() . 'contacts'));
+        return $this->db->get(db_prefix() . 'contacts')->result_array();
+    }
+        public function get_orgdetails_byname($name = '') {
         $this->db->where('company',$name);
         return $this->db->get(db_prefix() . 'clients')->result_array();
     }

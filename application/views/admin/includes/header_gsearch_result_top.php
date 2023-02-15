@@ -30,6 +30,11 @@ p {
     margin: 0 0 10px;
     font-size: 12px;
 }
+.nav>li>a {
+    position: relative;
+    display: block;
+    padding: 10px 10px;
+}
 </style>
 <div class="nav-container">
   <ol class="nav search-tabs">
