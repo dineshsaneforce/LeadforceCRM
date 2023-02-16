@@ -2448,7 +2448,7 @@ echo form_hidden('project_percent', $percent);
             $('.' + f + ' .data_edit').show();
         });
         $('.data_edit_btn').click(function(e) {
-            document.getElementById('overlay').style.display = '';
+            
             var f = $(this).attr("data-val");
             var data = {
                 project_id: <?php echo ($project->id); ?>,
@@ -2460,6 +2460,7 @@ echo form_hidden('project_percent', $percent);
         });
 
         function field_update(data, f) {
+            document.getElementById('overlay').style.display = '';
             $.ajax({
                 type: 'POST',
                 url: admin_url + 'projects/dyfieldupdate',

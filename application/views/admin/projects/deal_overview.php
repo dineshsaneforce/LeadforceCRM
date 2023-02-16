@@ -78,38 +78,38 @@ $hasApprovalFlow = $this->workflow_model->getflows('deal_approval', 0, ['service
                      </div>
                      <br>
                      <a class="btn btn-info pull-right data_edit_btn" data-val="clientid_copy_project">Save Changes</a>
-                     <button  class="btn pull-right mright5 close-dropdown">Cancel</button>
+                     <button class="btn pull-right mright5 close-dropdown">Cancel</button>
                   </div>
                </div>
             </div>
          <?php } ?>
-         
+
       </div>
       <div>
-            <?php if(isset($project->client_data->website) && $project->client_data->website):?>
-               <p class="text-muted h5"><i class="fa fa-globe mright5" aria-hidden="true"></i><a class="text-muted" href="<?php echo $project->client_data->website; ?>" target="_blank"><?php echo $project->client_data->website; ?></a></p>
-            <?php endif; ?>
-            <?php if(isset($project->client_data->phonenumber) && $project->client_data->phonenumber):?>
-               <p class="text-muted h5"><i class="fa fa-phone mright5" aria-hidden="true"></i><a class="text-muted" href="tel:<?php echo $project->client_data->phonenumber; ?>" ><?php echo $project->client_data->phonenumber; ?></a></p>
-            <?php endif; ?>
-            <?php $client_address ==array();
-               if(isset($project->client_data->address) && $project->client_data->address){
-                  $client_address[]=$project->client_data->address;
-               }
-               if(isset($project->client_data->city) && $project->client_data->city){
-                  $client_address[]=$project->client_data->city;
-               }
-               if(isset($project->client_data->state) && $project->client_data->state){
-                  $client_address[]=$project->client_data->state;
-               }
-               if(isset($project->client_data->zip) && $project->client_data->zip){
-                  $client_address[]=$project->client_data->zip;
-               }
-            ?>
-            <?php if($client_address):?>
-               <p class="text-muted h5"><i class="fa fa-map-marker mright5" aria-hidden="true"></i><span class="text-muted"  ><?php echo implode(',',$client_address); ?>.</span></p>
-            <?php endif; ?>
-         </div>
+         <?php if (isset($project->client_data->website) && $project->client_data->website) : ?>
+            <p class="text-muted h5"><i class="fa fa-globe mright5" aria-hidden="true"></i><a class="text-muted" href="<?php echo $project->client_data->website; ?>" target="_blank"><?php echo $project->client_data->website; ?></a></p>
+         <?php endif; ?>
+         <?php if (isset($project->client_data->phonenumber) && $project->client_data->phonenumber) : ?>
+            <p class="text-muted h5"><i class="fa fa-phone mright5" aria-hidden="true"></i><a class="text-muted" href="tel:<?php echo $project->client_data->phonenumber; ?>"><?php echo $project->client_data->phonenumber; ?></a></p>
+         <?php endif; ?>
+         <?php $client_address == array();
+         if (isset($project->client_data->address) && $project->client_data->address) {
+            $client_address[] = $project->client_data->address;
+         }
+         if (isset($project->client_data->city) && $project->client_data->city) {
+            $client_address[] = $project->client_data->city;
+         }
+         if (isset($project->client_data->state) && $project->client_data->state) {
+            $client_address[] = $project->client_data->state;
+         }
+         if (isset($project->client_data->zip) && $project->client_data->zip) {
+            $client_address[] = $project->client_data->zip;
+         }
+         ?>
+         <?php if ($client_address) : ?>
+            <p class="text-muted h5"><i class="fa fa-map-marker mright5" aria-hidden="true"></i><span class="text-muted"><?php echo implode(',', $client_address); ?>.</span></p>
+         <?php endif; ?>
+      </div>
    </div>
 <?php endif; ?>
 
@@ -151,7 +151,7 @@ $hasApprovalFlow = $this->workflow_model->getflows('deal_approval', 0, ['service
                      </div>
                      <br>
                      <a class="btn btn-info pull-right data_edit_btn" data-val="deadline">Save Changes</a>
-                     <button  class="btn pull-right mright5 close-dropdown">Cancel</button>
+                     <button class="btn pull-right mright5 close-dropdown">Cancel</button>
                   </div>
                </div>
             </div>
@@ -183,9 +183,9 @@ $hasApprovalFlow = $this->workflow_model->getflows('deal_approval', 0, ['service
       if (count($contacts) == 0) {
          echo '<p class="text-muted mtop10 no-mbot">' . _l('no_project_contacts') . '</p>';
       } else {
-         foreach ($contacts as $contact) {?>
-            <div style="display:flex">
-               <div >
+         foreach ($contacts as $contact) { ?>
+            <div style="display:flex" class="media">
+               <div>
                   <a href="<?php echo $can_user_edit ? admin_url('clients/view_contact/' . $contact["contacts_id"]) : '#'; ?>">
                      <img src="<?php echo contact_profile_image_url($contact['contacts_id'], array('staff-profile-image-small', 'media-object')); ?>" id="contact-img" class="staff-profile-image-small">
                   </a>
@@ -200,11 +200,11 @@ $hasApprovalFlow = $this->workflow_model->getflows('deal_approval', 0, ['service
                         } ?>
                      </h5>
                      <?php if ($can_user_edit && $project->approved == 1) : ?>
-                     <a href="#" onclick="callfromdeal(<?php echo $contact['contacts_id'] . ',' . $contact['project_id'] . ',' . $contact['phonenumber'] . ',\'deal\''; ?>);" title="Call Now"><img src="<?php echo APP_BASE_URL ?>/assets/images/call.png" style="width:25px;margin-left:10px;"></a>
+                        <a href="#" onclick="callfromdeal(<?php echo $contact['contacts_id'] . ',' . $contact['project_id'] . ',' . $contact['phonenumber'] . ',\'deal\''; ?>);" title="Call Now"><img src="<?php echo APP_BASE_URL ?>/assets/images/call.png" style="width:25px;margin-left:10px;"></a>
                      <?php endif; ?>
                      <?php
-                     if ($contact['is_primary'] == 1) {?>
-                     <span style="margin:0; top:0" class="primarycontact"> Primary </span>
+                     if ($contact['is_primary'] == 1) { ?>
+                        <span style="margin:0; top:0" class="primarycontact"> Primary </span>
                      <?php } ?>
                   </div>
                   <?php if ($contact['email']) : ?>
@@ -309,256 +309,234 @@ $custom_fields = array_merge($custom_fields1, $custom_fields2);
          $value = '<iframe src = "https://maps.google.com/maps?q=' . $value . '&hl=es;z=14&output=embed"></iframe>';
       }
       ?>
+
+
       <div class="<?php echo $field['slug']; ?> deal-detail-group">
          <p class="text-muted "><?php echo ucfirst($field['name']); ?></p>
-         <div class="data_display">
-            <?php if ($value) : ?>
-               <?php echo $value; ?>
-            <?php else : ?>
-               _ _ _ _
-            <?php endif; ?>
 
-            <?php if (true) { ?>
-               <?php if ($can_user_edit == true) { ?>
-                  <a class="data_display_btn" data-val="<?php echo $field['slug']; ?>">
-                     <i class="fa fa-pencil"></i>
-                  </a>
-               <?php } ?>
+         <div class="data_display dropdown">
+            <span class="h5 updated_text">
+               <?php if ($value) : ?>
+                  <?php echo $value; ?>
+               <?php else : ?>
+                  Nothig Selected
+               <?php endif; ?>
+            </span>
+            <?php if ($can_user_edit == true) { ?>
+               <a href="#" class="data_display_btn">
+                  <i class="fa fa-pencil"></i>
+               </a>
+               <div class="deal-field-update-dropdown">
+                  <div class="panel_s no-mbot">
+                     <div class="panel-body">
+                        <p class="text-muted">Update <?php echo ucfirst($field['name']); ?></p>
+                        <?php
+                        switch ($field['type']) {
+                           case 'textarea':
+                        ?>
+                              <div class="input-group">
+                                 <textarea id="<?php echo $field['slug']; ?>" name="<?php echo $field['slug']; ?>" class="form-control "><?php echo (isset($value) ? $value : ' '); ?></textarea>
+                              </div>
+                              
+                           <?php
+                              break;
+                           case 'date_picker':
+                           ?>
+                              <div class="input-group date">
+                                 <input type="text" id="<?php echo $field['slug']; ?>" name="<?php echo $field['slug']; ?>" class="form-control datepicker" value="<?php echo (!empty($value) ? date('d-m-Y', strtotime($value)) : ' '); ?>" autocomplete="off" readonly>
+                              </div>
+                           <?php
+                              break;
+                           case 'date_range':
+                           ?>
+                              <div class="input-group date">
+                                 <input type="text" id="<?php echo $field['slug']; ?>" name="<?php echo $field['slug']; ?>" class="form-control daterangepicker" value="<?php echo (!empty($value) ? date('d-m-Y', strtotime($value)) : ' '); ?>" autocomplete="off" readonly>
+                              </div>
+                           <?php
+                              break;
+                           case 'date_picker_time':
+                           ?>
+                              <div class="input-group date">
+                                 <input type="text" id="<?php echo $field['slug']; ?>" name="<?php echo $field['slug']; ?>" class="form-control datetimepicker" value="<?php echo (!empty($value) ? date('d-m-Y H:i:s', strtotime($value)) : ' '); ?>" autocomplete="off" readonly>
+                              </div>
+                           <?php
+                              break;
+                           case 'date_time_range':
+                           ?>
+                              <div class="input-group date">
+                                 <input type="text" id="<?php echo $field['slug']; ?>" name="<?php echo $field['slug']; ?>" class="form-control datetimerangepicker" value="<?php echo (!empty($value) ? date('d-m-Y', strtotime($value)) : ' '); ?>" autocomplete="off" readonly>
+                              </div>
+                           <?php
+                              break;
+                           case 'time_picker':
+                           ?>
+                              <div class="input-group date">
+                                 <input type="text" id="<?php echo $field['slug']; ?>" name="<?php echo $field['slug']; ?>" class="form-control timepicker" value="<?php echo $value; ?>" autocomplete="off" readonly>
+                              </div>
+                           <?php
+                              break;
+                           case 'number':
+                           ?>
+                              <div class="input-group">
+                                 <input type="number" id="<?php echo $field['slug']; ?>" name="<?php echo $field['slug']; ?>" class="form-control " value="<?php echo (isset($value) ? $value : ' '); ?>">
+                              </div>
+                           <?php
+                              break;
+                           case 'input':
+                           ?>
+                              <div class="input-group">
+                                 <input type="text" id="<?php echo $field['slug']; ?>" name="<?php echo $field['slug']; ?>" class="form-control " value="<?php echo (isset($value) ? $value : ' '); ?>">
+                              </div>
+                           <?php
+                              break;
+                           case 'select':
+                           ?>
+                              <div class="input-group">
+                                 <select id="<?php echo $field['slug']; ?>" name="<?php echo $field['slug']; ?>" data-live-search="true" data-width="100%" class=" selectpicker _select_input_group">
+                                    <?php
+                                    $all_vals = explode(',', $field['options']);
+                                    foreach ($all_vals as $all_val1) {
+                                       $selected = '';
+                                       if ($all_val1 == $value) {
+                                          $selected = 'selected="selected"';
+                                       }
+                                       echo '<option value="' . $all_val1 . '" ' . $selected . '>' . $all_val1 . '</option>';
+                                    }
+                                    ?>
+                                 </select>
+                              </div>
+                           <?php
+                              break;
+                           case 'multiselect':
+                           ?>
+                              <div class="input-group">
+                                 <select id="<?php echo $field['slug']; ?>" name="<?php echo $field['slug']; ?>" multiple="1" data-live-search="true" data-width="100%" class=" selectpicker form-control  custom-field-multi-select">
+                                    <?php
+                                    $all_vals = explode(',', $field['options']);
+                                    foreach ($all_vals as $all_val1) {
+                                       $all_val1 = trim($all_val1);
+                                       $selected = '';
+                                       if ($all_val1 == $value) {
+                                          $selected = 'selected="selected"';
+                                       } else {
+                                          $cur_vals = explode(',', $value);
+                                          if (!empty($cur_vals)) {
+                                             if (in_array(trim($all_val1), $cur_vals)) {
+                                                $selected = 'selected="selected"';
+                                             }
+                                          }
+                                       }
+                                       echo '<option value="' . $all_val1 . '" ' . $selected . '>' . $all_val1 . '</option>';
+                                    }
+                                    ?>
+                                 </select>
+                              </div>
+                           <?php
+                              break;
+                           case 'checkbox':
+                           ?>
+                              <div class="input-group">
+                                 <div class="form-group chk">
+                                    <?php
+                                    $all_vals = explode(',', $field['options']);
+                                    foreach ($all_vals as $all_val1) {
+                                       $all_val1 = trim($all_val1);
+                                       $selected = '';
+                                       if ($all_val1 == $value) {
+                                          $selected = 'checked="checked"';
+                                       } else {
+                                          $cur_vals = explode(',', $value);
+                                          if (!empty($cur_vals)) {
+                                             if (in_array(trim($all_val1), $cur_vals)) {
+                                                $selected = 'checked="checked"';
+                                             }
+                                          }
+                                       }
+                                       $input_id = 'cfc_' . $field['id'] . '_' . slug_it($all_val1) . '_' . app_generate_hash();
+
+                                       $fields_html = '<div class="checkbox' . ($field['display_inline'] == 1 ? ' checkbox-inline' : '') . '">';
+                                       $fields_html .= '<input class="custom_field_checkbox"  ' . $selected . ' value="' . $all_val1 . '" id="' . $input_id . '" type="checkbox" name="' . $field['slug'] . '[]">';
+                                       if ($field['required'] == 1) {
+                                          $fields_html .= '<label for="' . $input_id . '" class="cf-chk-label"> <small class="req text-danger">* </small>' . $all_val1 . '</label>';
+                                       } else {
+                                          $fields_html .= '<label for="' . $input_id . '" class="cf-chk-label">' . $all_val1 . '</label>';
+                                       }
+                                       // $fields_html .= '<input type="hidden" name="' . $field['slug'] . '[]" value="cfk_hidden">';
+                                       $fields_html .= '</div>';
+
+                                       echo $fields_html;
+                                       // echo '<input type="checkbox" value="'.$all_val1.'" '.$selected.'>'.$all_val1.'</option>';
+                                    }
+                                    ?>
+                                 </div>
+                              </div>
+                           <?php
+                              break;
+                           case 'link':
+                           ?>
+                              <div class="input-group">
+                                 <?php
+                                 $fields_html = '<div class="form-group cf-hyperlink" data-fieldto="' . $field['fieldto'] . '" data-field-id="' . $field['id'] . '" data-value="' . html_escape($value) . '" data-field-name="' . html_escape($field['name']) . '">';
+                                 $fields_html .= '<label class="control-label" for="' . $field['slug'] . '">' . $field_name . '</label></br>';
+
+                                 $fields_html .= '<a id="custom_fields_' . $field['fieldto'] . '_' . $field['id'] . '_popover" type="button" href="javascript:">' . _l('cf_translate_input_link_tip') . '</a>';
+
+                                 $fields_html .= '<input type="hidden" ' . ($field['required'] == 1 ? 'data-custom-field-required="1"' : '') . ' value="" id="custom_fields[' . $field['fieldto'] . '][' . $field['id'] . ']" name="' . $field['slug'] . '">';
+
+                                 $field_template = '';
+                                 $field_template .= '<div id="custom_fields_' . $field['fieldto'] . '_' . $field['id'] . '_popover-content" class="hide cfh-field-popover-template"><div class="form-group">';
+                                 $field_template .= '<div class="row"><div class="col-md-12"><label class="control-label" for="custom_fields_' . $field['fieldto'] . '_' . $field['id'] . '_title">' . _l('cf_translate_input_link_title') . '</label>';
+                                 $field_template .= '<input type="text"' . ($field['disalow_client_to_edit'] == 1 && is_client_logged_in() ? ' disabled="true" ' : ' ') . 'id="custom_fields_' . $field['fieldto'] . '_' . $field['id'] . '_title" value="" class="form-control">';
+                                 $field_template .= '</div>';
+                                 $field_template .= '</div>';
+                                 $field_template .= '</div>';
+                                 $field_template .= '<div class="form-group">';
+                                 $field_template .= '<div class="row">';
+                                 $field_template .= '<div class="col-md-12">';
+                                 $field_template .= '<label class="control-label" for="custom_fields_' . $field['fieldto'] . '_' . $field['id'] . '_link">' . _l('cf_translate_input_link_url') . '</label>';
+                                 $field_template .= '<div class="input-group"><input type="text"' . ($field['disalow_client_to_edit'] == 1 && is_client_logged_in() ? ' disabled="true" ' : ' ') . 'id="custom_fields_' . $field['fieldto'] . '_' . $field['id'] . '_link" value="" class="form-control"><span class="input-group-addon"><a href="#" id="cf_hyperlink_open_' . $field['id'] . '" target="_blank"><i class="fa fa-globe"></i></a></span></div>';
+                                 $field_template .= '</div>';
+                                 $field_template .= '</div>';
+                                 $field_template .= '</div>';
+                                 $field_template .= '<div class="row">';
+                                 $field_template .= '<div class="col-md-6">';
+                                 $field_template .= '<button type="button" id="custom_fields_' . $field['fieldto'] . '_' . $field['id'] . '_btn-cancel" class="btn btn-default btn-md pull-left" value="">' . _l('cancel') . '</button>';
+                                 $field_template .= '</div>';
+                                 $field_template .= '<div class="col-md-6">';
+                                 $field_template .= '<button type="button" id="custom_fields_' . $field['fieldto'] . '_' . $field['id'] . '_btn-save" class="btn btn-info btn-md pull-right" value="">' . _l('apply') . '</button>';
+                                 $field_template .= '</div>';
+                                 $field_template .= '</div>';
+                                 $fields_html .= '<script>';
+                                 $fields_html .= 'cfh_popover_templates[\'' . $field['id'] . '\'] = \'' . $field_template . '\';';
+                                 $fields_html .= '</script>';
+                                 $fields_html .= '</div>';
+                                 echo $fields_html;
+                                 ?>
+                              </div>
+                           <?php
+                              break;
+                           case 'location':
+                           ?>
+                              <div class="input-group">
+                                 <?php echo render_location_picker($field['slug'], $field['name'], get_custom_field_value($project->id, $field['id'], 'projects')) ?>
+                              </div>
+                        <?php
+                              break;
+                        }
+                        ?>
+                        <br>
+                        <?php 
+                        $data_val_type ='';
+                        if($field['type'] ='checkbox'){
+                           $data_val_type ='data-val-type="multi-checkbox"'; 
+                        }
+                        ?>
+                        <a class="btn btn-info pull-right data_edit_btn_custom" data-val="<?php echo $field['slug']; ?>" <?php echo $data_val_type; ?>>Save Changes</a>
+                        <button class="btn pull-right mright5 close-dropdown">Cancel</button>
+                     </div>
+                  </div>
+               </div>
             <?php } ?>
-         </div>
-         <div class="data_edit" style=" display:none;">
-            <?php
-            switch ($field['type']) {
-               case 'textarea':
-            ?>
-                  <div class="input-group">
-                     <textarea id="<?php echo $field['slug']; ?>" name="<?php echo $field['slug']; ?>" class="form-control "><?php echo (isset($value) ? $value : ' '); ?></textarea>
-                     <div class="input-group-addon" style="opacity: 1;">
-                        <a class=" data_edit_btn_custom" data-val="<?php echo $field['slug']; ?>"><i class="fa fa-check"></i></a>
-                     </div>
-                  </div>
-               <?php
-                  break;
-               case 'date_picker':
-               ?>
-                  <div class="input-group date">
-                     <input type="text" id="<?php echo $field['slug']; ?>" name="<?php echo $field['slug']; ?>" class="form-control datepicker" value="<?php echo (!empty($value) ? date('d-m-Y', strtotime($value)) : ' '); ?>" autocomplete="off" readonly>
-                     <div class="input-group-addon" style="opacity: 1;">
-                        <a class=" data_edit_btn_custom" data-val="<?php echo $field['slug']; ?>"><i class="fa fa-check"></i></a>
-                     </div>
-                  </div>
-               <?php
-                  break;
-               case 'date_range':
-               ?>
-                  <div class="input-group date">
-                     <input type="text" id="<?php echo $field['slug']; ?>" name="<?php echo $field['slug']; ?>" class="form-control daterangepicker" value="<?php echo (!empty($value) ? date('d-m-Y', strtotime($value)) : ' '); ?>" autocomplete="off" readonly>
-                     <div class="input-group-addon" style="opacity: 1;">
-                        <a class=" data_edit_btn_custom" data-val="<?php echo $field['slug']; ?>"><i class="fa fa-check"></i></a>
-                     </div>
-                  </div>
-               <?php
-                  break;
-               case 'date_picker_time':
-               ?>
-                  <div class="input-group date">
-                     <input type="text" id="<?php echo $field['slug']; ?>" name="<?php echo $field['slug']; ?>" class="form-control datetimepicker" value="<?php echo (!empty($value) ? date('d-m-Y H:i:s', strtotime($value)) : ' '); ?>" autocomplete="off" readonly>
-                     <div class="input-group-addon" style="opacity: 1;">
-                        <a class=" data_edit_btn_custom" data-val="<?php echo $field['slug']; ?>"><i class="fa fa-check"></i></a>
-                     </div>
-                  </div>
-               <?php
-                  break;
-               case 'date_time_range':
-               ?>
-                  <div class="input-group date">
-                     <input type="text" id="<?php echo $field['slug']; ?>" name="<?php echo $field['slug']; ?>" class="form-control datetimerangepicker" value="<?php echo (!empty($value) ? date('d-m-Y', strtotime($value)) : ' '); ?>" autocomplete="off" readonly>
-                     <div class="input-group-addon" style="opacity: 1;">
-                        <a class=" data_edit_btn_custom" data-val="<?php echo $field['slug']; ?>"><i class="fa fa-check"></i></a>
-                     </div>
-                  </div>
-               <?php
-                  break;
-               case 'time_picker':
-               ?>
-                  <div class="input-group date">
-                     <input type="text" id="<?php echo $field['slug']; ?>" name="<?php echo $field['slug']; ?>" class="form-control timepicker" value="<?php echo $value; ?>" autocomplete="off" readonly>
-                     <div class="input-group-addon" style="opacity: 1;">
-                        <a class=" data_edit_btn_custom" data-val="<?php echo $field['slug']; ?>"><i class="fa fa-check"></i></a>
-                     </div>
-                  </div>
-               <?php
-                  break;
-               case 'number':
-               ?>
-                  <div class="input-group">
-                     <input type="number" id="<?php echo $field['slug']; ?>" name="<?php echo $field['slug']; ?>" class="form-control " value="<?php echo (isset($value) ? $value : ' '); ?>">
-                     <div class="input-group-addon" style="opacity: 1;">
-                        <a class=" data_edit_btn_custom" data-val="<?php echo $field['slug']; ?>"><i class="fa fa-check"></i></a>
-                     </div>
-                  </div>
-               <?php
-                  break;
-               case 'input':
-               ?>
-                  <div class="input-group">
-                     <input type="text" id="<?php echo $field['slug']; ?>" name="<?php echo $field['slug']; ?>" class="form-control " value="<?php echo (isset($value) ? $value : ' '); ?>">
-                     <div class="input-group-addon" style="opacity: 1;">
-                        <a class=" data_edit_btn_custom" data-val="<?php echo $field['slug']; ?>"><i class="fa fa-check"></i></a>
-                     </div>
-                  </div>
-               <?php
-                  break;
-               case 'select':
-               ?>
-                  <div class="input-group">
-                     <select id="<?php echo $field['slug']; ?>" name="<?php echo $field['slug']; ?>" data-live-search="true" data-width="100%" class=" selectpicker _select_input_group">
-                        <?php
-                        $all_vals = explode(',', $field['options']);
-                        foreach ($all_vals as $all_val1) {
-                           $selected = '';
-                           if ($all_val1 == $value) {
-                              $selected = 'selected="selected"';
-                           }
-                           echo '<option value="' . $all_val1 . '" ' . $selected . '>' . $all_val1 . '</option>';
-                        }
-                        ?>
-                     </select>
-                     <div class="input-group-addon" style="opacity: 1;">
-                        <a class=" data_edit_btn_custom" data-val="<?php echo $field['slug']; ?>"><i class="fa fa-check"></i></a>
-                     </div>
-                  </div>
-               <?php
-                  break;
-               case 'multiselect':
-               ?>
-                  <div class="input-group">
-                     <select id="<?php echo $field['slug']; ?>" name="<?php echo $field['slug']; ?>" multiple="1" data-live-search="true" data-width="100%" class=" selectpicker form-control  custom-field-multi-select">
-                        <?php
-                        $all_vals = explode(',', $field['options']);
-                        foreach ($all_vals as $all_val1) {
-                           $all_val1 = trim($all_val1);
-                           $selected = '';
-                           if ($all_val1 == $value) {
-                              $selected = 'selected="selected"';
-                           } else {
-                              $cur_vals = explode(',', $value);
-                              if (!empty($cur_vals)) {
-                                 if (in_array(trim($all_val1), $cur_vals)) {
-                                    $selected = 'selected="selected"';
-                                 }
-                              }
-                           }
-                           echo '<option value="' . $all_val1 . '" ' . $selected . '>' . $all_val1 . '</option>';
-                        }
-                        ?>
-                     </select>
-                     <div class="input-group-addon" style="opacity: 1;">
-                        <a class=" data_edit_btn_custom" data-val="<?php echo $field['slug']; ?>"><i class="fa fa-check"></i></a>
-                     </div>
-                  </div>
-               <?php
-                  break;
-               case 'checkbox':
-               ?>
-                  <div class="input-group">
-                     <div class="form-group chk">
-                        <?php
-                        $all_vals = explode(',', $field['options']);
-                        foreach ($all_vals as $all_val1) {
-                           $all_val1 = trim($all_val1);
-                           $selected = '';
-                           if ($all_val1 == $value) {
-                              $selected = 'checked="checked"';
-                           } else {
-                              $cur_vals = explode(',', $value);
-                              if (!empty($cur_vals)) {
-                                 if (in_array(trim($all_val1), $cur_vals)) {
-                                    $selected = 'checked="checked"';
-                                 }
-                              }
-                           }
-                           $input_id = 'cfc_' . $field['id'] . '_' . slug_it($all_val1) . '_' . app_generate_hash();
-
-                           $fields_html = '<div class="checkbox' . ($field['display_inline'] == 1 ? ' checkbox-inline' : '') . '">';
-                           $fields_html .= '<input class="custom_field_checkbox"  ' . $selected . ' value="' . $all_val1 . '" id="' . $input_id . '" type="checkbox" name="' . $field['slug'] . '[]">';
-                           if ($field['required'] == 1) {
-                              $fields_html .= '<label for="' . $input_id . '" class="cf-chk-label"> <small class="req text-danger">* </small>' . $all_val1 . '</label>';
-                           } else {
-                              $fields_html .= '<label for="' . $input_id . '" class="cf-chk-label">' . $all_val1 . '</label>';
-                           }
-                           // $fields_html .= '<input type="hidden" name="' . $field['slug'] . '[]" value="cfk_hidden">';
-                           $fields_html .= '</div>';
-
-                           echo $fields_html;
-                           // echo '<input type="checkbox" value="'.$all_val1.'" '.$selected.'>'.$all_val1.'</option>';
-                        }
-                        ?>
-                     </div>
-                     <div class="input-group-addon" style="opacity: 1;">
-                        <a class=" data_edit_btn_custom" data-val="<?php echo $field['slug']; ?>" data-val-type="multi-checkbox"><i class="fa fa-check"></i></a>
-                     </div>
-                  </div>
-               <?php
-                  break;
-               case 'link':
-               ?>
-                  <div class="input-group">
-                     <?php
-                     $fields_html = '<div class="form-group cf-hyperlink" data-fieldto="' . $field['fieldto'] . '" data-field-id="' . $field['id'] . '" data-value="' . html_escape($value) . '" data-field-name="' . html_escape($field['name']) . '">';
-                     $fields_html .= '<label class="control-label" for="' . $field['slug'] . '">' . $field_name . '</label></br>';
-
-                     $fields_html .= '<a id="custom_fields_' . $field['fieldto'] . '_' . $field['id'] . '_popover" type="button" href="javascript:">' . _l('cf_translate_input_link_tip') . '</a>';
-
-                     $fields_html .= '<input type="hidden" ' . ($field['required'] == 1 ? 'data-custom-field-required="1"' : '') . ' value="" id="custom_fields[' . $field['fieldto'] . '][' . $field['id'] . ']" name="' . $field['slug'] . '">';
-
-                     $field_template = '';
-                     $field_template .= '<div id="custom_fields_' . $field['fieldto'] . '_' . $field['id'] . '_popover-content" class="hide cfh-field-popover-template"><div class="form-group">';
-                     $field_template .= '<div class="row"><div class="col-md-12"><label class="control-label" for="custom_fields_' . $field['fieldto'] . '_' . $field['id'] . '_title">' . _l('cf_translate_input_link_title') . '</label>';
-                     $field_template .= '<input type="text"' . ($field['disalow_client_to_edit'] == 1 && is_client_logged_in() ? ' disabled="true" ' : ' ') . 'id="custom_fields_' . $field['fieldto'] . '_' . $field['id'] . '_title" value="" class="form-control">';
-                     $field_template .= '</div>';
-                     $field_template .= '</div>';
-                     $field_template .= '</div>';
-                     $field_template .= '<div class="form-group">';
-                     $field_template .= '<div class="row">';
-                     $field_template .= '<div class="col-md-12">';
-                     $field_template .= '<label class="control-label" for="custom_fields_' . $field['fieldto'] . '_' . $field['id'] . '_link">' . _l('cf_translate_input_link_url') . '</label>';
-                     $field_template .= '<div class="input-group"><input type="text"' . ($field['disalow_client_to_edit'] == 1 && is_client_logged_in() ? ' disabled="true" ' : ' ') . 'id="custom_fields_' . $field['fieldto'] . '_' . $field['id'] . '_link" value="" class="form-control"><span class="input-group-addon"><a href="#" id="cf_hyperlink_open_' . $field['id'] . '" target="_blank"><i class="fa fa-globe"></i></a></span></div>';
-                     $field_template .= '</div>';
-                     $field_template .= '</div>';
-                     $field_template .= '</div>';
-                     $field_template .= '<div class="row">';
-                     $field_template .= '<div class="col-md-6">';
-                     $field_template .= '<button type="button" id="custom_fields_' . $field['fieldto'] . '_' . $field['id'] . '_btn-cancel" class="btn btn-default btn-md pull-left" value="">' . _l('cancel') . '</button>';
-                     $field_template .= '</div>';
-                     $field_template .= '<div class="col-md-6">';
-                     $field_template .= '<button type="button" id="custom_fields_' . $field['fieldto'] . '_' . $field['id'] . '_btn-save" class="btn btn-info btn-md pull-right" value="">' . _l('apply') . '</button>';
-                     $field_template .= '</div>';
-                     $field_template .= '</div>';
-                     $fields_html .= '<script>';
-                     $fields_html .= 'cfh_popover_templates[\'' . $field['id'] . '\'] = \'' . $field_template . '\';';
-                     $fields_html .= '</script>';
-                     $fields_html .= '</div>';
-                     echo $fields_html;
-                     ?>
-                     <div class="input-group-addon" style="opacity: 1;">
-                        <a class=" data_edit_btn_custom" data-val="<?php echo $field['slug']; ?>"><i class="fa fa-check"></i></a>
-                     </div>
-                  </div>
-               <?php
-                  break;
-               case 'location':
-               ?>
-                  <div class="input-group">
-                     <?php echo render_location_picker($field['slug'], $field['name'], get_custom_field_value($project->id, $field['id'], 'projects')) ?>
-                     <div class="input-group-addon" style="opacity: 1;">
-                        <a class=" data_edit_btn_custom" data-val="<?php echo $field['slug']; ?>"><i class="fa fa-check"></i></a>
-                     </div>
-                  </div>
-            <?php
-                  break;
-            }
-            ?>
          </div>
       </div>
    <?php endforeach; ?>
