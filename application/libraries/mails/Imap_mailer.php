@@ -28,6 +28,7 @@ class Imap_mailer
         $this->CI = &get_instance();
 
         $this->CI->load->model('leads_model');
+        $this->CI->load->model('projects_model');
         $this->connectMail = get_option('connect_mail');
         if($this->connectMail =='no'){
             $this->CI->load->helper("tasks_helper");
@@ -298,6 +299,8 @@ class Imap_mailer
             
             if($this->rel_type =='lead' && $log_action !=''){
                 $this->CI->leads_model->log_activity($this->rel_id,'email',$log_action,$this->CI->db->insert_id());
+            }elseif($this->rel_type =='project' && $log_action !=''){
+                $this->CI->projects_model->add_timeline_activity($this->rel_id,'email',$log_action,$this->CI->db->insert_id());
             }
             
         }

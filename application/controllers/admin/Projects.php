@@ -957,7 +957,7 @@ class Projects extends AdminController
             $data['staff_hierarchy'] =$this->approval_model->getDealReportingLevels($project->teamleader);
 
             $data['project_timeline_count'] = $this->projects_model->get_logs_count($project->id);
-            $data['emails_count'] = $this->projects_model->get_emails_count($project->id);
+            $data['project_email_count'] = $this->projects_model->get_emails_count($project->id);
             $data['project_tasks_count'] = $this->projects_model->get_activities_count($project->id);
             $data['project_tasks_bycall_count'] = $this->projects_model->get_calls_count($project->id);
             $data['project_proposal_count'] = $this->projects_model->get_proposal_count($project->id);
