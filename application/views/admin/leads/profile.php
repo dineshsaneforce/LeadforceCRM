@@ -118,7 +118,7 @@ if ($openEdit == true) {
       <?php echo  _l('lead_convert_to_client'); ?>
       </a>
       <?php } else { ?>
-        <a href="<?php echo admin_url('projects/project?lead_id='.$lead->id) ?>" class="btn btn-success pull-right lead-convert-to-customer lead-top-btn lead-view mbot10">
+        <a id="openNewProject" data-toggle="modal" data-target="#newDealModal" class="btn btn-success pull-right lead-convert-to-customer lead-top-btn lead-view mbot10">
         <!-- <i class="fa fa-user-o"></i> -->
         <?php echo  _l('lead_convert_to_client'); ?>
         </a>

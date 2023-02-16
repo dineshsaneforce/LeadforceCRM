@@ -15,7 +15,7 @@
 <div class="tasks-table">
 
 
-    <?php init_relation_tasks_table(array( 'data-new-rel-id'=>$project->id,'data-new-rel-type'=>'project','data-new-bycall'=>'bycall')); ?>
+    <?php init_relation_tasks_table(array( 'data-new-rel-id'=>$project->id,'data-new-rel-type'=>'project','data-new-bycall'=>'bycall','no-filters'=>true)); ?>
     
    <?php include_once(APPPATH . 'views/admin/clients/modals/send_file_modal.php'); ?>
 

@@ -13,7 +13,7 @@
               <div class="panel-body">
               <div class="_buttons">
               <?php if(has_permission('projects','','create')){ ?>
-                <a href="<?php echo admin_url('projects/project'); ?>" class="btn btn-info pull-left display-block mright5">
+                <a id="openNewProject" data-toggle="modal" data-target="#newDealModal" class="btn btn-info pull-left display-block mright5">
                   <?php echo _l('new_project'); ?>
                 </a>
               <?php } 
@@ -431,12 +431,27 @@ foreach($custom_fields as $cfkey=>$cfval){
   </div>
 </div>
 
+<div class="modal" id="newDealModal" style="display: none; z-index: 1050;">
+	<div class="modal-dialog">
+		<div class="modal-header">
+			<span class="title"><?php echo _l('new_project'); ?></span>
+			<button type="button" class="close" data-dismiss="modal">×</button>
+		</div>
+		<div class="modal-content">
+			<div class="modal-body" id="newDealModalContent">
+			</div>
+		</div>
+	</div>
+</div>
+<?php $this->load->view('admin/projects/modals_project') ?>
+
 <?php $this->load->view('admin/projects/copy_settings'); ?>
 <?php init_tail(); 
 $status1 = (!empty($_REQUEST['status']))?'?status='.$_REQUEST['status']:'';
 ?>
 <script>
 $(function(){
+	init_deal_model('');
      var ProjectsServerParams = {};
 
      $.each($('._hidden_inputs._filters input'),function(){

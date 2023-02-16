@@ -1076,7 +1076,6 @@ class Imap
 		$this->mailbox = '{' . $imapconf['host'] . ':'.$imapconf['port'].'/imap/ssl/novalidate-cert}';
 		$this->stream  = imap_open($this->mailbox, $imapconf['username'], $imapconf['password'])or die('Cannot connect to mail: ' . pr(imap_errors()));
 		$req_s = $this->get_compay_folders($imapconf);
-		$req_s = $this->get_compay_folders($imapconf);
 		
 		$this->select_folder('[Gmail]/Sent Mail');
 		$uids = $this->search();
@@ -1895,6 +1894,7 @@ class Imap
 		$this->select_folder($current_folder);
 		$inboxEmails = $this->get_message($_REQUEST['uid']);
 		$req_to = $inboxEmails['from']['email'].',';
+		$cc ='';
 		// if(!empty($inboxEmails['to']) && $reply=='all'){
 		// 	foreach($inboxEmails['to'] as $req_mail1){
 		// 		if($req_mail1['email'] != $to_email){
@@ -1905,13 +1905,14 @@ class Imap
 		if(!empty($inboxEmails['cc'])  && $reply=='all'){
 			foreach($inboxEmails['cc'] as $cc_mail1){
 				if($cc_mail1['email'] != $to_email){
-					$req_to .= $cc_mail1['email'].',';
+					$cc .= $cc_mail1['email'].',';
 				}
 			}
 		}
 		$req_to = rtrim($req_to,',');
+		$cc = rtrim($cc,',');
 		
-		$data = array('subject'=>$inboxEmails['subject'],'message'=>($inboxEmails['body']['html'])?$inboxEmails['body']['html']:$inboxEmails['body']['plain'],'from_address'=>$inboxEmails['from']['email'],'to_address'=>$req_to,'uid'=>$_REQUEST['uid']);
+		$data = array('subject'=>$inboxEmails['subject'],'message'=>($inboxEmails['body']['html'])?$inboxEmails['body']['html']:$inboxEmails['body']['plain'],'from_address'=>$inboxEmails['from']['email'],'to_address'=>$req_to,'cc'=>$cc,'uid'=>$_REQUEST['uid']);
 		return $data; 
 		exit;
 	}
@@ -1950,6 +1951,14 @@ class Imap
 		$output = '';		
 		$this->select_folder($current_folder);
 		$inboxEmails = $this->get_message($_REQUEST['uid']);
+		$cc =$bcc =array();
+		foreach($inboxEmails['cc'] as $ccmails){
+			$cc[] ='<a>'.$ccmails['email'].'</a>';
+		}
+		foreach($inboxEmails['bcc'] as $bccmails){
+			$bcc[] ='<a>'.$bccmails['email'].'</a>';
+		}
+		
 		$add_content = "'".$_REQUEST['uid']."'";	
 		$output .= '<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button><h4 class="modal-title"><i class="fa fa-envelope"></i> '.$inboxEmails['subject'].'</h4></div>';
 		$output .= '<div class="modal-body">';
@@ -1991,14 +2000,20 @@ class Imap
 				<div class="row">
 					<div class="col-md-6">
 						<p class="no-margin" style="font-size: 13px;">From : <a>'.$inboxEmails['from']['email'].'</a></p>
-						<p class="no-margin" style="font-size: 13px;">To : <a>'.$inboxEmails['to'][0]['email'].'</a></p>
-						<p class="no-margin" style="font-size: 13px;">'.date("d-M-Y H:i A",$inboxEmails['udate']).'</p>
+						<p class="no-margin" style="font-size: 13px;">To : <a>'.$inboxEmails['to'][0]['email'].'</a></p>';
+						if($cc){
+							$output .='<p class="no-margin" style="font-size: 13px;">Cc : '.implode(',',$cc).'</p>';
+						}
+						if($bcc){
+							$output .='<p class="no-margin" style="font-size: 13px;">Bcc : '.implode(',',$bcc).'</p>';
+						}
+						$output .='<p class="no-margin" style="font-size: 13px;">'.date("d-M-Y H:i A",$inboxEmails['udate']).'</p>
 					</div>
 					<div class="col-md-6">';
 						$reply ='<div class="button-group">
-							<button type="button" data-toggle="tooltip" data-original-title="Forward" class="btn btn-default pull-right" data-toggle="modal" data-target="#forward-modal" onclick="add_content('.$add_content.')"><i class="fa fa-share" aria-hidden="true"></i></button>
-							<button type="button" data-toggle="tooltip" data-original-title="Reply" class="btn btn-default pull-right" data-toggle="modal" data-target="#reply-modal" onclick="add_to('.$add_content.')" style="margin-right:5px;"><i class="fa fa-reply" ></i></button>
-							<button type="button" data-toggle="tooltip" data-original-title="Reply All" class="btn btn-default pull-right" data-toggle="modal" data-target="#reply-modal" onclick="add_reply_all('.$add_content.')" style="margin-right:5px;"><i class="fa fa-reply-all" aria-hidden="true"></i></button>
+							<button type="button" data-toggle="tooltip" data-original-title="Forward" class="btn btn-default pull-right" data-toggle="modal" data-target="#forward-modal" onclick="add_content('.$add_content.',\''.$current_folder.'\')"><i class="fa fa-share" aria-hidden="true"></i></button>
+							<button type="button" data-toggle="tooltip" data-original-title="Reply" class="btn btn-default pull-right" data-toggle="modal" data-target="#reply-modal" onclick="add_to('.$add_content.',\''.$current_folder.'\')" style="margin-right:5px;"><i class="fa fa-reply" ></i></button>
+							<button type="button" data-toggle="tooltip" data-original-title="Reply All" class="btn btn-default pull-right" data-toggle="modal" data-target="#reply-modal" onclick="add_reply_all('.$add_content.',\''.$current_folder.'\')" style="margin-right:5px;"><i class="fa fa-reply-all" aria-hidden="true"></i></button>
 						</div>';
 					$output .=$reply;
 					$output .='</div>
@@ -2390,6 +2405,7 @@ class Imap
 			'size'        => (int)$header->Size,
 			'attachments' => (array)$this->_get_attachments($uid, imap_fetchstructure($this->stream, $id)),
 			'body'        => $this->get_body($uid),
+			'folder'        => $this->folder,
 		];
 
 		$email = $this->embed_images($email);

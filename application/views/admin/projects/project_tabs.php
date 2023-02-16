@@ -37,8 +37,12 @@
                     id="dropdown_<?php echo $key; ?>"<?php } else { ?>
                     href="<?php echo admin_url('projects/view/'.$project->id.'?group='.$key); ?>"
                     <?php } ?>>
-                    <i class="<?php echo $tab['icon']; ?>" aria-hidden="true"></i>
+                    <!-- <i class="<?php echo $tab['icon']; ?>" aria-hidden="true"></i> -->
                     <?php echo $tab['name']; ?>
+                    <?php $count_name =$key."_count"; ?>
+                    <?php if(isset($$count_name) && $$count_name >0): ?>
+                    <span class="badge badge-light ml-3" id="<?php echo $count_name; ?>"><?php echo $$count_name?></span>
+                    <?php endif; ?>
                     <?php if($dropdown){ ?> <span class="caret"></span> <?php } ?>
                 </a>
                 <?php if($dropdown){ ?>
@@ -59,15 +63,6 @@
             </li>
         <?php } ?>
     </ul>
-    <?php if(is_admin(get_staff_user_id()) || $project->teamleader == get_staff_user_id() || in_array(get_staff_user_id(),$ownerHierarchy) || (!empty($my_staffids) && in_array($project->teamleader,$my_staffids) && !in_array($project->teamleader,$viewIds))) { 
-		if(!empty($need_fields) && in_array("status", $need_fields)){
-	?>
-			<div class="pipechange">
-				<button type="button" class="btn btn-primary" onclick="changeStage()"><?php echo $project_status['name']; ?></button>
-			</div>
-    <?php 
-		}
-	} ?>
 </div>
 </div>
 

@@ -1,5 +1,38 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed'); ?>
+<?php if($lead->deleted_status ==1): ?>
+   <?php  
+      $this->db->where('lead_id',$lead->id);
+      $this->db->where('deleted_status',0);
+      $deal =$this->db->get(db_prefix().'projects')->row();
+   ?>
+
+   <?php init_head(); ?>
+   <div id="wrapper">
+      <div class="content">
+      <div class="container">
+         <div class="text-center" style="height:100%">
+            <div style="margin:10vh 0px">
+               <?php if($deal):?>
+                  <i class="fa fa-handshake-o  fa-fw fa-lg" style="font-size:100px;"></i>
+                  <h3>This lead has been converted as deal.</h3>
+                  <a class="btn btn-info" href="<?php echo admin_url('projects/view/'.$deal->id) ?>">Open Deal</a>
+               <?php else: ?>
+                  <i class="fa fa-trash  fa-fw fa-lg" style="font-size:100px;"></i>
+                  <h3>This lead has been already deleted.</h3>
+                  <a class="btn btn-info" href="<?php echo admin_url('leads') ?>">Go to Leads</a>
+               <?php endif; ?>
+            </div>
+         </div>
+      </div>
+      </div>
+   </div>
+   <?php init_tail(); ?>
+   </body>
+   </html>
+<?php else: ?>
 <?php init_head(); ?>
+
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.13/css/intlTelInput.css">
 <div id="wrapper">
    <div class="content">
@@ -27,206 +60,6 @@
     width:100%;
 }
 
-/* End basic CSS override */
-.timeline {
-  width: 85%;
-  max-width: 700px;
-  margin-left: 50px;
-  margin-right: auto;
-  display: flex;
-  flex-direction: column;
-  padding: 0 0 0 32px;
-  border-left: 2px solid #e3e3e3;
-}
-
-.timeline-item {
-  display: flex;
-  gap: 24px;
-}
-.timeline-item + * {
-  margin-top: 24px;
-}
-.timeline-item + .extra-space {
-  margin-top: 48px;
-}
-
-.timeline .new-comment {
-  width: 100%;
-}
-.timeline .new-comment input {
-  border: 1px solid #e3e3e3;
-  border-radius: 6px;
-  height: 48px;
-  padding: 0 16px;
-  width: 100%;
-}
-.timeline .new-comment input::-moz-placeholder {
-  color: #b2b2b2;
-}
-.timeline .new-comment input:-ms-input-placeholder {
-  color: #b2b2b2;
-}
-.timeline .new-comment input::placeholder {
-  color: #b2b2b2;
-}
-.timeline .new-comment input:focus {
-  border-color: #b2b2b2;
-  outline: 0;
-  box-shadow: 0 0 0 4px #f4f6f8;
-}
-
-.timeline-item-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  margin-left: -52px;
-  flex-shrink: 0;
-  overflow: hidden;
-  box-shadow: 0 0 0 6px #fff;
-}
-.timeline-item-icon svg {
-  width: 20px;
-  height: 20px;
-}
-.timeline-item-icon.faded-icon {
-  background-color: #f4f6f8;
-  color: #7b7b7b;
-}
-.timeline-item-icon.filled-icon {
-  background-color: #688afd;
-  color: #fff;
-}
-.timeline-item-wrapper{
-   width: 100%;
-   border: 1px solid #e3e3e3;
-   border-radius: 5px;
-   padding: 10px;
-}
-.timeline-item-title h4{
-   font-size: 16px;
-}
-.timeline-item-description span{
-  color: #777;
-}
-.timeline-item-description img {
-  flex-shrink: 0;
-}
-.timeline-item-description a {
-   color: #777;
-  font-weight: 500;
-  text-decoration: none;
-}
-.timeline-item-description a:hover, .timeline-item-description a:focus {
-  outline: 0;
-}
-
-.timeline .avatar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  overflow: hidden;
-  aspect-ratio: 1/1;
-  flex-shrink: 0;
-  width: 40px;
-  height: 40px;
-}
-.timeline .avatar.small {
-  width: 28px;
-  height: 28px;
-}
-.timeline .avatar img {
-  -o-object-fit: cover;
-     object-fit: cover;
-     max-width: 100%;
-}
-
-.timeline .comment {
-  margin-top: 12px;
-  color: #3d3d3d;
-  border: 1px solid #e3e3e3;
-  box-shadow: 0 4px 4px 0 #f4f6f8;
-  border-radius: 6px;
-  padding: 16px;
-}
-
-.timeline .button {
-  border: 0;
-  padding: 0;
-  display: inline-flex;
-  vertical-align: middle;
-  margin-right: 4px;
-  margin-top: 12px;
-  align-items: center;
-  justify-content: center;
-  height: 32px;
-  padding: 0 8px;
-  background-color: #f4f6f8;
-  flex-shrink: 0;
-  cursor: pointer;
-  border-radius: 99em;
-}
-.timeline .button:hover {
-  background-color: #e3e3e3;
-}
-.timeline .button.square {
-  border-radius: 50%;
-  color: #7b7b7b;
-  width: 32px;
-  height: 32px;
-  padding: 0;
-}
-.timeline .button.square svg {
-  width: 24px;
-  height: 24px;
-}
-.timeline .button.square:hover {
-  background-color: #e3e3e3;
-  color: #3d3d3d;
-}
-
-.timeline .show-replies {
-  color: #b2b2b2;
-  background-color: transparent;
-  border: 0;
-  padding: 0;
-  margin-top: 16px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
-}
-.timeline .show-replies svg {
-  flex-shrink: 0;
-  width: 24px;
-  height: 24px;
-}
-.timeline .show-replies:hover, .show-replies:focus {
-  color: #3d3d3d;
-}
-
-.timeline .avatar-list {
-  display: flex;
-  align-items: center;
-}
-.timeline .avatar-list > * {
-  position: relative;
-  box-shadow: 0 0 0 2px #fff;
-  margin-right: -8px;
-}
-
-.timeline .note-bg{
-   background-color: #fff6d6;
-}
-.timeline .note-color{
-   color: #fff6d6;
-}
-.timeline .comment .document-icon-wrapper{
-   font-size: 20px;
-}
 .lead-preview-header{
    position: sticky;
    top: 0px;
@@ -618,7 +451,31 @@
 </div>
 <?php hooks()->do_action('lead_modal_profile_bottom',(isset($lead) ? $lead->id : '')); ?>
 
+<?php if(isset($lead->id)):?>
+<div class="modal" id="newDealModal" style="display: none; z-index: 1050;">
+    <div class="modal-dialog">
+        <div class="modal-header">
+            <span class="title"><?php echo _l('new_project'); ?></span>
+            <button type="button" class="close" data-dismiss="modal">×</button>
+        </div>
+        <div class="modal-content">
+            <div class="modal-body" id="newDealModalContent">
+            </div>
+        </div>
+    </div>
+</div>
+<?php $this->load->view('admin/projects/modals_project') ?>
+<?php endif; ?>
+
 <?php init_tail(); ?>
+
+<?php if(isset($lead->id)):?>
+<script>
+    $(function () {
+        init_deal_model('<?php echo 'lead_id=' . $lead->id; ?>');
+    });
+</script>
+<?php endif; ?>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.13/js/intlTelInput-jquery.min.js"></script>
 <script>
 
@@ -687,3 +544,5 @@
 
 </body>
 </html>
+
+<?php endif; ?>

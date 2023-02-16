@@ -5,7 +5,6 @@ $i = 0;
 foreach ($statuses as $status) {
   
   $total_pages = ceil($this->projects_model->do_kanban_query($status['id'],$this->input->get('search'),1,array(),true)/get_option('projects_kanban_limit'));
-
   $settings = '';
   foreach(get_system_favourite_colors() as $color){
     $color_selected_class = 'cpicker-small';
@@ -21,8 +20,9 @@ foreach ($statuses as $status) {
         <?php
         $status_color = '';
         if(!empty($status["color"])){
-          $status_color = 'style="background:'.$status["color"].';border:1px solid '.$status['color'].'"';
+          $status_color = 'style="border-top:5px solid '.$status['color'].';"';
         }
+       
 		    $projects = $this->projects_model->do_kanban_query_count($status['id'],$this->input->get('search'),1,array('sort_by'=>$this->input->get('sort_by'),'sort'=>$this->input->get('sort')));
 			$tot_amt = array_sum(array_column($projects, 'project_cost'));
 			
@@ -44,14 +44,29 @@ foreach ($statuses as $status) {
           }
         }
         $tot_amt = $amt;*/
-		 $projects = $this->projects_model->do_kanban_query($status['id'],$this->input->get('search'),1,array('sort_by'=>$this->input->get('sort_by'),'sort'=>$this->input->get('sort')));
+		    $projects = $this->projects_model->do_kanban_query($status['id'],$this->input->get('search'),1,array('sort_by'=>$this->input->get('sort_by'),'sort'=>$this->input->get('sort')));
         ?>
-        <div class="panel-heading-bg primary-bg" <?php if($status['isdefault'] == 1){ ?>data-toggle="tooltip" data-title="<?php echo _l('projects_converted_to_client') . ' - '. _l('client'); ?>"<?php } ?> <?php echo $status_color; ?> data-status-id="<?php echo $status['id']; ?>">
-          <i class="fa fa-reorder pointer" style="margin-top:-4px;"></i>
-          <span class="heading pointer" style="margin-top:-6px;" <?php if($is_admin){ ?> dat data-order="<?php echo $status['statusorder']; ?>" data-color="<?php echo $status['color']; ?>" data-name="<?php echo $status['name']; ?>" onclick="edit_status(this,<?php echo $status['id']; ?>); return false;" <?php } ?> title="<?php echo $status['name'].' ('.$total_projects.')'; ?>" data-title="<?php echo $status['name']; ?>">
-		  <?php echo $status['name'].' ('.$total_projects.')'; ?>
-          </span><p style="clear:both; margin-top:-3px;"><?php echo $base_currency->symbol;?> <?php echo number_format($tot_amt,2); ?></p>
-          <a href="#" onclick="return false;" class="pull-right color-white kanban-color-picker kanban-stage-color-picker<?php if($status['isdefault'] == 1){ echo ' kanban-stage-color-picker-last'; } ?>" data-placement="bottom" data-toggle="popover" data-content="
+        <div class="panel-heading-bg panel-body" <?php if($status['isdefault'] == 1){ ?>data-toggle="tooltip" data-title="<?php echo _l('projects_converted_to_client') . ' - '. _l('client'); ?>"<?php } ?> <?php echo $status_color; ?> data-status-id="<?php echo $status['id']; ?>">
+          <div class="" style="display: flex;">
+            <div class="" style="
+flex-grow: 1;
+overflow: hidden;
+text-overflow: ellipsis;
+white-space: nowrap;
+width: 1%;">
+            <p class="heading pointer" <?php if($is_admin){ ?> dat data-order="<?php echo $status['statusorder']; ?>" data-color="<?php echo $status['color']; ?>" data-name="<?php echo $status['name']; ?>" <?php } ?> title="<?php echo $status['name'].' ('.$total_projects.')'; ?>" data-title="<?php echo $status['name']; ?>">
+		          <?php echo $status['name']; ?>
+            </p>
+            </div>
+            <div class="text-right" style="white-space: nowrap;">
+              <span class="kanban-stage-deal-count"><?php echo $total_projects ?></span>
+              <?php if (has_permission('projects', '', 'create')): ?>
+              <a href ="#" onclick="setDealStage('<?php echo $status['id'] ?>','<?php echo $status['name']; ?>')" data-toggle="modal" data-target="#newDealModal" style="color:var(--theme-info-dark)" class="mleft4"><i class="fa fa-plus" aria-hidden="true"></i></a>
+              <?php endif; ?>
+            </div>
+          </div>
+          <p style="margin:0px" class="text-muted"><?php echo $base_currency->symbol;?> <?php echo number_format($tot_amt,2); ?></p>
+          <!-- <a href="#" onclick="return false;" class="pull-right kanban-color-picker kanban-stage-color-picker<?php if($status['isdefault'] == 1){ echo ' kanban-stage-color-picker-last'; } ?>" data-placement="bottom" data-toggle="popover" data-content="
             <div class='text-center'>
               <button type='button' return false;' class='btn btn-success btn-block mtop10 new-project-from-status'>
                 <?php echo _l('new_project'); ?>
@@ -61,8 +76,8 @@ foreach ($statuses as $status) {
             <div class='kan-ban-settings cpicker-wrapper'>
               <?php echo $settings; ?>
             </div>" data-html="true" data-trigger="focus">
-            <!-- <i class="fa fa-angle-down"></i> -->
-          </a>
+            
+          </a> -->
         </div>
         <div class="kan-ban-content-wrapper" style="width:100%">
           <div class="kan-ban-content">
@@ -71,7 +86,7 @@ foreach ($statuses as $status) {
               <?php
               foreach ($projects as $project) {
                 
-                $this->load->view('admin/projects/_kan_ban_card',array('project'=>$project,'status'=>$status));
+                $this->load->view('admin/projects/_kan_ban_card',array('project'=>$project,'status'=>$status,'staff_allowed_to_call'=>$this->callsettings_model->accessToCall()));
               } ?>
               <?php if($total_projects > 0 ){ ?>
               <!-- <li class="text-center not-sortable kanban-load-more" data-load-status="<?php echo $status['id']; ?>">
