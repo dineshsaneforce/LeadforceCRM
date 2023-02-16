@@ -1897,7 +1897,7 @@ class Leads extends AdminController
     {
         
         if(isset($_GET['page'])){
-            $activities =render_lead_activities($lead_id,$_GET['page']);
+            $activities =render_timeline_activities('lead',$lead_id,$_GET['page']);
             if($activities){
                 echo json_encode(array('success'=>true,'content'=>$activities));
                 die;

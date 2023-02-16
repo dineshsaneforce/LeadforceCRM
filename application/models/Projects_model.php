@@ -1321,7 +1321,9 @@ class Projects_model extends App_Model
 
             // hooks()->do_action('after_add_project_approval', $insert_id);
             hooks()->do_action('after_add_project', $insert_id);
-
+            if($insert_id){
+                $this->add_timeline_activity($insert_id, 'project', 'added',$insert_id);
+            }
             log_activity('New Project Created [ID: ' . $insert_id . ']');
 
             return $insert_id;
@@ -2806,7 +2808,7 @@ class Projects_model extends App_Model
             $insert_id = $this->db->insert_id();
             if ($insert_id) {
                 $staff_id = get_staff_user_id();
-                $this->log_activity($project_id, 'project_activity_added_a_new_note', '');
+                $this->add_timeline_activity($project_id, 'note', 'added',$insert_id);
                 return true;
             }
         }
@@ -3098,8 +3100,8 @@ class Projects_model extends App_Model
         $file = $this->get_file($file_id);
 
         $additional_data = $file->file_name;
-        $this->log_activity($project_id, 'project_activity_uploaded_file', $additional_data, $file->visible_to_customer);
 
+        $this->add_timeline_activity($project_id, 'attachment', 'added',$file_id);
         $members           = $this->get_project_members($project_id);
         $notification_data = [
            'description' => 'not_project_file_uploaded',
@@ -3342,6 +3344,8 @@ class Projects_model extends App_Model
         $this->db->join(db_prefix() . 'pipeline', db_prefix() . 'pipeline.id=' . db_prefix() . 'projects.pipeline_id', 'left');
         $this->db->where(db_prefix() . 'projects.status', $status);
         $this->db->where(db_prefix() . 'projects.deleted_status', 0);
+
+        $this->db->where(db_prefix().'projects.approved',1);
         if (empty($_SESSION['member'])) {
             if ($my_staffids){
                 $this->db->where('((' . db_prefix() . 'projects.id IN (SELECT ' . db_prefix() . 'projects.id FROM ' . db_prefix() . 'projects join ' . db_prefix() . 'project_members  on ' . db_prefix() . 'project_members.project_id = ' . db_prefix() . 'projects.id WHERE ' . db_prefix() . 'project_members.staff_id in (' . implode(',',$my_staffids) . '))) OR  ' . db_prefix() . 'projects.teamleader in (' . implode(',',$my_staffids) . '))');
@@ -3447,6 +3451,7 @@ class Projects_model extends App_Model
         $this->db->join(db_prefix() . 'pipeline', db_prefix() . 'pipeline.id=' . db_prefix() . 'projects.pipeline_id', 'left');
         $this->db->where(db_prefix() . 'projects.status', $status);
         $this->db->where(db_prefix() . 'projects.deleted_status', 0);
+        $this->db->where(db_prefix().'projects.approved',1);
         if (empty($_SESSION['member'])) {
             if ($my_staffids){
                 $this->db->where('((' . db_prefix() . 'projects.id IN (SELECT ' . db_prefix() . 'projects.id FROM ' . db_prefix() . 'projects join ' . db_prefix() . 'project_members  on ' . db_prefix() . 'project_members.project_id = ' . db_prefix() . 'projects.id WHERE ' . db_prefix() . 'project_members.staff_id in (' . implode(',',$my_staffids) . '))) OR  ' . db_prefix() . 'projects.teamleader in (' . implode(',',$my_staffids) . '))');
@@ -5013,4 +5018,119 @@ public function all_activiites()
 		return true;
 	}
 
+    /**
+     * @type : activity
+     * @action: added,updated,deleted
+     */
+    public function add_timeline_activity($deal_id, $type, $action,$type_id) {
+        $log = [
+            'project_id' => $deal_id,
+            'type'=>$type,
+            'action'=>$action,
+            'type_id'=>$type_id,
+            'staff_id' => get_staff_user_id()
+        ];
+        $this->db->insert(db_prefix() . 'project_log', $log);
+        return $this->db->insert_id();
+    }
+
+    public function get_timeline_activities($deal_id,$page=0)
+    {
+        $this->db->where('project_id',$deal_id);
+        $this->db->order_by('id', 'DESC');
+        $limit =10;
+        $this->db->limit($limit, $limit*$page);
+        return $this->db->get(db_prefix().'project_log')->result_object();
+    }
+
+    public function get_tabs_count($project_id,$table)
+    {
+        $this->db->where('rel_type','project');
+        $this->db->where('rel_id',$project_id);
+        $this->db->select('COUNT(id) as count');
+        $count =$this->db->get(db_prefix().$table)->row();
+        return $count->count;
+    }
+    public function get_activities_count($project_id)
+    {
+        return $this->get_tabs_count($project_id,'tasks');
+    }
+
+    public function get_proposal_count($project_id)
+    {
+        return $this->get_tabs_count($project_id,'proposals');
+    }
+
+    public function get_invoice_count($project_id)
+    {
+        $this->db->where('project_id',$project_id);
+        $this->db->select('COUNT(id) as count');
+        $count =$this->db->get(db_prefix().'invoices')->row();
+        return $count->count;
+    }
+    
+    public function get_files_count($project_id)
+    {
+        $this->db->where('project_id',$project_id);
+        $this->db->select('COUNT(id) as count');
+        $count =$this->db->get(db_prefix().'project_files')->row();
+        return $count->count;
+    }
+    public function get_notes_count($project_id)
+    {
+        $this->db->where('project_id',$project_id);
+        $this->db->select('COUNT(id) as count');
+        $count =$this->db->get(db_prefix().'project_notes')->row();
+        return $count->count;
+    }
+
+    public function get_calls_count($project_id){
+        $this->db->where('rel_type','project');
+        $this->db->where('rel_id',$project_id);
+        $this->db->group_start();
+        $this->db->where('call_request_id !=',"");
+        $this->db->or_where('call_code !=',0);
+        $this->db->group_end();
+        $this->db->select('COUNT(id) as count');
+        $count =$this->db->get(db_prefix().'tasks')->row();
+        return $count->count;
+    }
+    public function get_logs_count($project_id)
+    {
+        $this->db->where('project_id',$project_id);
+        $this->db->select('COUNT(id) as count');
+        $count =$this->db->get(db_prefix().'project_log')->row();
+        return $count->count;
+    }
+    public function get_emails_count($project_id)
+    {
+        $count =0;
+        $this->db->where('project_id', $project_id);
+
+		$this->db->where('staff_id !=', 0);
+        $this->db->select('count(id) AS count');
+		//$this->db->group_by('uid'); 
+        $emails = $this->db->get(db_prefix() . 'localmailstorage')->row();
+        if($emails){
+            $count +=$emails->count;
+        }
+
+        $this->db->where('project_id', $project_id);
+
+		$this->db->where('staff_id !=', 0);
+        $this->db->select('count(id) AS count');
+		//$this->db->group_by('uid'); 
+        $emails = $this->db->get(db_prefix() . 'reply')->row();
+        
+        if($emails){
+            $count +=$emails->count;
+        }
+
+        return $count;
+    }
+
+    public function get_emails($lead_id)
+    {
+        return $this->imap_mailer->getLocalMessages('project',$lead_id);
+    }
 }

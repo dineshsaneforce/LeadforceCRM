@@ -74,12 +74,22 @@ class Products_model extends App_Model {
         return $userid;
     }
 
-    public function save_lead_products($data, $id, $currency) {
-        $this->db->where('leadid',$id);
-        $this->db->delete(db_prefix() . 'lead_products');
-        $i = 0;
+    public function save_products($type,$data,$id,$currency)
+    {
         $insertdate = array();
-        $insertdate['leadid'] = $id;
+        
+        if($type =='lead'){
+            $this->db->where('leadid',$id);
+            $this->db->delete(db_prefix() . 'lead_products');
+            $insertdate['leadid'] = $id;
+        }elseif($type =='project'){
+            $this->db->where('projectid',$id);
+            $this->db->delete(db_prefix() . 'project_products');
+            $insertdate['projectid'] = $id;
+        }
+        
+        $i = 0;
+        
         foreach($data['product'] as $val) {
             if($val) {
                 $insertdate['productid'] = $val;
@@ -116,56 +126,35 @@ class Products_model extends App_Model {
                         $insertdate['variation'] = $data['variation'][$i];
                     }
                 }
-                
-                $this->db->insert(db_prefix() . 'lead_products', $insertdate);
-                $userid = $this->db->insert_id();
+                if($type =='lead'){
+                    $this->db->insert(db_prefix() . 'lead_products', $insertdate);
+                    $userid = $this->db->insert_id();
+                }elseif($type =='project'){
+                    $this->db->insert(db_prefix() . 'project_products', $insertdate);
+                }
             }
             $i++;
         }
+        if($type =='lead'){
+            $this->db->where('id',$id);
+            $this->db->update(db_prefix().'leads',array('lead_currency'=>$currency,'lead_cost'=>$data['grandtotal']));
+            
+        }elseif($type =='project'){
 
-        $this->db->where('id',$id);
-        $this->db->update(db_prefix().'leads',array('lead_currency'=>$currency,'lead_cost'=>$data['grandtotal']));
+            $update['project_cost'] = $data['grandtotal'];
+            $update['project_currency'] = $currency;
+            $this->db->where('id', $id);
+            $updateid = $this->db->update(db_prefix() . 'projects', $update);
+        }
         return $i;
+                
+    }
+    public function save_lead_products($data, $id, $currency) {
+        return $this->save_products('lead',$data,$id,$currency);
     }
 
     public function save_deals_products($data, $id, $currency) {
-        $this->db->where('projectid',$id);
-        $this->db->delete(db_prefix() . 'project_products');
-        $i = 0;
-        
-        foreach($data['product'] as $val) {
-            if($val) {
-                $insertdate = array();
-                $insertdate['projectid'] = $id;
-                $insertdate['productid'] = $val;
-                $insertdate['currency'] = $currency;
-                $insertdate['price'] = $data['price'][$i];
-                $insertdate['quantity'] = $data['qty'][$i];
-                $insertdate['total_price'] = $data['total'][$i];
-                $insertdate['method'] = $data['method'];
-                if($data['tax'][$i]) {
-                    $insertdate['tax'] = $data['tax'][$i];
-                }
-                if($data['discount'][$i]) {
-                    $insertdate['discount'] = $data['discount'][$i];
-                }
-                if($data['status'][$i]) {
-                    $insertdate['status'] = 1;
-                } else {
-                    $insertdate['status'] = 0;
-                }
-                if($data['variation'][$i] && $data['variation'][$i] > 0) {
-                    $insertdate['variation'] = $data['variation'][$i];
-                }
-                $this->db->insert(db_prefix() . 'project_products', $insertdate);
-            }
-            $i++;
-        }
-        $update['project_cost'] = $data['grandtotal'];
-        $update['project_currency'] = $currency;
-        $this->db->where('id', $id);
-        $updateid = $this->db->update(db_prefix() . 'projects', $update);
-        return $updateid;
+        return $this->save_products('project',$data,$id,$currency);
     }
 
     public function getCategories($id = '', $where = []) {
