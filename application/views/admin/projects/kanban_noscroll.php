@@ -97,7 +97,12 @@
 									<?php } ?>
 										</select>
 									</div>
-									<?php } ?>					
+									<?php } ?>
+					<div class="col-md-2">
+						<div class="form-group">
+							<input type="search" name="gsearch" class="form-control input-sm" value="<?php echo (isset($gsearch)?$gsearch:''); ?>" placeholder="Search..."/>
+						</div>
+					</div>					
 			        <div class="col-md-1">
 			        	<button type="submit" class="btn btn-default"><?php echo _l('apply'); ?></button>
 			        </div>
