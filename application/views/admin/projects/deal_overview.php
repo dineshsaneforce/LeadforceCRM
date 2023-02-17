@@ -49,7 +49,8 @@ $hasApprovalFlow = $this->workflow_model->getflows('deal_approval', 0, ['service
                <a class="text-muted h5"><i class="fa fa-building-o  mright5"></i>Nothing selected</a>
             <?php endif; ?>
          </span>
-         <?php if ($can_user_edit == true) { ?>
+         <?php if (has_permission('projects', '', 'edit')) { 
+             if ($can_user_edit == true) { ?>
             <a href="#" class="data_display_btn">
                <i class="fa fa-pencil"></i>
             </a>
@@ -82,7 +83,7 @@ $hasApprovalFlow = $this->workflow_model->getflows('deal_approval', 0, ['service
                   </div>
                </div>
             </div>
-         <?php } ?>
+         <?php }} ?>
 
       </div>
       <div>
@@ -125,10 +126,15 @@ $hasApprovalFlow = $this->workflow_model->getflows('deal_approval', 0, ['service
       <p class="text-muted "><?php echo _l('expected_closing_date'); ?></p>
       <div class="data_display dropdown">
          <span class="updated_text">
-            <?php if ($project->deadline) : ?>
-               <a class="h5">
+            <?php if ($project->deadline) : 
+                  $date=date_create($project->deadline);
+                  $deadline_class="";
+                  if($date < date_create()){
+                     $deadline_class="text-danger";
+                  }
+               ?>
+               <a class="h5 <?php echo $deadline_class ?>">
                   <i class="fa fa-flag-checkered mright5" aria-hidden="true"></i>
-
                   <?php echo _d($project->deadline); ?>
                </a>
             <?php else : ?>
@@ -138,7 +144,8 @@ $hasApprovalFlow = $this->workflow_model->getflows('deal_approval', 0, ['service
                </a>
             <?php endif; ?>
          </span>
-         <?php if ($can_user_edit == true) { ?>
+         <?php if (has_permission('projects', '', 'edit')) { 
+          if ($can_user_edit == true) { ?>
             <a href="#" class="data_display_btn">
                <i class="fa fa-pencil"></i>
             </a>
@@ -155,14 +162,14 @@ $hasApprovalFlow = $this->workflow_model->getflows('deal_approval', 0, ['service
                   </div>
                </div>
             </div>
-         <?php } ?>
+         <?php }} ?>
       </div>
    </div>
 <?php endif; ?>
 <?php if (!empty($deal_need_fields) && (in_array("project_contacts[]", $deal_need_fields) || in_array("primary_contact", $deal_need_fields))) : ?>
    <div class="team-contacts project-overview-team-contacts">
       <hr class="hr-panel-heading project-area-separation" />
-      <?php if (has_permission('projects', '', 'edit') || has_permission('projects', '', 'create')) { ?>
+      <?php if (has_permission('projects', '', 'edit')) { ?>
          <?php if ($can_user_edit == true) { ?>
             <div class="inline-block pull-right mright10 project-contact-settings" data-toggle="tooltip" data-title="<?php echo _l('add_new', _l('contact')); ?>">
                <?php if (!empty($deal_need_fields) && (in_array("project_contacts[]", $deal_need_fields))) { ?>
@@ -193,7 +200,7 @@ $hasApprovalFlow = $this->workflow_model->getflows('deal_approval', 0, ['service
                <div class="pleft5">
                   <div style="display:flex">
                      <h5 class="media-heading mtop5" style="width:auto; float:left;"><a class="h5" href="<?php echo $can_user_edit ? admin_url('clients/view_contact/' . $contact["contacts_id"]) : '#'; ?>"><?php echo get_contact_full_name($contact['contacts_id']); ?></a>
-                        <?php if ((has_permission('projects', '', 'edit') || has_permission('projects', '', 'create')) && $contact['is_primary'] == 0) { ?>
+                        <?php if ((has_permission('projects', '', 'edit')) && $contact['is_primary'] == 0) { ?>
                            <?php if ($can_user_edit == true) { ?>
                               <a href="<?php echo admin_url('projects/remove_team_contact/' . $project->id . '/' . $contact['contacts_id']); ?>" class="text-danger _delete"><i class="fa fa fa-times"></i></a>
                         <?php }
@@ -225,7 +232,7 @@ $hasApprovalFlow = $this->workflow_model->getflows('deal_approval', 0, ['service
 <?php if (!empty($deal_need_fields) && in_array("project_members[]", $deal_need_fields)) : ?>
    <div class="team-members project-overview-team-members">
       <hr class="hr-panel-heading project-area-separation" />
-      <?php if (has_permission('projects', '', 'edit') || has_permission('projects', '', 'create')) { ?>
+      <?php if (has_permission('projects', '', 'edit')) { ?>
          <?php if ($can_user_edit == true) { ?>
             <div class="inline-block pull-right mright10 project-member-settings" data-toggle="tooltip" data-title="<?php echo _l('add_edit_members'); ?>">
                <a href="#" data-toggle="modal" class="pull-right" data-target="#add-edit-members"><i class="fa fa-plus"></i></a>
@@ -256,7 +263,7 @@ $hasApprovalFlow = $this->workflow_model->getflows('deal_approval', 0, ['service
                         <!-- <br /><small class="text-muted"><?php echo _l('total_logged_hours_by_staff') . ': ' . seconds_to_time_format($member['total_logged_time']); ?></small> -->
                      <?php } ?>
 
-                     <?php if (has_permission('projects', '', 'edit') || has_permission('projects', '', 'create')) { ?>
+                     <?php if (has_permission('projects', '', 'edit')) { ?>
                         <?php if ($can_user_edit == true) { ?>
                            <a href="<?php echo admin_url('projects/remove_team_member/' . $project->id . '/' . $member['staff_id']); ?>" class="text-danger _delete"><i class="fa fa fa-times"></i></a>
                      <?php }
@@ -274,7 +281,7 @@ $hasApprovalFlow = $this->workflow_model->getflows('deal_approval', 0, ['service
       <hr class="hr-panel-heading project-area-separation" />
       <h4 class="text-primary hover-show">
          <?php echo _l('project_description'); ?>
-         <?php if (has_permission('projects', '', 'edit') || has_permission('projects', '', 'create')) { ?>
+         <?php if (has_permission('projects', '', 'edit')) { ?>
             <?php if ($can_user_edit == true) { ?>
                <a href="#" data-toggle="modal" class="h5 hover-edit" data-target="#edit_description"><i class=" fa fa-pencil"></i></a>
          <?php }
@@ -295,7 +302,7 @@ $hasApprovalFlow = $this->workflow_model->getflows('deal_approval', 0, ['service
       <hr class="hr-panel-heading project-area-separation hr-10" />
       <?php echo '<span class="h4 text-primary"><i class="fa fa-tag" aria-hidden="true"></i> ' . _l('tags')?>
       <?php echo '</span>'; ?>
-      <?php if (has_permission('projects', '', 'edit') || has_permission('projects', '', 'create')) { ?>
+      <?php if (has_permission('projects', '', 'edit')) { ?>
             <?php if ($can_user_edit == true) { ?>
                <a href="#" class="data_display_btn">
                   <i class="fa fa-pencil"></i>
@@ -348,7 +355,8 @@ $custom_fields = array_merge($custom_fields1, $custom_fields2);
                   Nothing Selected
                <?php endif; ?>
             </span>
-            <?php if ($can_user_edit == true) { ?>
+            <?php if (has_permission('projects', '', 'edit')) {
+                if ($can_user_edit == true) { ?>
                <a href="#" class="data_display_btn">
                   <i class="fa fa-pencil"></i>
                </a>
@@ -562,7 +570,7 @@ $custom_fields = array_merge($custom_fields1, $custom_fields2);
                      </div>
                   </div>
                </div>
-            <?php } ?>
+            <?php } } ?>
          </div>
       </div>
    <?php endforeach; ?>

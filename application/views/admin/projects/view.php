@@ -1,13 +1,56 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed'); ?>
 
 <?php
-$can_user_edit = true;
-if ($project->approved == 0) {
-    $can_user_edit = false;
+$can_access_this_deal = false;
+if (is_admin(get_staff_user_id()) || $project->teamleader == get_staff_user_id() || in_array(get_staff_user_id(), $ownerHierarchy) || (!empty($my_staffids) && in_array($project->teamleader, $my_staffids) && !in_array($project->teamleader, $viewIds))) {
+   $can_access_this_deal = true;
 }
 
-if ($deal_rejected && get_staff_user_id() == $project->created_by) {
-    $can_user_edit = true;
+if(!$can_access_this_deal && $members){
+    foreach($members as $member){
+        if($member['staff_id'] ==get_staff_user_id() || in_array($member['staff_id'], $ownerHierarchy)(!empty($my_staffids) && in_array($member['staff_id'], $my_staffids) && !in_array($member['staff_id'], $viewIds))){
+            $can_access_this_deal =true;
+            break;
+        }
+    }
+}
+
+if($can_access_this_deal ==false){ ?>
+    <?php init_head(); ?>
+    <div id="wrapper">
+      <div class="content">
+      <div class="container">
+         <div class="text-center" style="height:100%">
+            <div style="margin:10vh 0px">
+                  <i class="fa fa-lock  fa-fw fa-lg" style="font-size:100px;"></i>
+                  <h3>You dont have access to this deal.</h3>
+                  <a class="btn btn-info" href="<?php echo admin_url('projects') ?>">Go to Deals</a>
+            </div>
+         </div>
+      </div>
+      </div>
+   </div>
+    <?php init_tail(); ?>
+    </body>
+    </html>
+<?php 
+    exit();
+}
+
+$can_user_edit = false;
+if (is_admin(get_staff_user_id()) || $project->teamleader == get_staff_user_id() || in_array(get_staff_user_id(), $ownerHierarchy) || (!empty($my_staffids) && in_array($project->teamleader, $my_staffids) && !in_array($project->teamleader, $viewIds))) {
+   $can_user_edit = true;
+}
+if ($project->approved == 0 && !$deal_rejected) {
+   $can_user_edit = false;
+}
+
+if ($project->approved == 0 && $deal_rejected && get_staff_user_id() != $project->created_by) {
+   $can_user_edit = false;
+}
+
+if (!has_permission('projects', '', 'edit')) {
+    $can_user_edit = false;
 }
 
 $hasHIstory = $this->approval_model->hasHistory('projects', $project->id) ? true : false;
@@ -67,6 +110,9 @@ $hasApprovalFlow = $this->workflow_model->getflows('deal_approval', 0, ['service
 
     .data_display_btn{
         color: var(--theme-info-dark);
+    }
+    .clientiddiv .dropdown-menu{
+        bottom: auto;
     }
 </style>
 <div id="wrapper">
@@ -313,14 +359,14 @@ $hasApprovalFlow = $this->workflow_model->getflows('deal_approval', 0, ['service
                                     </div>
                                 <?php } ?>
                             </div>
-                            <?php if (!empty($need_fields) && in_array("status", $need_fields) && (is_admin(get_staff_user_id()) || $project->teamleader == get_staff_user_id() || in_array(get_staff_user_id(), $ownerHierarchy) || (!empty($my_staffids) && in_array($project->teamleader, $my_staffids) && !in_array($project->teamleader, $viewIds))) && $project->deleted_status == 0 && $project->approved == 1) : ?>
+                            <?php if (!empty($need_fields) && in_array("status", $need_fields)) : ?>
 
 
                                 <div class="col-xs-12">
                                     <ul class="arrow-progress">
                                         <?php $activestatus = true; ?>
                                         <?php foreach ($statuses as $status) : ?>
-                                            <li data-toggle="tooltip" data-title="<?php echo $status['name']; ?>" class="<?php echo $activestatus ? 'active' : '' ?>" onclick="changeProjectStatus(<?php echo $project->id ?>,<?php echo $status['id'] ?>)">
+                                            <li data-toggle="tooltip" data-title="<?php echo $status['name']; ?>" class="<?php echo $activestatus ? 'active' : '' ?>" <?php echo ($can_user_edit)?'onclick="changeProjectStatus('.$project->id.','.$status['id'].')"': '' ?>>
                                                 <?php if ($project->status == $status['id']) {
                                                     $activestatus = false;
                                                 } ?>
