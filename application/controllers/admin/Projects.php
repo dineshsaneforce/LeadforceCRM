@@ -312,7 +312,7 @@ class Projects extends AdminController
                 unset($data['total']);
 				$data['progress'] = $this->projects_model->getprogressstatus($data['status']);
                 $data['created_by'] =get_staff_user_id();
-                $id = $this->projects_model->add($data,$products,$project_contacts,$primary_contact);
+                $id = $this->projects_model->add($data,$products,$project_contacts,$primary_contact,$this->input->post('lead_id'));
 
                 if($this->input->post('lead_id')){
                     $this->leads_model->convert_to_deal($this->input->post('lead_id'),$id,$primary_contact);
@@ -956,7 +956,8 @@ class Projects extends AdminController
                 $data['deal_rejected'] =0;
             $data['staff_hierarchy'] =$this->approval_model->getDealReportingLevels($project->teamleader);
 
-            $data['project_timeline_count'] = $this->projects_model->get_logs_count($project->id);
+            // $data['project_timeline_count'] = $this->projects_model->get_logs_count($project->id);
+            $data['project_timeline_count'] = 0;
             $data['project_email_count'] = $this->projects_model->get_emails_count($project->id);
             $data['project_tasks_count'] = $this->projects_model->get_activities_count($project->id);
             $data['project_tasks_bycall_count'] = $this->projects_model->get_calls_count($project->id);
@@ -1569,6 +1570,8 @@ class Projects extends AdminController
 					}
 				}elseif(isset($data['date_finished']) && !empty($data['date_finished'])){
 					$success = $this->projects_model->update(array('date_finished'=>$data['date_finished'],'project_modified'=>date('Y-m-d H:i:s'),'modified_by'=>get_staff_user_id()), $data['project_id']);
+				}elseif(isset($data['tags'])){
+					$success = $this->projects_model->update(array('tags'=>$data['tags'],'project_modified'=>date('Y-m-d H:i:s'),'modified_by'=>get_staff_user_id()), $data['project_id']);
 				}elseif(isset($data['status']) && !empty($data['status'])){
 					
 					$success = $this->projects_model->update(array('status'=>$data['status'],'project_modified'=>date('Y-m-d H:i:s'),'modified_by'=>get_staff_user_id()), $data['project_id']);

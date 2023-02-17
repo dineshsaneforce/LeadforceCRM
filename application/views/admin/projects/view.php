@@ -11,8 +11,7 @@ if ($deal_rejected && get_staff_user_id() == $project->created_by) {
 }
 
 $hasHIstory = $this->approval_model->hasHistory('projects', $project->id) ? true : false;
-$hasApprovalFlow = $this->workflow_model->getflows('deal_approval', 0, ['service' => 'approval_level']);
-
+$hasApprovalFlow = $this->workflow_model->getflows('deal_approval', 0, ['service' => 'approval_level','inactive'=>0]);
 ?>
 <?php init_head(); ?>
 <style>
@@ -1496,12 +1495,12 @@ echo form_hidden('project_percent', $percent);
 
 <script>
     $(document).ready(function() {
-        $('.data_display_btn').click(function(e) {
-            var f = $(this).attr("data-val");
+        // $('.data_display_btn').click(function(e) {
+        //     var f = $(this).attr("data-val");
 
-            $('.' + f + ' .data_display').hide();
-            $('.' + f + ' .data_edit').show();
-        });
+        //     $('.' + f + ' .data_display').hide();
+        //     $('.' + f + ' .data_edit').show();
+        // });
         $('.data_edit_btn').click(function(e) {
             
             var f = $(this).attr("data-val");

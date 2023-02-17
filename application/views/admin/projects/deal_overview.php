@@ -46,7 +46,7 @@ $hasApprovalFlow = $this->workflow_model->getflows('deal_approval', 0, ['service
                   <?php echo $project->client_data->company; ?>
                </a>
             <?php else : ?>
-               <a class="text-muted h5"><i class="fa fa-building-o  mright5"></i>Nothig selected</a>
+               <a class="text-muted h5"><i class="fa fa-building-o  mright5"></i>Nothing selected</a>
             <?php endif; ?>
          </span>
          <?php if ($can_user_edit == true) { ?>
@@ -87,7 +87,7 @@ $hasApprovalFlow = $this->workflow_model->getflows('deal_approval', 0, ['service
       </div>
       <div>
          <?php if (isset($project->client_data->website) && $project->client_data->website) : ?>
-            <p class="text-muted h5"><i class="fa fa-globe mright5" aria-hidden="true"></i><a class="text-muted" href="<?php echo $project->client_data->website; ?>" target="_blank"><?php echo $project->client_data->website; ?></a></p>
+            <p class="text-muted h5"><i class="fa fa-globe mright5" aria-hidden="true"></i><a class="text-muted" href="<?php echo maybe_add_http($project->client_data->website); ?>" target="_blank"><?php echo $project->client_data->website; ?></a></p>
          <?php endif; ?>
          <?php if (isset($project->client_data->phonenumber) && $project->client_data->phonenumber) : ?>
             <p class="text-muted h5"><i class="fa fa-phone mright5" aria-hidden="true"></i><a class="text-muted" href="tel:<?php echo $project->client_data->phonenumber; ?>"><?php echo $project->client_data->phonenumber; ?></a></p>
@@ -134,7 +134,7 @@ $hasApprovalFlow = $this->workflow_model->getflows('deal_approval', 0, ['service
             <?php else : ?>
                <a class="text-muted h5">
                   <i class="fa fa-flag-checkered mright5" aria-hidden="true"></i>
-                  Nothig Selected
+                  Nothing Selected
                </a>
             <?php endif; ?>
          </span>
@@ -171,7 +171,7 @@ $hasApprovalFlow = $this->workflow_model->getflows('deal_approval', 0, ['service
             </div>
             <div class="inline-block pull-right mright10 project-contact-settings" data-toggle="tooltip" data-title="<?php echo _l('change'); ?>">
 
-               <a href="#" data-toggle="modal" class="pull-right getcontactsbyorg" data-target="#add-edit-contacts"><i class="fa fa-cog"></i></a>
+               <a href="#" data-toggle="modal" class="pull-right getcontactsbyorg" data-target="#add-edit-contacts"><i class="fa fa-pencil"></i></a>
             </div>
       <?php }
       } ?>
@@ -207,12 +207,14 @@ $hasApprovalFlow = $this->workflow_model->getflows('deal_approval', 0, ['service
                         <span style="margin:0; top:0" class="primarycontact"> Primary </span>
                      <?php } ?>
                   </div>
+                  <div style="padding-top: 5px;">
                   <?php if ($contact['email']) : ?>
                      <a href="mailto:<?php echo $contact['email'] ?>" class="text-muted"><i class="fa fa-envelope mright5"></i><?php echo $contact['email'] ?></a>
                   <?php endif; ?>
                   <?php if ($contact['phonenumber']) : ?>
                      &nbsp<a href="tel:<?php echo $contact['phonenumber'] ?>" class="text-muted"><i class="fa fa-phone mright5"></i><?php echo $contact['phonenumber'] ?></a>
                   <?php endif; ?>
+                  </div>
                </div>
             </div>
       <?php }
@@ -289,10 +291,34 @@ $hasApprovalFlow = $this->workflow_model->getflows('deal_approval', 0, ['service
 
 <?php $tags = get_tags_in($project->id, 'project'); ?>
 <?php if ($tags) : ?>
-   <div class="tags-read-only-custom project-overview-tags">
+   <div class="data_display dropdown project-overview-tags">
       <hr class="hr-panel-heading project-area-separation hr-10" />
-      <?php echo '<h4 class="text-primary"><i class="fa fa-tag" aria-hidden="true"></i> ' . _l('tags') . '</h4>'; ?>
-      <input type="text" class="tagsinput read-only" id="tags" name="tags" value="<?php echo prep_tags_input($tags); ?>" data-role="tagsinput">
+      <?php echo '<span class="h4 text-primary"><i class="fa fa-tag" aria-hidden="true"></i> ' . _l('tags')?>
+      <?php echo '</span>'; ?>
+      <?php if (has_permission('projects', '', 'edit') || has_permission('projects', '', 'create')) { ?>
+            <?php if ($can_user_edit == true) { ?>
+               <a href="#" class="data_display_btn">
+                  <i class="fa fa-pencil"></i>
+               </a>
+               <div class="deal-field-update-dropdown" >
+                  <div class="panel_s no-mbot">
+                        <div class="panel-body">
+                           <p class="text-muted">Update Tags</p>
+                           <div class="input-group date">
+                              <input type="text" class="tagsinput" id="tags" name="tags" value="<?php echo prep_tags_input($tags); ?>" data-role="tagsinput">
+                           </div>
+                           <div id="company_exists_info" class="hide"></div>
+                           <br>
+                           <a class="btn btn-info pull-right data_edit_btn" data-val="tags">Save Changes</a>
+                           <button  class="btn pull-right mright5 close-dropdown">Cancel</button>
+                        </div>
+                  </div>
+               </div>
+         <?php }
+         } ?>
+      <div class="tags-read-only-custom">
+      <input type="text" class="tagsinput read-only" id="" name="" value="<?php echo prep_tags_input($tags); ?>" data-role="tagsinput">
+      </div>
       <br>
    </div>
 <?php endif; ?>
@@ -319,7 +345,7 @@ $custom_fields = array_merge($custom_fields1, $custom_fields2);
                <?php if ($value) : ?>
                   <?php echo $value; ?>
                <?php else : ?>
-                  Nothig Selected
+                  Nothing Selected
                <?php endif; ?>
             </span>
             <?php if ($can_user_edit == true) { ?>

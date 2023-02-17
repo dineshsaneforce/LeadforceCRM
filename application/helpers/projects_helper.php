@@ -72,7 +72,7 @@ function app_init_project_tabs()
             'linked_to_customer_option' => ['view_activity_email'],
         ]);
     }
-    if (has_permission('proposals', '', 'view')) {
+    if (has_permission('proposals', '', 'view')||has_permission('proposals', '', 'view_own')) {
         $CI->app_tabs->add_project_tab('project_proposal', [
             'name'                      => _l('proposal'),
             'icon'                      => 'fa fa-exclamation',
@@ -81,7 +81,7 @@ function app_init_project_tabs()
             'linked_to_customer_option' => ['view_proposals'],
         ]);
     }
-    if (has_permission('invoices', '', 'view')) {
+    if (has_permission('invoices', '', 'view_own') || has_permission('invoices', '', 'view')) {
         $CI->app_tabs->add_project_tab('project_invoice', [
             'name'                      => _l('invoice'),
             'icon'                      => 'fa fa-exclamation',
