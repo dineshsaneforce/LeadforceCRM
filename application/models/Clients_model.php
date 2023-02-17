@@ -99,7 +99,6 @@ class Clients_model extends App_Model {
             $this->db->where($d);
         }
         $this->db->select('client.company,contacts.userid,client.userid,contacts.firstname,contacts.email,contacts.phonenumber,contacts.id');
-        $this->db->from(`tblcontacts`);
         $this->db->join('clients AS client', 'contacts.userids=client.userid', 'left');
         // pre($this->db->get_compiled_select(db_prefix() . 'contacts'));
         return $this->db->get(db_prefix() . 'contacts')->result_array();
