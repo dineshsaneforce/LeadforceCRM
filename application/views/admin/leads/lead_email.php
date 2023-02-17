@@ -53,10 +53,12 @@ $emails =$this->leads_model->get_emails($lead->id);
 								<?php if(!empty($email1['attachements']) && $email1['attachements'] != '[]'){
 									$msg_id = $email1['message_id'];
 									if(!empty($email1['mail_by']) && $email1['mail_by']=='outlook'){
-										$downoad_url = admin_url('outlook_mail/outlook_all_download_attachment?msg_id='.$msg_id);
+										if($email1['has_attachments']){
+											$downoad_url = admin_url('outlook_mail/outlook_all_download_attachment?msg_id='.$msg_id);
 										?>
 										<a href="<?php echo $downoad_url;?>" ><i class="fa fa-paperclip" aria-hidden="true"></i></a>
-										<?php
+
+										<?php }
 									}else{
 									if($inboxEmails['uid']!=0){
 										if($email1['folder']=='INBOX'){
@@ -98,87 +100,9 @@ $emails =$this->leads_model->get_emails($lead->id);
 <?php $this->load->view("admin/staff/emailcomposer") ?>
 
 <script>
-	function add_content(uid) {
-        document.getElementById('overlay').style.display = '';
-        $.post(admin_url + 'company_mail/content', {
-                uid: uid
-            },
-            function(data, status) {
-                var json = $.parseJSON(data);
-                $('.ch_files_f').html('');
-                $('#f_files').html('');
-                $('#forward_toemail').val('');
-                $('#forward_ccemail').val('');
-                $('#forward_bccemail').val('');
-                $('#ftotcnt').val(1);
-                $('#ffilecnt').val(1);
-                $('#fallcnt').val(0);
-                $('#f_file').val('');
-                // check_email('', 'forward_toemail');
-                $('#f_getFile').val('');
-                $('#forward_subject').val('Fwd: ' + json.subject);
-                tinyMCE.get('forward_description').setContent(json.message);
-                $('#forward-modal').modal('show');
-                document.getElementById('overlay').style.display = 'none';
+    
 
-            });
-    }
-
-    function add_to(uid) {
-        document.getElementById('overlay').style.display = '';
-        $.post(admin_url + 'company_mail/to_mail', {
-                uid: uid
-            },
-            function(data, status) {
-                var json = $.parseJSON(data);
-                $('#reply_toemail').val(json.from_address);
-                $('#ch_uid').val(json.message_id);
-                $('#reply_subject').val('Re: ' + json.subject);
-                $('.ch_files_r').html('');
-                $('#r_files').html('');
-                $('#reply_ccemail').val('');
-                $('#reply_bccemail').val('');
-                $('#ftotcnt').val(1);
-                $('#rfilecnt').val(1);
-                $('#rallcnt').val(0);
-                $('#r_file').val('');
-                $('#reply-modal [name="rel_type"]').val(json.rel_data.rel_type);
-                $('#reply-modal [name="rel_id"]').val(json.rel_data.rel_id);
-                $('#reply-modal [name="parent_id"]').val(json.rel_data.parent_id);
-                tinyMCE.get('reply_description').setContent('<blockquote style="border-left: 2px solid #ccc; padding-left: 10px;">'+json.message+'</blockquote><br><br>');
-                $('#r_getFile').val('');
-                $('#reply-modal').modal('show');
-                document.getElementById('overlay').style.display = 'none';
-
-            });
-    }
-
-    function add_reply_all(uid) {
-        document.getElementById('overlay').style.display = '';
-        $.post(admin_url + 'company_mail/add_reply_all', {
-                uid: uid
-            },
-            function(data, status) {
-                var json = $.parseJSON(data);
-                $('#reply_toemail').val(json.to_address);
-                $('#ch_uid').val(json.message_id);
-                $('#reply_subject').val('Re: ' + json.subject);
-
-                $('.ch_files_r').html('');
-                $('#r_files').html('');
-                $('#reply_ccemail').val('');
-                $('#reply_bccemail').val('');
-                $('#ftotcnt').val(1);
-                $('#rfilecnt').val(1);
-                $('#rallcnt').val(0);
-                $('#r_file').val('');
-				tinyMCE.get('reply_description').setContent('<blockquote style="border-left: 2px solid #ccc; padding-left: 10px;">'+json.message+'</blockquote><br><br>');
-                $('#r_getFile').val('');
-                $('#reply-modal').modal('show');
-                document.getElementById('overlay').style.display = 'none';
-
-            });
-    }
+    
 	function sync_mail(){
 		document.getElementById('overlay').style.display = ''; 
 		$.ajax({
@@ -214,3 +138,9 @@ $emails =$this->leads_model->get_emails($lead->id);
 		});
 	}
 </script>
+<?php
+if(get_option('connect_mail')=='no'){
+	$this->load->view("admin/outlook/outlook_replyjs");
+}else{
+	$this->load->view("admin/staff/imap_replyjs");
+} ?>

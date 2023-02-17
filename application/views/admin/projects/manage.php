@@ -13,27 +13,21 @@
               <div class="panel-body">
               <div class="_buttons">
               <?php if(has_permission('projects','','create')){ ?>
-                <a href="<?php echo admin_url('projects/project'); ?>" class="btn btn-info pull-left display-block mright5">
+                <a id="openNewProject" data-toggle="modal" data-target="#newDealModal" class="btn btn-info pull-left display-block mright5">
                   <?php echo _l('new_project'); ?>
                 </a>
               <?php } 
-              $list_url = admin_url('projects/index_list?pipelines=&member=&gsearch=');
-			  $kanban_onscroll_url = admin_url('projects/kanban_noscroll?pipelines='.$pipelines[0]['id'].'&gsearch='.$gsearch);
-			  foreach($mem as $member) {
-				  $kanban_onscroll_url .= '&member[]=' . $member;
-			  }
-			   //   $kanban_url = admin_url('projects/kanbans?pipelines='.$pipelines[0]['id'].'&member=&gsearch=');
-			$forecast_url = admin_url('projects/kanbans_forecast?pipelines='.$pipelines[0]['id'].'&gsearch='.$gsearch);
-			   foreach($mem as $member) {
-				$forecast_url .= '&member[]=' . $member;
-			}			  
+			$list_url = admin_url('projects/index_list?pipelines=&member=&gsearch=');
+			$kanban_onscroll_url = admin_url('projects/kanban_noscroll?pipelines='.$pipelines[0]['id'].'&member='.$mem.'&gsearch='.$gsearch);
+			// $kanban_url = admin_url('projects/kanbans?pipelines='.$pid.'&member='.$mem.'&gsearch='.$gsearch);
+			$forecast_url = admin_url('projects/kanbans_forecast?pipelines='.$pipelines[0]['id'].'&member='.$mem.'&gsearch='.$gsearch);
 			$approval_url = admin_url('projects/index_list?approvalList=1&pipelines=&member=&gsearch=');
 			  if(!is_admin(get_staff_user_id())) {
-                  $list_url = admin_url('projects/index_list?pipelines='.$pipelines[0]['id'].'&member='.get_staff_user_id().'&gsearch=');
-                  $kanban_onscroll_url = admin_url('projects/kanban_noscroll?pipelines='.$pipelines[0]['id'].'&member='.get_staff_user_id().'&gsearch=');
-                //   $kanban_url = admin_url('projects/kanbans?pipelines='.$pipelines[0]['id'].'&member='.get_staff_user_id().'&gsearch=');
+                  $list_url = admin_url('projects/index_list?pipelines='.$pipelines[0]['id'].'&member=&gsearch=');
+                  $kanban_onscroll_url = admin_url('projects/kanban_noscroll?pipelines='.$pipelines[0]['id'].'&member=&gsearch=');
+                //   $kanban_url = admin_url('projects/kanbans?pipelines='.$pipelines[0]['id'].'&member=&gsearch=');
                   $forecast_url = admin_url('projects/kanbans_forecast?pipelines='.$pipelines[0]['id'].'&member='.$mem.'&gsearch='.$gsearch);
-                //   $approval_url = admin_url('projects/index_list?approvalList=1&pipelines='.$pipelines[0]['id'].'&member='.get_staff_user_id().'&gsearch=');
+                  $approval_url = admin_url('projects/index_list?approvalList=1&pipelines='.$pipelines[0]['id'].'&member=&gsearch=');
 				}
               ?>
               <a href="<?php echo $list_url; ?>" data-toggle="tooltip" title="<?php echo _l('projects'); ?>" class="btn <?php echo !isset($_GET['approvalList'])?'btn-primary':'btn-default' ?>"><i class="fa fa-list" aria-hidden="true"></i></a>
@@ -437,12 +431,27 @@ foreach($custom_fields as $cfkey=>$cfval){
   </div>
 </div>
 
+<div class="modal" id="newDealModal" style="display: none; z-index: 1050;">
+	<div class="modal-dialog">
+		<div class="modal-header">
+			<span class="title"><?php echo _l('new_project'); ?></span>
+			<button type="button" class="close" data-dismiss="modal">×</button>
+		</div>
+		<div class="modal-content">
+			<div class="modal-body" id="newDealModalContent">
+			</div>
+		</div>
+	</div>
+</div>
+<?php $this->load->view('admin/projects/modals_project') ?>
+
 <?php $this->load->view('admin/projects/copy_settings'); ?>
 <?php init_tail(); 
 $status1 = (!empty($_REQUEST['status']))?'?status='.$_REQUEST['status']:'';
 ?>
 <script>
 $(function(){
+	init_deal_model('');
      var ProjectsServerParams = {};
 
      $.each($('._hidden_inputs._filters input'),function(){

@@ -1,11 +1,18 @@
 <?php 
 
 
-function render_lead_activities($lead_id,$page=0)
+
+function render_timeline_activities($type,$type_id,$page=0)
 {
     $CI = & get_instance();
     $CI->load->model('tasktype_model');
-    $logs =$CI->leads_model->get_log_activities($lead_id,$page);
+    $logs =array();
+    if($type =='lead'){
+        $logs =$CI->leads_model->get_log_activities($type_id,$page);
+    }elseif($type =='project'){
+        $logs =$CI->projects_model->get_timeline_activities($type_id,$page);
+    }
+    
     if($logs){
         ob_start(); ?>
         <?php if($page ==0): ?>
@@ -36,6 +43,14 @@ function render_lead_activities($lead_id,$page=0)
 
                     }else{
                         $title ='Lead manually created';
+                    }
+                    
+                }elseif($log->type =='project'){
+                    $icon ='<i class="fa fa-handshake-o"></i>';
+                    if($log->action =='addedfromlead'){
+                        $title ='Deal created from lead';
+                    }else{
+                        $title ='Deal manually created';
                     }
                     
                 }elseif($log->type =='activity'){
@@ -85,13 +100,23 @@ function render_lead_activities($lead_id,$page=0)
                     }
                     
                 }elseif($log->type =='note'){
-                    $note =$CI->misc_model->get_note($log->type_id);
+                    if($type =='project'){
+                        $note =$CI->projects_model->get_notes_byid($log->type_id);
+                        if($note){
+                            $detailed_content ='<div class="comment note-bg">'.$note->content.'</div>';
+                        }
+                    }else{
+                        $note =$CI->misc_model->get_note($log->type_id);
+                        if($note){
+                            $detailed_content ='<div class="comment note-bg">'.$note->description.'</div>';
+                        }
+                    }
                     if(!$note){
                         continue;
                     }
                     $icon ='<i class="fa fa-sticky-note"></i>';
                     $subject ='has added new  <i class="fa fa-sticky-note"></i> note';
-                    $detailed_content ='<div class="comment note-bg">'.$note->description.'</div>';
+                    
                 }elseif($log->type =='email'){
                     $CI->db->where('id',$log->type_id);
                     if($log->action =='added'){
@@ -116,12 +141,25 @@ function render_lead_activities($lead_id,$page=0)
                   </div>';
                 }elseif($log->type =='attachment'){
                     $CI->db->where('id',$log->type_id);
-                    $file = $CI->db->get('files')->row();
+                    if($type =='project'){
+                        $file = $CI->db->get('project_files')->row();
+                    }else{
+                        $file = $CI->db->get('files')->row();
+                    }
+                    
                     if(!$file){
                         continue;
                     }
-                    $attachment_url = site_url('download/file/lead_attachment/'.$file->id);
-                    $path = get_upload_path_by_type('lead') . $file->rel_id . '/' . $file->file_name;
+                    if($type =='project'){
+                        
+                        $attachment_url = site_url('download/file/project_attachment/'.$file->id);
+                        $path = get_upload_path_by_type('project') . $file->project_id . '/' . $file->file_name;
+                    }else{
+                        $attachment_url = site_url('download/file/lead_attachment/'.$file->id);
+                        $path = get_upload_path_by_type('lead') . $file->rel_id . '/' . $file->file_name;
+
+                    }
+                   
                     $filesize =convertToReadableSize(filesize($path));
                     if(!empty($file->external)){
                         $attachment_url = $file->external_link;
@@ -175,7 +213,6 @@ function render_lead_activities($lead_id,$page=0)
     }
     return $content;
 }
-
 function convertToReadableSize($size){
     $base = log($size) / log(1024);
     $suffix = array("", "KB", "MB", "GB", "TB");

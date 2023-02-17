@@ -399,6 +399,10 @@ class Invoices extends AdminController
         $data['staff']     = $this->staff_model->get('', ['active' => 1]);
         $data['title']     = $title;
         $data['bodyclass'] = 'invoice';
+        if($this->input->get('rel_type','') =='project'){
+            $this->db->where('id',$this->input->get('rel_id',''));
+            $data['project'] =$this->db->get(db_prefix().'projects')->row();
+        }
 		$fields = get_option('deal_fields');
 		$data['need_fields'] =  array();
 		if(!empty($fields) && $fields != 'null'){
@@ -762,5 +766,13 @@ class Invoices extends AdminController
             echo '1';
         }
         exit;
+    }
+
+    public function invoice_relations($project_id)
+    {
+        $_POST['project_id'] =$project_id;
+        $this->app->get_table_data('invoices', [
+            'project_id'   => $project_id,
+        ]);
     }
 }

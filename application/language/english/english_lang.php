@@ -3148,10 +3148,10 @@ $lang['this_week']                                       = 'This Week';
 $lang['last_week']                                       = 'Last Week';
 $lang['this_month']                                      = 'This Month';
 $lang['last_month']                                      = 'Last Month';
-$lang['no_description_project']                          = 'No description for this project';
+$lang['no_description_project']                          = 'No description for this deal';
 $lang['sales_string']                                    = 'Sales';
-$lang['no_project_members']                              = 'No members for this project';
-$lang['no_project_contacts']                              = 'No contact person for this project';
+$lang['no_project_members']                              = 'No members for this deal';
+$lang['no_project_contacts']                              = 'No contact person for this deal';
 $lang['search_by_tags']                                  = 'Use # + tagname to search by tags';
 $lang['project_status_5']                                = 'Cancelled';
 

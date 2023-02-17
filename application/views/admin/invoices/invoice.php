@@ -506,6 +506,18 @@
 
 
 </script>
+
+<?php if(isset($project->id)): ?>
+   <?php $rel_data = get_relation_data('project',$project->id);
+      $rel_val = get_relation_values($rel_data,'project');
+      $select_project_option_string ='<option value="'.$rel_val['id'].'" selected>'.$rel_val['name'].'</option>'; ?>
+<script>
+   $( document ).ready(function() {
+      $('#project_id').append(`<?php echo $select_project_option_string ?>`).selectpicker('refresh').trigger('change');
+   });
+</script>
+<?php endif;?>
+
 <style>
 .ui-autocomplete {
     position: absolute;

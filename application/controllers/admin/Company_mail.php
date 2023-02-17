@@ -142,7 +142,7 @@ class Company_mail extends AdminController
         $this->load->library('imap');
         $imapconf = get_imap_setting();
         $this->imap->connect($imapconf);
-        $folders = $this->imap->company_content();
+        $folders = $this->imap->company_content('','',$_REQUEST['folder']);
         echo json_encode($folders);
         exit;
     }
@@ -187,7 +187,7 @@ class Company_mail extends AdminController
         $staff = $this->db->get(db_prefix() . 'staff')->row();
         $this->imap->connect($imapconf);
 
-        $folders = $this->imap->company_content($staff->email,'');
+        $folders = $this->imap->company_content($staff->email,'',$_REQUEST['folder']);
 		$email = $this->imap->get_message($_REQUEST['uid']);
 		
 		$this->db->where('message_id',$email['message_id']);
@@ -198,10 +198,10 @@ class Company_mail extends AdminController
 			'parent_id'=>'',
 		);
 		if($local_message){
-			if($local_message->deal_id){
+			if($local_message->project_id){
 				$rel_data = array(
 					'rel_type'=>'project',
-					'rel_id'=>$local_message->deal_id,
+					'rel_id'=>$local_message->project_id,
 					'parent_id'=>$local_message->id,
 				);
 			}elseif($local_message->lead_id){
@@ -224,7 +224,7 @@ class Company_mail extends AdminController
 		$this->db->where('staffid ', $staffid);
         $staff = $this->db->get(db_prefix() . 'staff')->row();
         $this->imap->connect($imapconf);
-        $folders = $this->imap->company_content($staff->email,'all');
+        $folders = $this->imap->company_content($staff->email,'all',$_REQUEST['folder']);
         echo json_encode($folders);
         exit;
     }
@@ -757,6 +757,7 @@ class Company_mail extends AdminController
 				$_POST['deal_id'] =$relarray[1];
 			}
 		}
+
 		if(get_option('connect_mail')=='no'){
 			$redirect_url = admin_url('outlook_mail/connect_outlook');
 		}else{
@@ -771,8 +772,12 @@ class Company_mail extends AdminController
 		if($this->input->post('redirect')){
 			if($this->input->post('redirect') =='lead'){
 				$redirect_url = admin_url('leads/lead/'.$_POST['deal_id'].'?group=tab_email');
+			}elseif($this->input->post('redirect') =='project'){
+				$redirect_url = admin_url('projects/view/'.$_POST['deal_id'].'?group=project_email');
 			}
 		}
+
+		
 		$this->load->library('mails/imap_mailer');
 		$this->imap_mailer->set_to($this->input->post('toemail', false));
 		$this->imap_mailer->set_subject($this->input->post('name', false));
@@ -792,6 +797,8 @@ class Company_mail extends AdminController
 	public function forward() {
 		if($this->input->post('rel_type') =='lead'){
 			$redirect_url = admin_url('leads/lead/'.$this->input->post('rel_id').'?group=tab_email');
+		}elseif($this->input->post('rel_type') =='project'){
+			$redirect_url = admin_url('projects/view/'.$this->input->post('rel_id').'?group=project_email');
 		}elseif(get_option('connect_mail')=='no'){
 			$redirect_url = admin_url('outlook_mail/connect_outlook');
 		}else{
@@ -817,6 +824,8 @@ class Company_mail extends AdminController
 	public function reply() {
 		if($this->input->post('rel_type') =='lead'){
 			$redirect_url = admin_url('leads/lead/'.$this->input->post('rel_id').'?group=tab_email');
+		}elseif($this->input->post('rel_type') =='project'){
+			$redirect_url = admin_url('projects/view/'.$this->input->post('rel_id').'?group=project_email');
 		}elseif(get_option('connect_mail')=='no'){
 			$redirect_url = admin_url('outlook_mail/connect_outlook');
 		}else{

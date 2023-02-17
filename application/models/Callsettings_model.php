@@ -213,6 +213,9 @@ class Callsettings_model extends App_Model {
                 if($post['rel_type'] =='lead'){
                     $this->leads_model->log_activity($post['rel_id'],'activity','called',$insert_id);
 
+                }elseif (isset($post['rel_type']) && $post['rel_type'] == 'project') {
+                    $this->load->model('projects_model');
+                    $this->projects_model->add_timeline_activity($post['rel_id'],'activity','added',$insert_id);
                 }
                 
                 log_activity('New Task Added [ID:' . $insert_id . ', Name: ' . $data['name'] . ']');

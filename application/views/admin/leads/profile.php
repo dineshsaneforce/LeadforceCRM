@@ -118,7 +118,7 @@ if ($openEdit == true) {
       <?php echo  _l('lead_convert_to_client'); ?>
       </a>
       <?php } else { ?>
-        <a href="<?php echo admin_url('projects/project?lead_id='.$lead->id) ?>" class="btn btn-success pull-right lead-convert-to-customer lead-top-btn lead-view mbot10">
+        <a id="openNewProject" data-toggle="modal" data-target="#newDealModal" class="btn btn-success pull-right lead-convert-to-customer lead-top-btn lead-view mbot10">
         <!-- <i class="fa fa-user-o"></i> -->
         <?php echo  _l('lead_convert_to_client'); ?>
         </a>
@@ -481,7 +481,6 @@ echo render_select('teamleader', $teamleaders, array('staffid', array('firstname
     <div class="row">
         <div class="col-md-6">
             <?php $value = (isset($lead) ? $lead->name : ''); ?>
-            <?php $value = (isset($email_data) ? $email_data['from']['email'] : $value); ?>
             <?php echo render_input('name', 'lead_add_edit_name', $value,'text',['onblur'=>'validate_lead_profile_text_input(this.value,\'name\')','maxlength'=>'150']); ?>
         </div>
         <div class="col-md-6">

@@ -1298,6 +1298,9 @@ $(function() {
                 });  
             }
       });
+    <?php if($lead_id): ?>
+        $("select[id^=project_contacts]").trigger('change');
+    <?php endif; ?>
 });
 function get_description(){
 	var text = tinyMCE.get('description').getContent();
