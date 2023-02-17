@@ -8,6 +8,7 @@ class Indiamart extends AdminController
     {
         parent::__construct();
         $this->load->model('leads_model');
+        $this->load->model('staff_model');
     }
 
     public function index()
@@ -46,7 +47,11 @@ class Indiamart extends AdminController
         //pre($fvs);
         $data['name'] = explode(',',$fvs->name);;
         $data['lead_company'] = explode(',',$fvs->lead_company);
-
+        $data['members'] = $this->staff_model->get('', [
+            'active'       => 1,
+            'action_for'       => 'Active',
+            //'role' => 1,
+        ]);
         $this->load->view('admin/integrations/indiamart/mergefields',$data);
     }
 

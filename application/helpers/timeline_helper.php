@@ -27,7 +27,7 @@ function render_timeline_activities($type,$type_id,$page=0)
                 $log_data ='<span class=""><i class="fa fa-calendar" aria-hidden="true"></i> '.$logged_at.'</span> | <a class="" href="'.admin_url("profile/".$log->staff_id).'"><i class="fa fa-user" aria-hidden="true"></i> '.get_staff_full_name($log->staff_id).'</a>';
                 $meta_data ='';
                 $detailed_content ='';
-                if($type =='lead' && $log->type =='lead'){
+                if($log->type =='lead'){
                     $icon ='<i class="fa fa-tty"></i>';
                     if($log->action =='addedfromemail'){
                         $title ='Lead created from email';
@@ -45,7 +45,7 @@ function render_timeline_activities($type,$type_id,$page=0)
                         $title ='Lead manually created';
                     }
                     
-                }elseif($type =='project' && $log->type =='project'){
+                }elseif($log->type =='project'){
                     $icon ='<i class="fa fa-handshake-o"></i>';
                     if($log->action =='addedfromlead'){
                         $title ='Deal created from lead';

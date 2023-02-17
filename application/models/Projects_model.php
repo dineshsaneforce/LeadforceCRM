@@ -1158,7 +1158,7 @@ class Projects_model extends App_Model
      * @param  array project_contacts
      * @param  array primary_contact
      */
-    public function add($data,$products=false,$project_contacts=false,$primary_contact=false)
+    public function add($data,$products=false,$project_contacts=false,$primary_contact=false,$lead_id=false)
     {
         if (isset($data['notify_project_members_status_change'])) {
             unset($data['notify_project_members_status_change']);
@@ -1322,7 +1322,11 @@ class Projects_model extends App_Model
             // hooks()->do_action('after_add_project_approval', $insert_id);
             hooks()->do_action('after_add_project', $insert_id);
             if($insert_id){
-                $this->add_timeline_activity($insert_id, 'project', 'added',$insert_id);
+                if($lead_id){
+                    $this->add_timeline_activity($insert_id, 'project', 'addedfromlead',$insert_id);
+                }else{
+                    $this->add_timeline_activity($insert_id, 'project', 'added',$insert_id);
+                }
             }
             log_activity('New Project Created [ID: ' . $insert_id . ']');
 
@@ -5036,11 +5040,28 @@ public function all_activiites()
 
     public function get_timeline_activities($deal_id,$page=0)
     {
-        $this->db->where('project_id',$deal_id);
-        $this->db->order_by('id', 'DESC');
+        $this->db->where("id",$deal_id);
+        $project =$this->db->get(db_prefix().'projects')->row();
+        $selects =array('type','action','type_id','added_at','staff_id');
         $limit =10;
-        $this->db->limit($limit, $limit*$page);
-        return $this->db->get(db_prefix().'project_log')->result_object();
+        if($project->lead_id){
+            $this->db->select($selects);
+            $this->db->where('project_id',$deal_id);
+            $subQuery1 = $this->db->get_compiled_select(db_prefix().'project_log');
+
+            $this->db->select($selects);
+            $this->db->where('lead_id',$project->lead_id);
+            $subQuery2 = $this->db->get_compiled_select(db_prefix().'lead_log');
+            return $this->db->query("select * from ($subQuery1 UNION $subQuery2) as unionTable order by added_at desc LIMIT ".$limit*$page.", ".$limit)->result_object();
+        }else{
+            
+            $this->db->select($selects);
+            $this->db->where('project_id',$deal_id);
+            $this->db->order_by('added_at', 'DESC');
+            
+            $this->db->limit($limit, $limit*$page);
+            return $this->db->get(db_prefix().'project_log')->result_object();
+        }
     }
 
     public function get_tabs_count($project_id,$table)
