@@ -5154,4 +5154,17 @@ public function all_activiites()
     {
         return $this->imap_mailer->getLocalMessages('project',$lead_id);
     }
+
+    public function addChangeLog($project_id,$field_name,$previous_value,$current_value)
+    {
+        $data =array(
+            'project_id'=>$project_id,
+            'field_name'=>$field_name,
+            'previous_value'=>$previous_value,
+            'current_value'=>$current_value,
+            'updated_by'=>get_staff_user_id(),
+        );
+        $change_log_id =$this->db->insert(db_prefix().'project_changelogs',$data);
+        $this->add_timeline_activity($project_id, 'project', 'updated',$change_log_id);
+    }
 }

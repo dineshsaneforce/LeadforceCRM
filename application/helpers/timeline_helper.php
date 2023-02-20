@@ -49,6 +49,13 @@ function render_timeline_activities($type,$type_id,$page=0)
                     $icon ='<i class="fa fa-handshake-o"></i>';
                     if($log->action =='addedfromlead'){
                         $title ='Deal created from lead';
+                    }elseif($log->action =='updated'){
+                        $CI->db->where('id',$log->type_id);
+                        $change_log =$CI->db->get(db_prefix().'project_changelogs')->row();
+                        if($change_log->field_name =='name'){
+                            $title ='Deal name updated';
+                            $meta_data .='<span>'.$change_log->previous_value.'</span><i class="fa fa-arrow-right text-muted" style="margin-right:5px;margin-left:5px;" aria-hidden="true"></i><span>'.$change_log->current_value.'</span>';
+                        }
                     }else{
                         $title ='Deal manually created';
                     }

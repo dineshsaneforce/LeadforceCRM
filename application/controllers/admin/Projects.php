@@ -1541,6 +1541,7 @@ class Projects extends AdminController
         
         if (has_permission('projects', '', 'edit') || has_permission('projects', '', 'create')) {
             $data = $this->input->post();
+            $project_previous_value =$this->projects_model->get($data['project_id']);
             if(isset($data['custom_field'])){
 				if(is_array($data['f_val'])){
 					$data['f_val']	= implode(',',$data['f_val']);
@@ -1561,6 +1562,7 @@ class Projects extends AdminController
 					$success = $this->projects_model->update(array('project_cost'=>$data['project_cost'],'project_modified'=>date('Y-m-d H:i:s'),'modified_by'=>get_staff_user_id()), $data['project_id']);
 				}elseif(isset($data['name']) && !empty($data['name'])){
 					$success = $this->projects_model->update(array('name'=>$data['name'],'project_modified'=>date('Y-m-d H:i:s'),'modified_by'=>get_staff_user_id()), $data['project_id']);
+                    $this->projects_model->addChangeLog($data['project_id'],'name',$project_previous_value->name,$data['name']);
 				}elseif(isset($data['deadline']) && !empty($data['deadline'])){
 					$checkdeadline = $this->projects_model->checkdeadline($data['deadline'], $data['project_id']);
 					if($checkdeadline) {
