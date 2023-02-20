@@ -26,14 +26,14 @@ class Organizations extends BaseController
                 if($organization){
                     $this->api_model->response_ok(true,$organization,'');
                 }else{
-                    $this->api_model->response_ok(true,[],'No records found');
+                    $this->api_model->response_ok(true,new stdClass(),'No records found');
                 }
             }else{
-                $this->api_model->response_ok(true,[],'No records found');
+                $this->api_model->response_ok(true,new stdClass(),'No records found');
             }
             $this->api_model->response_ok(true,$new_staffs,'');
         }else{
-            $this->api_model->response_ok(true,[],'No records found');
+            $this->api_model->response_ok(true,new stdClass(),'No records found');
         }
                
     }
