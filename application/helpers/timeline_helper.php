@@ -6,6 +6,8 @@ function render_timeline_activities($type,$type_id,$page=0)
 {
     $CI = & get_instance();
     $CI->load->model('tasktype_model');
+    $CI->load->model('Pipeline_model');
+    $CI->load->model('Clients_model');
     $logs =array();
     if($type =='lead'){
         $logs =$CI->leads_model->get_log_activities($type_id,$page);
@@ -52,10 +54,52 @@ function render_timeline_activities($type,$type_id,$page=0)
                     }elseif($log->action =='updated'){
                         $CI->db->where('id',$log->type_id);
                         $change_log =$CI->db->get(db_prefix().'project_changelogs')->row();
-                        if($change_log->field_name =='name'){
-                            $title ='Deal name updated';
-                            $meta_data .='<span>'.$change_log->previous_value.'</span><i class="fa fa-arrow-right text-muted" style="margin-right:5px;margin-left:5px;" aria-hidden="true"></i><span>'.$change_log->current_value.'</span>';
+                        if($change_log){
+                            if($change_log->field_name =='name'){
+                                $title ='Deal name updated';
+                                $meta_data .='<span>'.$change_log->previous_value.'</span><i class="fa fa-arrow-right text-muted" style="margin-right:5px;margin-left:5px;" aria-hidden="true"></i><span>'.$change_log->current_value.'</span>';
+                            }elseif($change_log->field_name =='project_cost'){
+                                $title ='Deal value updated';
+                                $meta_data .='<span>'.$change_log->previous_value.'</span><i class="fa fa-arrow-right text-muted" style="margin-right:5px;margin-left:5px;" aria-hidden="true"></i><span>'.$change_log->current_value.'</span>';
+                            }elseif($change_log->field_name =='deadline'){
+                                $title ='Deal expected closing date updated';
+                                $meta_data .='<span>'._d($change_log->previous_value).'</span><i class="fa fa-arrow-right text-muted" style="margin-right:5px;margin-left:5px;" aria-hidden="true"></i><span>'._d($change_log->current_value).'</span>';
+                            }elseif($change_log->field_name =='pipeline_id'){
+                                $title ='Deal pipeline changed';
+                                $previous_pipeline =$CI->Pipeline_model->getpipelinebyId($change_log->previous_value);
+                                $current_pipeline =$CI->Pipeline_model->getpipelinebyId($change_log->current_value);
+                                $meta_data .='<span>'.$previous_pipeline->name.'</span><i class="fa fa-arrow-right text-muted" style="margin-right:5px;margin-left:5px;" aria-hidden="true"></i><span>'.$current_pipeline->name.'</span>';
+                            }elseif($change_log->field_name =='status'){
+                                $title ='Deal stage changed';
+                                $previous_stage =$CI->Pipeline_model->get_pipeline_stage($change_log->previous_value)[0];
+                                $current_stage =$CI->Pipeline_model->get_pipeline_stage($change_log->current_value)[0];
+                                $meta_data .='<span>'.$previous_stage['name'].'</span><i class="fa fa-arrow-right text-muted" style="margin-right:5px;margin-left:5px;" aria-hidden="true"></i><span>'.$current_stage['name'].'</span>';
+                            }elseif($change_log->field_name =='clientid'){
+                                $title ='Deal organization changed';
+                                $previous_org =$CI->Clients_model->get($change_log->previous_value);
+                                $current_org =$CI->Clients_model->get($change_log->current_value);
+
+                                $meta_data .='<span>'.$previous_org->company.'</span><i class="fa fa-arrow-right text-muted" style="margin-right:5px;margin-left:5px;" aria-hidden="true"></i><span>'.$current_org->company.'</span>';
+                            }elseif($change_log->field_name =='teamleader'){
+                                $title ='Deal Owner changed';
+                                $meta_data .='<span><a class="" href="'.admin_url("profile/".$change_log->previous_value).'"><i class="fa fa-user" aria-hidden="true"></i> '.get_staff_full_name($change_log->previous_value).'</a></span><i class="fa fa-arrow-right text-muted" style="margin-right:5px;margin-left:5px;" aria-hidden="true"></i><span><a class="" href="'.admin_url("profile/".$change_log->current_value).'"><i class="fa fa-user" aria-hidden="true"></i> '.get_staff_full_name($change_log->current_value).'</a></span>';
+                            }elseif($change_log->field_name =='stage_of'){
+                                if($change_log->current_value ==0){
+                                    $title ='Deal Reopened';
+                                }elseif($change_log->current_value ==1){
+                                    $title ='Deal marked as own';
+                                }elseif($change_log->current_value ==2){
+                                    $title ='Deal marked as lost';
+                                }else{
+                                    continue;
+                                }
+                            }else{
+                                continue;
+                            }
+                        }else{
+                            continue;
                         }
+                        
                     }else{
                         $title ='Deal manually created';
                     }

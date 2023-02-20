@@ -1541,7 +1541,7 @@ class Projects extends AdminController
         
         if (has_permission('projects', '', 'edit') || has_permission('projects', '', 'create')) {
             $data = $this->input->post();
-            $project_previous_value =$this->projects_model->get($data['project_id']);
+            $project_previous_value =$this->projects_model->getProjectOnly($data['project_id']);
             if(isset($data['custom_field'])){
 				if(is_array($data['f_val'])){
 					$data['f_val']	= implode(',',$data['f_val']);
@@ -1554,12 +1554,16 @@ class Projects extends AdminController
 			else{
 				if(isset($data['clientid_copy_project'])){
 					$success = $this->projects_model->update(array('clientid'=>$data['clientid_copy_project'],'project_modified'=>date('Y-m-d H:i:s'),'modified_by'=>get_staff_user_id()), $data['project_id']);
+                    $this->projects_model->addChangeLog($data['project_id'],'clientid',$project_previous_value->clientid,$data['clientid_copy_project']);
 				}elseif(isset($data['pipeline_id']) && !empty($data['pipeline_id'])){
 					$success = $this->projects_model->update(array('pipeline_id'=>$data['pipeline_id'],'project_modified'=>date('Y-m-d H:i:s'),'modified_by'=>get_staff_user_id()), $data['project_id']);
+                    $this->projects_model->addChangeLog($data['project_id'],'pipeline_id',$project_previous_value->pipeline_id,$data['pipeline_id']);
 				}elseif(isset($data['teamleader']) && !empty($data['teamleader'])){
 					$success = $this->projects_model->update(array('teamleader'=>$data['teamleader'],'project_modified'=>date('Y-m-d H:i:s'),'modified_by'=>get_staff_user_id()), $data['project_id']);
+                    $this->projects_model->addChangeLog($data['project_id'],'teamleader',$project_previous_value->teamleader,$data['teamleader']);
 				}elseif(isset($data['project_cost']) && !empty($data['project_cost'])){
 					$success = $this->projects_model->update(array('project_cost'=>$data['project_cost'],'project_modified'=>date('Y-m-d H:i:s'),'modified_by'=>get_staff_user_id()), $data['project_id']);
+                    $this->projects_model->addChangeLog($data['project_id'],'project_cost',$project_previous_value->project_cost,$data['project_cost']);
 				}elseif(isset($data['name']) && !empty($data['name'])){
 					$success = $this->projects_model->update(array('name'=>$data['name'],'project_modified'=>date('Y-m-d H:i:s'),'modified_by'=>get_staff_user_id()), $data['project_id']);
                     $this->projects_model->addChangeLog($data['project_id'],'name',$project_previous_value->name,$data['name']);
@@ -1567,6 +1571,7 @@ class Projects extends AdminController
 					$checkdeadline = $this->projects_model->checkdeadline($data['deadline'], $data['project_id']);
 					if($checkdeadline) {
 						$success = $this->projects_model->update(array('deadline'=>$data['deadline'],'project_modified'=>date('Y-m-d H:i:s'),'modified_by'=>get_staff_user_id()), $data['project_id']);
+                        $this->projects_model->addChangeLog($data['project_id'],'deadline',$project_previous_value->deadline,$data['deadline']);
 					} else {
 						$error = 'Close date should not be lesser than Start date.';
 					}
@@ -3718,11 +3723,14 @@ class Projects extends AdminController
     public function savepipelineAndstage()
     {
             $data = $this->input->post();
+            $project_previous_value =$this->projects_model->getProjectOnly($data['project_id']);
             if(isset($data['pipeline_id']) && !empty($data['pipeline_id'])){
                 $success = $this->projects_model->update(array('pipeline_id'=>$data['pipeline_id']), $data['project_id']);
+                $this->projects_model->addChangeLog($data['project_id'],'pipeline_id',$project_previous_value->pipeline_id,$data['pipeline_id']);
             }
             if(isset($data['status']) && !empty($data['status'])){
                 $success = $this->projects_model->update(array('status'=>$data['status']), $data['project_id']);
+                $this->projects_model->addChangeLog($data['project_id'],'status',$project_previous_value->status,$data['status']);
             }
             if ($success) {
                 $data['message'] = _l('updated_successfully', _l('project'));

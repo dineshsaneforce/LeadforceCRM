@@ -1680,14 +1680,12 @@ class Projects_model extends App_Model
 
             return true;
         }
-
-
         return false;
     }
 	
 	public function mark_as_won_loss_reopen($data)
     {
-      
+        $project_previous_value =$this->projects_model->getProjectOnly($data['project_id']);
         $datasave['stage_of'] = $data['status_id'];
         if($datasave['stage_of'] == 2){
             $datasave['loss_remark'] = $data['loss_remark'];
@@ -1700,6 +1698,8 @@ class Projects_model extends App_Model
         $this->db->where('id', $data['project_id']);
         $this->db->update(db_prefix() . 'projects', $datasave);
         if ($this->db->affected_rows() > 0) {
+            $this->projects_model->addChangeLog($data['project_id'],'stage_of',$project_previous_value->stage_of,$data['status_id']);
+
            $this->log_activity($data['project_id'], 'project_stage_updated', '<b><lang>project-status-' . $data['status_id'] . '</lang></b>');
 
             return true;
@@ -3805,8 +3805,10 @@ class Projects_model extends App_Model
      * @return boolean
      */
     public function update_project_status($data) {
+        $project_previous_value =$this->getProjectOnly($data['projectid']);
         $data['project_id'] = $data['projectid'];
         $data['status_id'] = $data['status'];
+        $this->addChangeLog($data['project_id'],'status',$project_previous_value->status,$data['status']);
         return $this->mark_as($data);
     }
 
@@ -3820,7 +3822,6 @@ class Projects_model extends App_Model
         $this->db->where($where);
         if (is_numeric($id)) {
             $this->db->where('id', $id);
-
             return $this->db->get(db_prefix() . 'projects_status')->row();
         }
 
@@ -5164,7 +5165,14 @@ public function all_activiites()
             'current_value'=>$current_value,
             'updated_by'=>get_staff_user_id(),
         );
-        $change_log_id =$this->db->insert(db_prefix().'project_changelogs',$data);
+        $this->db->insert(db_prefix().'project_changelogs',$data);
+        $change_log_id =$this->db->insert_id();
         $this->add_timeline_activity($project_id, 'project', 'updated',$change_log_id);
+    }
+
+    public function getProjectOnly($id)
+    {
+        $this->db->where('id',$id);
+        return $this->db->get(db_prefix().'projects')->row();
     }
 }
