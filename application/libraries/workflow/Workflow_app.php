@@ -80,14 +80,14 @@ class Workflow_app
                 '{staff_lastname}'=>'Staff last name',
             ]
         ],
-        'deal_merge_fields'=>[
+        'project_merge_fields'=>[
             'name'=>'Deal placeholders',
             'placeholders'=>[
-                '{deal_name}'=>'Deal name',
-                '{deal_description}'=>'Deal description',
-                '{deal_start_date}'=>'Deal start date',
-                '{deal_deadline}'=>'Deal deadline',
-                '{deal_link}'=>'Deal link',
+                '{project_name}'=>'Deal name',
+                '{project_description}'=>'Deal description',
+                '{project_start_date}'=>'Deal start date',
+                '{project_deadline}'=>'Deal expected closing date',
+                '{project_link}'=>'Deal link',
             ]
         ],
         'activity_merge_fields'=>[
@@ -430,6 +430,17 @@ class Workflow_app
         }
 
         $smsconfiguration =$this->ci->sms_model->getConfig();
+
+        // echo 'To : ';
+        // pr($to);
+        // echo '<hr>';
+        // echo 'Template : ';
+        // pr($configure['template']);
+        // echo '<hr>';
+        // echo 'Fields : ';
+        // pr($smsFields);
+        // echo '<hr>';
+        // return true;
         if($smsconfiguration ){
             if($smsconfiguration['provider'] =='daffytel'){
                 $this->ci->load->library('sms/sms_daffytel');

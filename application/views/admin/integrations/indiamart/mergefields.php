@@ -15,7 +15,7 @@
                                         <small class="req text-danger">* </small>Registered Mobile Number</label>
                                 </div>
                                 <div class="form-group col-md-12">
-                                    <input type="text" class="form-control" name="user_account" id="user_account" value="<?php echo $result->user_account; ?>">
+                                    <input required="ture" type="text" class="form-control" name="user_account" id="user_account" value="<?php echo $result->user_account; ?>">
                                 </div>
                             </div>
                         </div>
@@ -27,7 +27,7 @@
                                             <small class="req text-danger">* </small>IndiaMART Key</label>
                                     </div>
                                     <div class="form-group col-md-12">
-                                        <input type="text" class="form-control" name="unique_key" id="unique_key" value="<?php echo $result->unique_key; ?>">
+                                        <input  required="ture" type="text" class="form-control" name="unique_key" id="unique_key" value="<?php echo $result->unique_key; ?>">
                                     </div>
                                 </div>
                             </div>
@@ -43,7 +43,7 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <select required="1" name="name" class="selectpicker" data-none-selected-text="Nothing Selected">
+                                        <select required="ture"  name="name" class="selectpicker" data-none-selected-text="Nothing Selected">
                                             <option value="0"></option>
                                             <option value="">Nothing Selected</option>
                                             <?php foreach ($indiaMart as $kay => $val) {
@@ -67,7 +67,7 @@
                                     </div>
                                 </div>
                                 <div class="col-md-4">
-                                    <select required="1" name="name1" class="selectpicker" data-none-selected-text="Nothing Selected">
+                                    <select  name="name1" class="selectpicker" data-none-selected-text="Nothing Selected">
                                         <option value="0"></option>
                                         <option value="">Nothing Selected</option>
                                         <?php foreach ($indiaMart as $kay => $val) {
@@ -90,7 +90,7 @@
                                     </select>
                                 </div>
                                 <div class="col-md-4">
-                                    <select required="1" name="name2" class="selectpicker" data-none-selected-text="Nothing Selected">
+                                    <select  name="name2" class="selectpicker" data-none-selected-text="Nothing Selected">
                                         <option value="0"></option>
                                         <option value="">Nothing Selected</option>
                                         <?php foreach ($indiaMart as $kay => $val) {
@@ -120,7 +120,7 @@
                                     <label for="name" class="control-label">Position</label>
                                 </div>
                                 <div class="col-md-12">
-                                    <select required="1" name="title" class="selectpicker" data-none-selected-text="Nothing Selected">
+                                    <select  name="title" class="selectpicker" data-none-selected-text="Nothing Selected">
                                         <option value="0"></option>
                                         <option value="">Nothing Selected</option>
                                         <?php foreach ($indiaMart as $kay => $val) {
@@ -144,7 +144,7 @@
                                     <label for="name" class="control-label">Email Address</label>
                                 </div>
                                 <div class="col-md-12">
-                                    <select required="1" name="email" class="selectpicker" data-none-selected-text="Nothing Selected">
+                                    <select  name="email" class="selectpicker" data-none-selected-text="Nothing Selected">
                                         <option value="0"></option>
                                         <option value="">Nothing Selected</option>
                                         <?php foreach ($indiaMart as $kay => $val) {
@@ -169,7 +169,7 @@
                                     <label for="name" class="control-label">Website</label>
                                 </div>
                                 <div class="col-md-12">
-                                    <select required="1" name="website" class="selectpicker" data-none-selected-text="Nothing Selected">
+                                    <select name="website" class="selectpicker" data-none-selected-text="Nothing Selected">
                                         <option value="0"></option>
                                         <option value="">Nothing Selected</option>
                                         <?php foreach ($indiaMart as $kay => $val) {
@@ -193,7 +193,7 @@
                                     <label for="name" class="control-label">Phone</label>
                                 </div>
                                 <div class="col-md-12">
-                                    <select required="1" name="phonenumber" class="selectpicker" data-none-selected-text="Nothing Selected">
+                                    <select  name="phonenumber" class="selectpicker" data-none-selected-text="Nothing Selected">
                                         <option value="0"></option>
                                         <option value="">Nothing Selected</option>
                                         <?php foreach ($indiaMart as $kay => $val) {
@@ -214,11 +214,10 @@
                         <div class="col-md-12 row">
                             <div class="row org" app-field-wrapper="name">
                                 <div class="col-md-12">
-                                    <label for="name" class="control-label">
-                                        <small class="req text-danger">* </small>Organization</label>
+                                    <label for="name" class="control-label">Organization</label>
                                 </div>
                                 <div class="col-md-4 form-group">
-                                    <select required="1" name="lead_company" class="selectpicker" data-none-selected-text="Nothing Selected">
+                                    <select  name="lead_company" class="selectpicker" data-none-selected-text="Nothing Selected">
                                         <option value="0"></option>
                                         <option value="">Nothing Selected</option>
                                         <?php foreach ($indiaMart as $kay => $val) {
@@ -241,7 +240,7 @@
                                     </select>
                                 </div>
                                 <div class="col-md-4">
-                                    <select required="1" name="lead_company1" class="selectpicker" data-none-selected-text="Nothing Selected">
+                                    <select  name="lead_company1" class="selectpicker" data-none-selected-text="Nothing Selected">
                                         <option value="0"></option>
                                         <option value="">Nothing Selected</option>
                                         <?php foreach ($indiaMart as $kay => $val) {
@@ -264,7 +263,7 @@
                                     </select>
                                 </div>
                                 <div class="col-md-4">
-                                    <select required="1" name="lead_company2" class="selectpicker" data-none-selected-text="Nothing Selected">
+                                    <select  name="lead_company2" class="selectpicker" data-none-selected-text="Nothing Selected">
                                         <option value="0"></option>
                                         <option value="">Nothing Selected</option>
                                         <?php foreach ($indiaMart as $kay => $val) {
@@ -294,7 +293,7 @@
                                     <label for="name" class="control-label">Description</label>
                                 </div>
                                 <div class="col-md-12">
-                                    <select required="1" name="description" class="selectpicker" data-none-selected-text="Nothing Selected">
+                                    <select  name="description" class="selectpicker" data-none-selected-text="Nothing Selected">
                                         <option value="0"></option>
                                         <option value="">Nothing Selected</option>
                                         <?php foreach ($indiaMart as $kay => $val) {
@@ -320,7 +319,7 @@
                                     <label for="name" class="control-label">Address</label>
                                 </div>
                                 <div class="col-md-12">
-                                    <select required="1" name="address" class="selectpicker" data-none-selected-text="Nothing Selected">
+                                    <select  name="address" class="selectpicker" data-none-selected-text="Nothing Selected">
                                         <option value="0"></option>
                                         <option value="">Nothing Selected</option>
                                         <?php foreach ($indiaMart as $kay => $val) {
@@ -344,7 +343,7 @@
                                     <label for="name" class="control-label">City</label>
                                 </div>
                                 <div class="col-md-12">
-                                    <select required="1" name="city" class="selectpicker" data-none-selected-text="Nothing Selected">
+                                    <select  name="city" class="selectpicker" data-none-selected-text="Nothing Selected">
                                         <option value="0"></option>
                                         <option value="">Nothing Selected</option>
                                         <?php foreach ($indiaMart as $kay => $val) {
@@ -368,7 +367,7 @@
                                     <label for="name" class="control-label">State</label>
                                 </div>
                                 <div class="col-md-12">
-                                    <select required="1" name="state" class="selectpicker" data-none-selected-text="Nothing Selected">
+                                    <select  name="state" class="selectpicker" data-none-selected-text="Nothing Selected">
                                         <option value="0"></option>
                                         <option value="">Nothing Selected</option>
                                         <?php foreach ($indiaMart as $kay => $val) {
@@ -392,7 +391,7 @@
                                     <label for="name" class="control-label">Country</label>
                                 </div>
                                 <div class="col-md-12">
-                                    <select required="1" name="country" class="selectpicker" data-none-selected-text="Nothing Selected">
+                                    <select  name="country" class="selectpicker" data-none-selected-text="Nothing Selected">
                                         <option value="0"></option>
                                         <option value="">Nothing Selected</option>
                                         <?php foreach ($indiaMart as $kay => $val) {
@@ -416,7 +415,7 @@
                                     <label for="name" class="control-label">Zip</label>
                                 </div>
                                 <div class="col-md-12">
-                                    <select required="1" name="zip" class="selectpicker" data-none-selected-text="Nothing Selected">
+                                    <select  name="zip" class="selectpicker" data-none-selected-text="Nothing Selected">
                                         <option value="0"></option>
                                         <option value="">Nothing Selected</option>
                                         <?php foreach ($indiaMart as $kay => $val) {
@@ -472,7 +471,6 @@
             name: 'required',
             user_account: 'required',
             unique_key: 'required',
-            lead_company: 'required'
         });
     });
 

@@ -1,14 +1,24 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed'); ?>
 <br>
 <?php echo form_open(admin_url('workflow/saveconfig/'), array('id' => 'WhatsappConfig')); ?>
-<div class="form-group">
-    <label for="sendto" class="control-label">Send to</label>
-    <select name="sendto" id="sendto" class="form-control selectpicker" required>
-        <option >Nothing selected</option>
-        <option value="customer" selected>Customer</option>
-        <option value="staff">Staff</option>
-    </select>
-</div>
+<?php if ($moduleDetails['name'] == 'lead') : ?>
+    <div class="form-group">
+        <label for="sendto" class="control-label">Send to</label>
+        <select name="sendto" id="sendto" class="form-control" data-live-search="true" required>
+            <option value="customer">Customer</option>
+            <option value="staff">Staff</option>
+        </select>
+    </div>
+<?php elseif ($moduleDetails['name'] == 'project') : ?>
+    <div class="form-group">
+        <label for="sendto" class="control-label">Send to</label>
+        <select name="sendto" id="sendto" class="form-control" data-live-search="true" required>
+            <option value="staff">Staff</option>
+            <option value="followers">Followers</option>
+            <option value="manager">Manager</option>
+        </select>
+    </div>
+<?php endif; ?>
 <div class="form-group">
     <label for="template" class="control-label">Template</label>
     <select name="template" id="template" class="form-control selectpicker" data-live-search="true" required>
@@ -159,7 +169,7 @@
                 var header_format =$('[name="header-format"]').val();
                 var header_variable = header_media_link = header_media_caption ='';
                 if(header_format !=''){
-                    header['format'] =header_format;
+                    // header['format'] =header_format;
                     if(header_format =='TEXT'){
                         header_variable =$('[name="header_variable"]').val();
                     }else{
@@ -192,6 +202,10 @@
                                 title ='Send to customer';
                             }else if($('#WhatsappConfig [name="sendto"]').val() =='staff'){
                                 title ='Send to staff';
+                            }else if ($('#EmailConfig [name="sendto"]').val() == 'followers') {
+                                title = 'Send to followers';
+                            }else if ($('#EmailConfig [name="sendto"]').val() == 'manager') {
+                                title = 'Send to manager';
                             }
 
                             var description =template;

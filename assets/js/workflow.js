@@ -169,6 +169,10 @@ var workflowl =function(module){
                         var title ='Send to customer';
                     }else if(flow.configure.sendto =='staff'){
                         var title ='Send to staff';
+                    }else if (flow.configure.sendto == 'followers') {
+                        title = 'Send to followers';
+                    }else if (flow.configure.sendto == 'manager') {
+                        title = 'Send to manager';
                     }
                     var description =flow.configure.subject;
                     workflowl.updateBlockContent(flow.id,title,description);
@@ -177,6 +181,10 @@ var workflowl =function(module){
                         var title ='Send to customer';
                     }else if(flow.configure.sendto =='staff'){
                         var title ='Send to staff';
+                    }else if (flow.configure.sendto == 'followers') {
+                        title = 'Send to followers';
+                    }else if (flow.configure.sendto == 'manager') {
+                        title = 'Send to manager';
                     }
                     var description =flow.configure.template;
                     workflowl.updateBlockContent(flow.id,title,'Template : <b>'+description+'</b>');
@@ -185,6 +193,10 @@ var workflowl =function(module){
                         var title ='Send to customer';
                     }else if(flow.configure.sendto =='staff'){
                         var title ='Send to staff';
+                    }else if (flow.configure.sendto == 'followers') {
+                        title = 'Send to followers';
+                    }else if (flow.configure.sendto == 'manager') {
+                        title = 'Send to manager';
                     }
                     var description =$('#SMSConfig #template option[value="'+flow.configure.template+'"]').html();
                     workflowl.updateBlockContent(flow.id,title,'Template : <b>'+description+'</b>');
@@ -207,6 +219,11 @@ var workflowl =function(module){
                 }else if(flow.action =='lead_assign_staff'){
                     if(flow.configure){
                         description =`Assign staff to lead. <b>`+$('[name="type"] option[value="'+flow.configure.type+'"]').html()+`</b>`;
+                        workflowl.updateBlockContent(flow.id,'',description);
+                    }
+                }else if(flow.action =='project_assign_staff'){
+                    if(flow.configure){
+                        description =`Assign owner to deal. <b>`+$('[name="type"] option[value="'+flow.configure.type+'"]').html()+`</b>`;
                         workflowl.updateBlockContent(flow.id,'',description);
                     }
                 }
@@ -470,6 +487,34 @@ var workflowl =function(module){
 
                 $('#sidebarSettingsTitle').html("Assign User");
                 $('#sidebarsetupleadstaffassign').addClass('show');   
+            }else if(blockname =='project_assign_staff'){
+
+                if(flow.configure){
+                    $('#ProjectAssignStaffConfig [name="type"]').val(flow.configure.type).trigger('change');
+                    if(flow.configure.type=='direct_assign'){
+                        $('#ProjectAssignStaffConfig [name="assignto"]').val(flow.configure.assignto)
+                        $('#ProjectAssignStaffConfig [name="assignto"]').selectpicker('refresh');
+                    }else if(flow.configure.type=='round_robin_method' || flow.configure.type=='having_less_no_of_projects' || flow.configure.type=='having_more_wins'){
+                        $('#ProjectAssignStaffConfig [name="stafftype"]').val(flow.configure.stafftype).trigger('change');
+
+                        if(flow.configure.stafftype =='staff'){
+                            $('#ProjectAssignStaffConfig [name="assigntogroup[]"]').val(flow.configure.assigntogroup);
+                            $('#ProjectAssignStaffConfig [name="assigntogroup[]"]').selectpicker('refresh');
+                        }else if(flow.configure.stafftype =='roles'){
+                            $('#ProjectAssignStaffConfig [name="assigntorole[]"]').val(flow.configure.assigntorole);
+                            $('#ProjectAssignStaffConfig [name="assigntorole[]"]').selectpicker('refresh');
+                        }else if(flow.configure.stafftype =='designation'){
+                            $('#ProjectAssignStaffConfig [name="assigntodesignation[]"]').val(flow.configure.assigntodesignation);
+                            $('#ProjectAssignStaffConfig [name="assigntodesignation[]"]').selectpicker('refresh');
+                        }
+                        
+                    }
+                }else{
+                    workflowl.resetForm('ProjectAssignStaffConfig');
+                }
+
+                $('#sidebarSettingsTitle').html("Assign User");
+                $('#sidebarsetupprojectstaffassign').addClass('show');   
             }else{
                 $('#sidabarnosetup').addClass('show');
             }

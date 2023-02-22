@@ -2,13 +2,24 @@
 <?php $templates =$this->sms_model->getTemplates(); ?>
 <br>
 <?php echo form_open(admin_url('workflow/saveconfig/'), array('id' => 'SMSConfig')); ?>
-<div class="form-group">
-    <label for="sendto" class="control-label">Send to</label>
-    <select name="sendto" id="sendto" class="form-control" required>
-        <option value="customer">Customer</option>
-        <option value="staff">Staff</option>
-    </select>
-</div>
+<?php if ($moduleDetails['name'] == 'lead') : ?>
+    <div class="form-group">
+        <label for="sendto" class="control-label">Send to</label>
+        <select name="sendto" id="sendto" class="form-control" data-live-search="true" required>
+            <option value="customer">Customer</option>
+            <option value="staff">Staff</option>
+        </select>
+    </div>
+<?php elseif ($moduleDetails['name'] == 'project') : ?>
+    <div class="form-group">
+        <label for="sendto" class="control-label">Send to</label>
+        <select name="sendto" id="sendto" class="form-control" data-live-search="true" required>
+            <option value="staff">Staff</option>
+            <option value="followers">Followers</option>
+            <option value="manager">Manager</option>
+        </select>
+    </div>
+<?php endif; ?>
 <div class="form-group">
     <label for="template" class="control-label">Template</label>
     <select name="template" id="template" class="form-control selectpicker" data-live-search="true" required>
@@ -97,6 +108,10 @@ function updateSMSTemplateDetails() {
                                 title ='Send to customer';
                             }else if($('#SMSConfig [name="sendto"]').val() =='staff'){
                                 title ='Send to staff';
+                            }else if ($('#EmailConfig [name="sendto"]').val() == 'followers') {
+                                title = 'Send to followers';
+                            }else if ($('#EmailConfig [name="sendto"]').val() == 'manager') {
+                                title = 'Send to manager';
                             }
 
                             var description =$('#SMSConfig #template option[value="'+template+'"]').html();

@@ -1,4 +1,7 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed'); ?>
+<?php 
+// hooks()->do_action('after_add_project', '27466'); pre(''); 
+?>
 <?php init_head(); ?>
 
 <script src="<?php echo base_url('assets/js/workflow.js?v=1.2') ?>"></script>
@@ -84,6 +87,11 @@
                                     <?php if ($moduleDetails['name'] == 'lead') : ?>
                                         <div class="sidebar-setup" id="sidebarsetupleadstaffassign">
                                             <?php $this->load->view('admin/workflow/lead/assign_staff'); ?>
+                                        </div>
+                                    <?php endif; ?>
+                                    <?php if ($moduleDetails['name'] == 'project') : ?>
+                                        <div class="sidebar-setup" id="sidebarsetupprojectstaffassign">
+                                            <?php $this->load->view('admin/workflow/project/assign_staff'); ?>
                                         </div>
                                     <?php endif; ?>
                                     <div class="sidebar-setup show" id="sidabarnosetup">
