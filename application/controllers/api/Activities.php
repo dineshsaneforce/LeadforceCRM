@@ -96,7 +96,7 @@ class Activities extends BaseController
         foreach($data_assignee as $taskey => $tasvalue ){
             $data['assignee'] = $tasvalue;
            
-            $this->tasks_model->add_task_assignees($data);
+            $this->tasks_model->add_task_assignees_api($data);
         }
         $_id     = false;
         $success = false;
