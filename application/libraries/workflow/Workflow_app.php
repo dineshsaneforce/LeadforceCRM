@@ -256,6 +256,7 @@ class Workflow_app
                     case 'send_sms':
                         $this->run_sms($flow);
                         break;
+                    case 'converted_from_lead':
                     case 'condition':
                         $condition =$this->run_condition($flow);
                         if($condition){
@@ -280,7 +281,10 @@ class Workflow_app
                         $this->run_add_activity($flow);
                         break;
                     default:
-                        $this->check_flow($flow);
+                        $flow_status =$this->check_flow($flow);
+                        if($flow_status === false){
+                            $continue =true;
+                        }
                         break;
                 }
 

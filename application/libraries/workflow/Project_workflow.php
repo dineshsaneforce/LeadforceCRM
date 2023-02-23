@@ -9,10 +9,12 @@ class Project_workflow extends Workflow_app
         'title'=>'Deal',
         'description'=>'Deal module',
         'icon'=>'<i class="fa fa-handshake-o"></i>',
-        'triggers'=>['project_created']
+        'triggers'=>['project_created','project_updated','project_deleted']
     );
 
     protected $project_id ='';
+    protected $project_change_log_id =0;
+    protected $project_change_log ;
     protected $project;
     protected $merge_fields =[];
 
@@ -21,19 +23,19 @@ class Project_workflow extends Workflow_app
             'title'=>'Deal Created',
             'description'=>'Workflow starts when new deal created.',
             'icon'=>'<i class="fa fa-plus text-success" aria-hidden="true"></i>',
-            'triggers'=>['condition','project_assign_staff','add_activity','send_email','send_whatsapp','send_sms'],
+            'triggers'=>['condition','converted_from_lead','project_assign_staff','add_activity','send_email','send_whatsapp','send_sms'],
         ],
         'project_updated'=>[
             'title'=>'Deal Updated',
             'description'=>'Workflow starts when deal updated.',
             'icon'=>'<i class="fa fa-pencil-square-o text-primary" aria-hidden="true"></i>',
-            'triggers'=>['condition','send_email','send_whatsapp','send_sms'],
+            'triggers'=>['project_update_event','condition','converted_from_lead','project_assign_staff','add_activity','send_email','send_whatsapp','send_sms'],
         ],
         'project_deleted'=>[
-            'title'=>'Lead Deleted',
+            'title'=>'Deal Deleted',
             'description'=>'Workflow starts when deal deleted.',
             'icon'=>'<i class="fa fa-trash text-danger" aria-hidden="true"></i>',
-            'triggers'=>['condition','send_email','send_whatsapp','send_sms'],
+            'triggers'=>['send_email','send_whatsapp','send_sms'],
         ],
         'project_cronjob'=>[
             'title'=>'Lead Scheduler',
@@ -41,9 +43,21 @@ class Project_workflow extends Workflow_app
             'icon'=>'<i class="fa fa-clock-o text-warning" aria-hidden="true"></i>',
             'triggers'=>['condition','send_email','send_whatsapp','send_sms'],
         ],
+        'project_update_event'=>[
+            'title'=>'Deal update event',
+            'description'=>'Configure deal update event',
+            'icon'=>'<i class="fa fa-question text-warning" aria-hidden="true"></i>',
+            'triggers'=>['condition','project_assign_staff','add_activity','send_email','send_whatsapp','send_sms'],
+        ],
         'condition'=>[
             'title'=>'Conditions',
             'description'=>'Define deal conditions.',
+            'icon'=>'<i class="fa fa-question text-warning" aria-hidden="true"></i>',
+            'triggers'=>['true','false'],
+        ],
+        'converted_from_lead'=>[
+            'title'=>'Converted from lead',
+            'description'=>'When deal is converted from lead',
             'icon'=>'<i class="fa fa-question text-warning" aria-hidden="true"></i>',
             'triggers'=>['true','false'],
         ],
@@ -89,13 +103,13 @@ class Project_workflow extends Workflow_app
             'title'=>'True',
             'description'=>'If condition true.',
             'icon'=>'<i class="fa fa-check text-success" aria-hidden="true"></i>',
-            'triggers'=>['condition','project_assign_staff','add_activity','send_email','send_whatsapp','send_sms'],
+            'triggers'=>['condition','converted_from_lead','project_assign_staff','add_activity','send_email','send_whatsapp','send_sms'],
         ],
         'false'=>[
             'title'=>'False',
             'description'=>'If condition false.',
             'icon'=>'<i class="fa fa-times text-danger" aria-hidden="true"></i>',
-            'triggers'=>['condition','project_assign_staff','add_activity','send_email','send_whatsapp','send_sms'],
+            'triggers'=>['condition','converted_from_lead','project_assign_staff','add_activity','send_email','send_whatsapp','send_sms'],
         ],
     );
 
@@ -219,18 +233,44 @@ class Project_workflow extends Workflow_app
         }
     }
 
+    protected function initialise_project($project_created_flow,$project_id,$project_change_log_id=0)
+    {
+        $this->project_id =$project_id;
+        $this->change_log_id =$project_change_log_id;
+        $this->project = $this->ci->projects_model->get($project_id);
+        if($project_change_log_id){
+            $this->ci->db->where('id',$project_change_log_id);
+            $this->project_change_log =$this->ci->db->get(db_prefix().'project_changelogs')->row();
+        }else{
+            $this->project_change_log =new stdClass();
+        }
+        $this->setup();
+        $project_created_flow =$project_created_flow[0];
+        $this->run(self::$module['name'],$project_created_flow->id);
+    }
     public function project_created($project_id){
         
         $project_created_flow =$this->ci->workflow_model->getmoduleflows(self::$module['name'],['action'=>'project_created']);
         
         if($project_created_flow){
-            $this->project_id =$project_id;
-            $this->project = $this->ci->projects_model->get($project_id);
+            $this->initialise_project($project_created_flow,$project_id);
+        }
+    }
 
-            $this->setup();
+    public function project_deleted($project_id){
+        $project_created_flow =$this->ci->workflow_model->getmoduleflows(self::$module['name'],['action'=>'project_deleted']);
+        
+        if($project_created_flow){
+            $this->initialise_project($project_created_flow,$project_id);
+        }
+    }
 
-            $project_created_flow =$project_created_flow[0];
-            $this->run(self::$module['name'],$project_created_flow->id);
+    public function project_updated($project_id,$project_change_log_id =0){
+        $project_created_flow =$this->ci->workflow_model->getmoduleflows(self::$module['name'],['action'=>'project_updated']);
+        
+        if($project_created_flow){
+            
+            $this->initialise_project($project_created_flow,$project_id,$project_change_log_id);
         }
     }
 
@@ -252,7 +292,9 @@ class Project_workflow extends Workflow_app
     }
 
     protected function run_condition($flow){
-        if($flow->configure){
+        if($flow->action =='converted_from_lead'){
+            return $this->project->lead_id?true:false;
+        }elseif($flow->configure){
             $sql = "SELECT * FROM ".db_prefix()."projects WHERE ( ".$flow->configure['sql']." ) and id = ?";
             $params =$flow->configure['params'];
             $params [] =$this->project_id;
@@ -261,55 +303,46 @@ class Project_workflow extends Workflow_app
         }
     }
 
+    protected function prepare_and_send_email($flow,$staff_id) {
+        if($staff_id){
+            $this->run_mergefields($staff_id);
+            $subject =$this->mergefieldsContent($this->merge_fields,$flow->configure['subject']);
+            $fromname =$this->mergefieldsContent($this->merge_fields,$flow->configure['fromname']);
+            $message =$this->mergefieldsContent($this->merge_fields,$flow->configure['message']);
+            $this->ci->db->where('staffid', $staff_id);
+            $staff = $this->ci->db->get(db_prefix() . 'staff')->row();
+            if(!$staff){
+                return;
+            }
+            $sendto =$staff->email;
+            $this->sendEmail($fromname,$sendto,$subject,$message,'workflow deal created');
+        }   
+    }
+
     protected function run_email($flow)
     {
-        
         if($flow->configure){
-            $sendto =$flow->configure['sendto'];
-            $sendto ='';
-            if($flow->configure['sendto'] =='staff'){
-                
-                $this->run_mergefields();
-                $subject =$this->mergefieldsContent($this->merge_fields,$flow->configure['subject']);
-                $fromname =$this->mergefieldsContent($this->merge_fields,$flow->configure['fromname']);
-                $message =$this->mergefieldsContent($this->merge_fields,$flow->configure['message']);
-                $this->ci->db->where('staffid', $this->get_staff_id());
-                $staff = $this->ci->db->get(db_prefix() . 'staff')->row();
-                if(!$staff){
-                    return ;
+            if($flow->configure['sendto'] =='staff' || $flow->configure['sendto'] =='other_staffs'){
+                if($flow->configure['sendto'] =='staff'){
+                    $staffs =array($this->get_staff_id());
+                }else{
+                    $staffs =$flow->configure['other_staffs_group'];
                 }
-                $sendto =$staff->email;
-                $this->sendEmail($fromname,$sendto,$subject,$message,'workflow deal created');
+                
+                if($staffs){
+                    foreach ($staffs as $staff_id) {
+                        $this->prepare_and_send_email($flow,$staff_id);
+                    }
+                }
             }elseif($flow->configure['sendto'] =='followers'){
                 $members =$this->get_followers();
                 if($members){
                     foreach ($members as $member) {
-                        $this->ci->db->where('staffid', $member['staff_id']);
-                        $staff = $this->ci->db->get(db_prefix() . 'staff')->row();
-                        if(!$staff){
-                            continue ;
-                        }
-                        $this->run_mergefields($member['staff_id']);
-                        $subject =$this->mergefieldsContent($this->merge_fields,$flow->configure['subject']);
-                        $fromname =$this->mergefieldsContent($this->merge_fields,$flow->configure['fromname']);
-                        $message =$this->mergefieldsContent($this->merge_fields,$flow->configure['message']);
-                        $sendto =$staff->email;
-                        $this->sendEmail($fromname,$sendto,$subject,$message,'workflow deal created');
+                        $this->prepare_and_send_email($flow,$member['staff_id']);
                     }
                 }
             }elseif($flow->configure['sendto'] =='manager'){
-                $manager_id =$this->get_manager_id();
-                $this->run_mergefields($manager_id);
-                $subject =$this->mergefieldsContent($this->merge_fields,$flow->configure['subject']);
-                $fromname =$this->mergefieldsContent($this->merge_fields,$flow->configure['fromname']);
-                $message =$this->mergefieldsContent($this->merge_fields,$flow->configure['message']);
-                $this->ci->db->where('staffid', $manager_id);
-                $staff = $this->ci->db->get(db_prefix() . 'staff')->row();
-                if(!$staff){
-                    return ;
-                }
-                $sendto =$staff->email;
-                $this->sendEmail($fromname,$sendto,$subject,$message,'workflow deal created');
+                $this->prepare_and_send_email($flow,$this->get_manager_id());
             }
         }
     }
@@ -391,7 +424,18 @@ class Project_workflow extends Workflow_app
                     }
                 }
                 break;
-            
+            case 'project_update_event':
+                if($flow->configure){
+                    $configure =$flow->configure;
+                    if($this->project_change_log->field_name ==$configure['event']){
+                        return true;
+                    }else{
+                        return false;
+                    }
+                }else{
+                    return false;
+                }
+                break;
             default:
                 break;
         }
@@ -407,12 +451,25 @@ class Project_workflow extends Workflow_app
     {
         if($flow->configure){
             $sendto =$flow->configure['sendto'];
-            if($flow->configure['sendto'] =='staff'){
-                $this->run_mergefields();
-                $this->ci->db->where('staffid', $this->get_staff_id());
-                $staff = $this->ci->db->get(db_prefix() . 'staff')->row();
-                $sendto =$this->getCountryCallingCode($staff->phone_country_code) . $staff->phonenumber;
-                $this->sendWhatsapp($sendto, $flow, $this->merge_fields);
+
+            if($flow->configure['sendto'] =='staff' || $flow->configure['sendto'] =='other_staffs'){
+                if($flow->configure['sendto'] =='staff'){
+                    $staffs =array($this->get_staff_id());
+                }else{
+                    $staffs =$flow->configure['other_staffs_group'];
+                }
+                
+                if($staffs){
+                    foreach ($staffs as $staff_id) {
+                        $this->run_mergefields($staff_id);
+                        $this->ci->db->where('staffid', $staff_id);
+                        $staff = $this->ci->db->get(db_prefix() . 'staff')->row();
+                        if($staff){
+                            $sendto =$this->getCountryCallingCode($staff->phone_country_code) . $staff->phonenumber;
+                            $this->sendWhatsapp($sendto, $flow, $this->merge_fields);
+                        }
+                    }
+                }
             }elseif($flow->configure['sendto'] =='followers'){
                 $members =$this->get_followers();
                 if($members){
@@ -420,23 +477,24 @@ class Project_workflow extends Workflow_app
                         $this->run_mergefields($member['staff_id']);
                         $this->ci->db->where('staffid', $member['staff_id']);
                         $staff = $this->ci->db->get(db_prefix() . 'staff')->row();
-                        $sendto =$this->getCountryCallingCode($staff->phone_country_code) . $staff->phonenumber;
-                        $this->sendWhatsapp($sendto, $flow, $this->merge_fields);
+                        if($staff){
+                            $sendto =$this->getCountryCallingCode($staff->phone_country_code) . $staff->phonenumber;
+                            $this->sendWhatsapp($sendto, $flow, $this->merge_fields);
+                        }
                     }
                 }
-                $sendto =$this->getCountryCallingCode($this->project->phone_country_code) .$this->project->phonenumber;
             }elseif($flow->configure['sendto'] =='manager'){
                 $manager_id =$this->get_manager_id();
                 if($manager_id){
                     $this->run_mergefields($manager_id);
                     $this->ci->db->where('staffid', $manager_id);
                     $staff = $this->ci->db->get(db_prefix() . 'staff')->row();
-                    $sendto =$this->getCountryCallingCode($staff->phone_country_code) . $staff->phonenumber;
-                    $this->sendWhatsapp($sendto, $flow, $this->merge_fields);
+                    if($staff){
+                        $sendto =$this->getCountryCallingCode($staff->phone_country_code) . $staff->phonenumber;
+                        $this->sendWhatsapp($sendto, $flow, $this->merge_fields);
+                    }
                 }
-                
             }
-            
         }
     }
 
@@ -445,12 +503,24 @@ class Project_workflow extends Workflow_app
         
         if($flow->configure){
             $sendto =$flow->configure['sendto'];
-            if($flow->configure['sendto'] =='staff'){
-                $this->run_mergefields();
-                $this->ci->db->where('staffid', $this->get_staff_id());
-                $staff = $this->ci->db->get(db_prefix() . 'staff')->row();
-                $sendto =$this->getCountryCallingCode($staff->phone_country_code) . $staff->phonenumber;
-                $this->sendSMS($sendto, $flow, $this->merge_fields);
+            if($flow->configure['sendto'] =='staff' || $flow->configure['sendto'] =='other_staffs'){
+                if($flow->configure['sendto'] =='staff'){
+                    $staffs =array($this->get_staff_id());
+                }else{
+                    $staffs =$flow->configure['other_staffs_group'];
+                }
+                if($staffs){
+                    foreach ($staffs as $staff_id) {
+                        $this->run_mergefields($staff_id);
+                        $this->ci->db->where('staffid', $staff_id);
+                        $staff = $this->ci->db->get(db_prefix() . 'staff')->row();
+                        if($staff){
+                            $sendto =$this->getCountryCallingCode($staff->phone_country_code) . $staff->phonenumber;
+                            $this->sendSMS($sendto, $flow, $this->merge_fields);
+                        }
+                        
+                    }
+                }
             }elseif($flow->configure['sendto'] =='followers'){
                 $members =$this->get_followers();
                 if($members){
@@ -458,8 +528,10 @@ class Project_workflow extends Workflow_app
                         $this->run_mergefields($member['staff_id']);
                         $this->ci->db->where('staffid', $member['staff_id']);
                         $staff = $this->ci->db->get(db_prefix() . 'staff')->row();
-                        $sendto =$this->getCountryCallingCode($staff->phone_country_code) . $staff->phonenumber;
-                        $this->sendSMS($sendto, $flow, $this->merge_fields);
+                        if($staff){
+                            $sendto =$this->getCountryCallingCode($staff->phone_country_code) . $staff->phonenumber;
+                            $this->sendSMS($sendto, $flow, $this->merge_fields);
+                        }
                     }
                 }
                 $sendto =$this->getCountryCallingCode($this->project->phone_country_code) .$this->project->phonenumber;
@@ -469,8 +541,10 @@ class Project_workflow extends Workflow_app
                     $this->run_mergefields($manager_id);
                     $this->ci->db->where('staffid', $manager_id);
                     $staff = $this->ci->db->get(db_prefix() . 'staff')->row();
-                    $sendto =$this->getCountryCallingCode($staff->phone_country_code) . $staff->phonenumber;
-                    $this->sendSMS($sendto, $flow, $this->merge_fields);
+                    if($staff){
+                        $sendto =$this->getCountryCallingCode($staff->phone_country_code) . $staff->phonenumber;
+                        $this->sendSMS($sendto, $flow, $this->merge_fields);
+                    }
                 }
                 
             }

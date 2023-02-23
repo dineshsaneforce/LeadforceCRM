@@ -2864,6 +2864,7 @@ class Projects_model extends App_Model
         $this->db->where('id', $project_id);
         $this->db->update(db_prefix() . 'projects', $data);
         if ($this->db->affected_rows() > 0) {
+            hooks()->do_action('after_delete_project', $project_id);
             return true;
         }
         /*
@@ -5168,6 +5169,7 @@ public function all_activiites()
         $this->db->insert(db_prefix().'project_changelogs',$data);
         $change_log_id =$this->db->insert_id();
         $this->add_timeline_activity($project_id, 'project', 'updated',$change_log_id);
+        hooks()->do_action('after_update_project', ['project_id'=>$project_id,'change_log_id'=>$change_log_id]);
     }
 
     public function getProjectOnly($id)

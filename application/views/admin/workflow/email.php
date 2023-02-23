@@ -7,19 +7,30 @@
         <label for="sendto" class="control-label">Send to</label>
         <select name="sendto" id="sendto" class="form-control" data-live-search="true" required>
             <option value="customer">Customer</option>
-            <option value="staff">Staff</option>
+            <option value="staff">Assigned Staff</option>
         </select>
     </div>
 <?php elseif ($moduleDetails['name'] == 'project') : ?>
     <div class="form-group">
         <label for="sendto" class="control-label">Send to</label>
         <select name="sendto" id="sendto" class="form-control" data-live-search="true" required>
-            <option value="staff">Staff</option>
+            <option value="staff">Owner</option>
             <option value="followers">Followers</option>
             <option value="manager">Manager</option>
+            <option value="other_staffs">Other Staffs</option>
         </select>
     </div>
 <?php endif; ?>
+
+<div class="form-group dynamic-form-group" id="otherStaffGroup" style="display:none">
+    <label for="other_staffs_group" class="control-label">Select Staffs</label>
+    <select name="other_staffs_group[]" id="other_staffs_group" class="form-control selectpicker" data-live-search="true" multiple>
+    <?php foreach($staffs as $staffid => $staffname): ?>
+        <option value="<?php echo $staffid ?>"><?php echo $staffname ?></option>
+    <?php endforeach; ?>
+    </select>
+</div>
+
 <?php echo render_input('subject', 'template_subject', '', 'text', ['data-cursor' => 0]); ?>
 <?php echo render_input('fromname', 'template_fromname', '', 'text', ['data-cursor' => 0]); ?>
 <hr />
@@ -60,6 +71,18 @@
             },
         });
 
+        $('#EmailConfig [name="sendto"]').change(function(){
+            var type_val =$(this).val();
+            if(type_val =='other_staffs'){
+                $('#EmailConfig #otherStaffGroup').show();
+                $('#EmailConfig #otherStaffGroup').attr('required','true');
+            }else{
+                $('#EmailConfig #otherStaffGroup').hide();
+                $('#EmailConfig #otherStaffGroup').attr('required','false');
+            }
+                
+        });
+        
         appValidateForm($('#EmailConfig'), {
                 subject: 'required',
                 fromname: 'required',

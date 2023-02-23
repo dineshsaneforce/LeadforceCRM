@@ -42,6 +42,32 @@ function workflow_deal_created($deal_id)
     $CI->project_workflow->project_created($deal_id);
 }
 
+hooks()->add_action('after_update_project','workflow_deal_updated');
+
+function workflow_deal_updated($data)
+{
+    if(is_array($data)){
+        $project_id =$data['project_id'];
+        if(isset($data['change_log_id'])){
+            $change_log_id =$data['change_log_id'];
+        }
+    }else{
+        $project_id =$data;
+        $change_log_id =0;
+    }
+    
+    $CI = &get_instance();
+    $CI->project_workflow->project_updated($project_id,$change_log_id);
+}
+
+hooks()->add_action('after_delete_project','workflow_deal_deleted');
+
+function workflow_deal_deleted($deal_id)
+{
+    $CI = &get_instance();
+    $CI->project_workflow->project_deleted($deal_id);
+}
+
 hooks()->add_action('after_add_project_approval','workflow_deal_created_approval');
 
 function workflow_deal_created_approval($deal_id)

@@ -1,6 +1,8 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed'); ?>
 <?php 
 // hooks()->do_action('after_add_project', '27466'); pre(''); 
+// hooks()->do_action('after_update_project', ['project_id'=>27462,'change_log_id'=>22]); pre('');
+// hooks()->do_action('after_delete_project', '27462'); pre('');
 ?>
 <?php init_head(); ?>
 
@@ -92,6 +94,9 @@
                                     <?php if ($moduleDetails['name'] == 'project') : ?>
                                         <div class="sidebar-setup" id="sidebarsetupprojectstaffassign">
                                             <?php $this->load->view('admin/workflow/project/assign_staff'); ?>
+                                        </div>
+                                        <div class="sidebar-setup" id="sidebarsetupprojectchangeevents">
+                                            <?php $this->load->view('admin/workflow/project/change_events'); ?>
                                         </div>
                                     <?php endif; ?>
                                     <div class="sidebar-setup show" id="sidabarnosetup">
@@ -441,7 +446,9 @@
     #workflowQuerybuilder .form-control{
         width: 100%;
     }
-
+    li.hide-child-blocks ul{
+        display: none;
+    }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-extendext/1.0.0/jquery-extendext.min.js" integrity="sha512-pAU2x/rE9QHeYHtKS3RJccBEx8v8Lyyo4kVsxg+K3N+w/kbwrj2C9mp02XGQA+cOwlF1FdbEzTxnKg3DrQgWuA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dot/1.1.3/doT.min.js" integrity="sha512-mv9iHAP8cyGYB1TX54qMIFYFbHpFoqo1StdcuIUoAxTXIiFfOu22TjJGrFMpY+iR4QmGkElLlHBVx5C+PiIdvg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
