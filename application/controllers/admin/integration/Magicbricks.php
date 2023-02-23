@@ -2,7 +2,7 @@
 
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Acres99 extends AdminController
+class Magicbricks extends AdminController
 {
     public $moudle_permission_name = 'settings';
 
@@ -18,20 +18,20 @@ class Acres99 extends AdminController
             access_denied();
         }
         if($this->input->post()){
-            $this->db->where('plugin','99acres_lead');
+            $this->db->where('plugin','magicbricks');
             $this->db->where('config',json_encode(['web_form_id'=>$this->input->post('web_form')]));
             $exists =$this->db->get(db_prefix().'plugin_configs')->row();
             if($exists){
                 set_alert('danger', 'Selected form already exsists');
             }else{
-                $this->plugins_model->add_config('99acres_lead',['web_form_id'=>$this->input->post('web_form')]);
+                $this->plugins_model->add_config('magicbricks',['web_form_id'=>$this->input->post('web_form')]);
                 set_alert('success', 'Form Saved successfully');
             }
             
         }
         $data =[];
-        $data['title'] ='99Acres';
-        $configs =$this->plugins_model->get_configs_by_plugin('99acres_lead');
+        $data['title'] ='Magicbricks';
+        $configs =$this->plugins_model->get_configs_by_plugin('magicbricks');
         $web_forms =$this->db->get(db_prefix().'web_to_lead')->result_array();
         $data['web_forms'] =$data['configs'] =[];
         if($web_forms){
@@ -45,7 +45,7 @@ class Acres99 extends AdminController
                 $data['configs'][]=$config;
             }
         }
-        $this->load->view('admin/integrations/acres99/acres99',$data);
+        $this->load->view('admin/integrations/magicbricks/magicbricks',$data);
     }
 
     public function config($id)
@@ -59,7 +59,7 @@ class Acres99 extends AdminController
             $web_form =$this->db->get(db_prefix().'web_to_lead')->row();
             if($web_form){
                 $data =array('web_form'=>$web_form,'configure_id'=>$id);
-                $this->load->view('admin/integrations/acres99/configuration_view',$data);
+                $this->load->view('admin/integrations/magicbricks/configuration_view',$data);
             }
         }
     }
@@ -71,6 +71,6 @@ class Acres99 extends AdminController
         }
         $this->plugins_model->delete($id);
         set_alert('success', 'Form removed successfully');
-        redirect(admin_url('integration/acres99'));
+        redirect(admin_url('integration/magicbricks'));
     }
 }
