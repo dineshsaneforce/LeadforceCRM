@@ -150,10 +150,52 @@ class Projects_merge_fields extends App_merge_fields
         $fields['{discussion_subject}']     = '';
         $fields['{discussion_description}'] = '';
         $fields['{discussion_comment}']     = '';
+        $fields['{project_teamleader}']     = '';
+        $fields['{project_pipeline}']     = '';
+        $fields['{project_status}']     = '';
+        $fields['{project_cost}']     = '';
+        $fields['{project_modified_by}']     = '';
 
 
         $this->ci->db->where('id', $project_id);
         $project = $this->ci->db->get(db_prefix().'projects')->row();
+
+        if($project && $project->teamleader){
+            $this->ci->db->where('staffid',$project->teamleader);
+            $this->ci->db->select('CONCAT(firstname," ",lastname) as full_name');
+            $team_leader =$this->ci->db->get(db_prefix().'staff')->row();
+            if($team_leader){
+                $fields['{project_teamleader}'] =$team_leader->full_name;
+            }
+        }
+        if($project && $project->modified_by){
+            $this->ci->db->where('staffid',$project->modified_by);
+            $this->ci->db->select('CONCAT(firstname," ",lastname) as full_name');
+            $project_modified_by =$this->ci->db->get(db_prefix().'staff')->row();
+            if($team_leader){
+                $fields['{project_modified_by}'] =$project_modified_by->full_name;
+            }
+        }
+        if($project && $project->project_cost){
+            $fields['{project_cost}'] =app_format_money($project->project_cost, $project->project_currency);
+        }
+        if($project && $project->pipeline_id){
+            $this->ci->db->where('id',$project->pipeline_id);
+            $this->ci->db->select('name');
+            $pipeline =$this->ci->db->get(db_prefix().'pipeline')->row();
+            if($pipeline){
+                $fields['{project_pipeline}'] =$pipeline->name;
+            }
+        }
+
+        if($project && $project->status){
+            $this->ci->db->where('id',$project->status);
+            $this->ci->db->select('name');
+            $status =$this->ci->db->get(db_prefix().'projects_status')->row();
+            if($status){
+                $fields['{project_status}'] =$status->name;
+            }
+        }
 
         $fields['{project_name}']        = $project->name;
         $fields['{project_deadline}']    = _d($project->deadline);

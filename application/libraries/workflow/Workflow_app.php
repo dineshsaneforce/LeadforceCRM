@@ -88,6 +88,11 @@ class Workflow_app
                 '{project_start_date}'=>'Deal start date',
                 '{project_deadline}'=>'Deal expected closing date',
                 '{project_link}'=>'Deal link',
+                '{project_teamleader}'=>'Deal Owner',
+                '{project_pipeline}'=>'Deal Pipeline',
+                '{project_status}'=>'Deal stage',
+                '{project_cost}'=>'Deal value',
+                '{project_modified_by}'=>'Deal modified by',
             ]
         ],
         'activity_merge_fields'=>[
