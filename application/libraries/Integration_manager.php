@@ -10,6 +10,7 @@ class Integration_manager {
         $this->addIntegration("99Acres","Online Platform To Real Estate Developers, Brokers and Owners For Listing Their Property.",'99acres.jpeg','integration/acres99',array('leads','99acres'),'Leads');
         $this->addIntegration("IndiaMart","IndiaMART is India's largest online B2B marketplace, connecting buyers with suppliers.",'indiamart.jpeg','integration/indiamart',array('leads','Indiamart'),'Leads');
         $this->addIntegration("LinkedIn","LinkedIn is one of the most trusted networks for building connections, enhancing your networking opportunities and finding the right career.",'linkedin.png','',array('leads','LinkedIn'),'Leads','Upcoming');
+        $this->addIntegration("MagicBricks","Search Real Estate Properties in India at Magicbricks, the best property site in India. Buy, Sell, Rent residential and commercial properties.",'magicbricks.jpg','integration/magicbricks',array('leads','MagicBricks'),'Leads');
 
         $this->addIntegration("Whatsapp Business API","Send Automated Updates, Reminders on WhatsApp & Provide seamless Customer Experience.",'whatsapp.jpeg','integration/whatsapp',array('notification','whatsapp'),'Message');
         $this->addIntegration("Daffytel","Daffytel Cloud Telephony in Chennai is one of the leading businesses in the Telecommunication Services.",'daffytel.png','integration/sms/daffytel',array('notification','sms','Daffytel'),'Message');
