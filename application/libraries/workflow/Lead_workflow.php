@@ -8,7 +8,7 @@ class Lead_workflow extends Workflow_app
         'name'=>'lead',
         'title'=>'Lead',
         'description'=>'Lead module',
-        'icon'=>'<i class="fa fa-tty  fa-fw fa-lg"></i>',
+        'icon'=>'<i class="fa fa-tty"></i>',
         // 'triggers'=>['lead_created','lead_updated','lead_deleted','lead_cronjob'],
         'triggers'=>['lead_created']
     );

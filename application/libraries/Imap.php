@@ -124,6 +124,9 @@ class Imap
 	public function check_imap(array $config = [])
     {
 		$config       = array_replace_recursive($this->config, $config);
+		if(!$config || (!isset($config['host']) || !$config['host']) || (!isset($config['port']) || !$config['port'])|| (!isset($config['username']) || !$config['username'])|| (!isset($config['password']) || !$config['password'])){
+			return false;
+		}
 		$this->config = $config;
 		$this->mailbox = '{' . $config['host'] .  ':'.$config['port'].'/imap/ssl/novalidate-cert}';
 		imap_timeout(IMAP_OPENTIMEOUT, 3);

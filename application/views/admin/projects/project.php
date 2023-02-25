@@ -160,17 +160,20 @@
                 data-none-selected-text="<?php echo _l('dropdown_non_selected_tex'); ?>">
                 <option></option>
                 <?php
-                    foreach($client_contacts as $cckey => $ccval){ 
-                        foreach($contacts as $scckey => $sccval){
-                            if( $sccval['contacts_id'] == $ccval['id']){
-                                $selected = '';
-                                if( $sccval['is_primary'] == 1){
-                                    $selected = 'selected';
+                    if($client_contacts){
+                        foreach($client_contacts as $cckey => $ccval){ 
+                            foreach($contacts as $scckey => $sccval){
+                                if( $sccval['contacts_id'] == $ccval['id']){
+                                    $selected = '';
+                                    if( $sccval['is_primary'] == 1){
+                                        $selected = 'selected';
+                                    }
+                                    echo '<option value="'.$ccval['id'].'" '.$selected.' >'.$ccval['firstname'].' '.$ccval['lastname'].'</option>';
                                 }
-                                echo '<option value="'.$ccval['id'].'" '.$selected.' >'.$ccval['firstname'].' '.$ccval['lastname'].'</option>';
                             }
-                        }
-                    } 
+                        } 
+                    }
+                    
                 ?>
                 <?php //foreach($statuses as $status){ ?>
                 <!-- <option value="<?php echo $status['id']; ?>"

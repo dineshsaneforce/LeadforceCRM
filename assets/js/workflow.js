@@ -75,7 +75,7 @@ var workflowl =function(module){
             datatitle =trigger.title;
             description =trigger.description;
 
-            
+            //                <a data-toggle="tooltip" data-title="Hide child flows" class="text-muted toggle-child-block" style="float: right;"><i class="fa fa-compress" aria-hidden="true"></i></a>
             block =`<div class="block" type="button" aria-pressed="false" data-js="node"`;
             block +=` data-id="`+id+`" data-name="`+slug+`" data-title="`+datatitle+`">
                 <div class="block-content">
@@ -169,6 +169,12 @@ var workflowl =function(module){
                         var title ='Send to customer';
                     }else if(flow.configure.sendto =='staff'){
                         var title ='Send to staff';
+                    }else if (flow.configure.sendto == 'followers') {
+                        title = 'Send to followers';
+                    }else if (flow.configure.sendto == 'manager') {
+                        title = 'Send to manager';
+                    }else if (flow.configure.sendto == 'other_staffs') {
+                        title = 'Send to other staffs';
                     }
                     var description =flow.configure.subject;
                     workflowl.updateBlockContent(flow.id,title,description);
@@ -177,6 +183,12 @@ var workflowl =function(module){
                         var title ='Send to customer';
                     }else if(flow.configure.sendto =='staff'){
                         var title ='Send to staff';
+                    }else if (flow.configure.sendto == 'followers') {
+                        title = 'Send to followers';
+                    }else if (flow.configure.sendto == 'manager') {
+                        title = 'Send to manager';
+                    }else if (flow.configure.sendto == 'other_staffs') {
+                        title = 'Send to other staffs';
                     }
                     var description =flow.configure.template;
                     workflowl.updateBlockContent(flow.id,title,'Template : <b>'+description+'</b>');
@@ -185,6 +197,12 @@ var workflowl =function(module){
                         var title ='Send to customer';
                     }else if(flow.configure.sendto =='staff'){
                         var title ='Send to staff';
+                    }else if (flow.configure.sendto == 'followers') {
+                        title = 'Send to followers';
+                    }else if (flow.configure.sendto == 'manager') {
+                        title = 'Send to manager';
+                    }else if (flow.configure.sendto == 'other_staffs') {
+                        title = 'Send to other staffs';
                     }
                     var description =$('#SMSConfig #template option[value="'+flow.configure.template+'"]').html();
                     workflowl.updateBlockContent(flow.id,title,'Template : <b>'+description+'</b>');
@@ -206,7 +224,17 @@ var workflowl =function(module){
                     }
                 }else if(flow.action =='lead_assign_staff'){
                     if(flow.configure){
-                        description =`Assign staff to lead. <b>`+$('[name="type"] option[value="'+flow.configure.type+'"]').html()+`</b>`;
+                        description =`Assign staff to lead. <b>`+$('LeadAssignStaffConfig [name="type"] option[value="'+flow.configure.type+'"]').html()+`</b>`;
+                        workflowl.updateBlockContent(flow.id,'',description);
+                    }
+                }else if(flow.action =='project_assign_staff'){
+                    if(flow.configure){
+                        description =`Assign owner to deal. <b>`+$('#ProjectAssignStaffConfig [name="type"] option[value="'+flow.configure.type+'"]').html()+`</b>`;
+                        workflowl.updateBlockContent(flow.id,'',description);
+                    }
+                }else if(flow.action =='project_update_event'){
+                    if(flow.configure){
+                        description =`When <b>`+$('#ProjectChangeEventConfig [name="event"] option[value="'+flow.configure.event+'"]').html()+`</b>`;
                         workflowl.updateBlockContent(flow.id,'',description);
                     }
                 }
@@ -217,6 +245,17 @@ var workflowl =function(module){
         workflowl.RenderTriggers();
         $('body').on('click', '.tree .block', function(e) {
             workflowl.selectNode($(this));
+        });
+        $('body').on('click', '.toggle-child-block', function(e) {
+            
+            $(this).parent().parent().toggleClass('hide-child-blocks');
+            if($(this).parent().parent().hasClass('hide-child-blocks')){
+                $(this).attr('data-original-title','Show child flows');
+                $(this).html('<i class="fa fa-expand" aria-hidden="true"></i>');
+            }else{
+                $(this).html('<i class="fa fa-compress" aria-hidden="true"></i>');
+                $(this).attr('data-original-title','Hide child flows');
+            }
         });
         $('body').on('click', '.trigger', function(e) {
             workflowl.addChild($(this).attr('data-name'));
@@ -368,9 +407,12 @@ var workflowl =function(module){
         if(trigger){
             if(trigger.type =='notification' && trigger.medium =='email'){
                 if(flow.configure){
-                    $('form#EmailConfig [name="sendto"]').val(flow.configure.sendto);
+                    $('form#EmailConfig [name="sendto"]').val(flow.configure.sendto).trigger('change');
                     $('form#EmailConfig [name="subject"]').val(flow.configure.subject);
                     $('form#EmailConfig [name="fromname"]').val(flow.configure.fromname);
+                    if(flow.configure.sendto =='other_staffs'){
+                        $('form#EmailConfig #other_staffs_group').val(flow.configure.other_staffs_group).selectpicker('refresh');
+                    }
                     if(flow.configure.plaintext=='on'){
                         $('form#EmailConfig [name="plaintext"]').attr('checked','checked')
                     }
@@ -384,9 +426,11 @@ var workflowl =function(module){
                 if(flow.configure){
                     if(typeof flow.configure.variables !='undefined')
                         workflowl.setWhatsappVariables(flow.configure.variables);
-                    $('form#WhatsappConfig [name="sendto"]').val(flow.configure.sendto);
+                    $('form#WhatsappConfig [name="sendto"]').val(flow.configure.sendto).trigger('change');
                     $('form#WhatsappConfig [name="template"]').val(flow.configure.template).trigger('change');
-
+                    if(flow.configure.sendto =='other_staffs'){
+                        $('form#WhatsappConfig #other_staffs_group').val(flow.configure.other_staffs_group).selectpicker('refresh');
+                    }
                     if(typeof flow.configure.header_variable != 'undefined'){
                         $('form#WhatsappConfig [name="header_variable"]').val(flow.configure.header_variable);
                     }
@@ -405,8 +449,11 @@ var workflowl =function(module){
                 if(flow.configure){
                     if(typeof flow.configure.variables !='undefined')
                         workflowl.setSmsVariables(flow.configure.variables);
-                    $('form#SMSConfig [name="sendto"]').val(flow.configure.sendto);
+                    $('form#SMSConfig [name="sendto"]').val(flow.configure.sendto).trigger('change');
                     $('form#SMSConfig [name="template"]').val(flow.configure.template).trigger('change');
+                    if(flow.configure.sendto =='other_staffs'){
+                        $('form#SMSConfig #other_staffs_group').val(flow.configure.other_staffs_group).selectpicker('refresh');
+                    }
                 }else{
                     workflowl.resetForm('SMSConfig');
                 }
@@ -470,6 +517,44 @@ var workflowl =function(module){
 
                 $('#sidebarSettingsTitle').html("Assign User");
                 $('#sidebarsetupleadstaffassign').addClass('show');   
+            }else if(blockname =='project_assign_staff'){
+
+                if(flow.configure){
+                    $('#ProjectAssignStaffConfig [name="type"]').val(flow.configure.type).trigger('change');
+                    if(flow.configure.type=='direct_assign'){
+                        $('#ProjectAssignStaffConfig [name="assignto"]').val(flow.configure.assignto)
+                        $('#ProjectAssignStaffConfig [name="assignto"]').selectpicker('refresh');
+                    }else if(flow.configure.type=='round_robin_method' || flow.configure.type=='having_less_no_of_projects' || flow.configure.type=='having_more_wins'){
+                        $('#ProjectAssignStaffConfig [name="stafftype"]').val(flow.configure.stafftype).trigger('change');
+
+                        if(flow.configure.stafftype =='staff'){
+                            $('#ProjectAssignStaffConfig [name="assigntogroup[]"]').val(flow.configure.assigntogroup);
+                            $('#ProjectAssignStaffConfig [name="assigntogroup[]"]').selectpicker('refresh');
+                        }else if(flow.configure.stafftype =='roles'){
+                            $('#ProjectAssignStaffConfig [name="assigntorole[]"]').val(flow.configure.assigntorole);
+                            $('#ProjectAssignStaffConfig [name="assigntorole[]"]').selectpicker('refresh');
+                        }else if(flow.configure.stafftype =='designation'){
+                            $('#ProjectAssignStaffConfig [name="assigntodesignation[]"]').val(flow.configure.assigntodesignation);
+                            $('#ProjectAssignStaffConfig [name="assigntodesignation[]"]').selectpicker('refresh');
+                        }
+                        
+                    }
+                }else{
+                    workflowl.resetForm('ProjectAssignStaffConfig');
+                }
+
+                $('#sidebarSettingsTitle').html("Assign User");
+                $('#sidebarsetupprojectstaffassign').addClass('show');   
+            }else if(blockname =='project_update_event'){
+
+                if(flow.configure){
+                    $('#ProjectChangeEventConfig [name="event"]').val(flow.configure.event).selectpicker('refresh');
+                }else{
+                    workflowl.resetForm('ProjectChangeEventConfig');
+                }
+
+                $('#sidebarSettingsTitle').html("Deal update event");
+                $('#sidebarsetupprojectchangeevents').addClass('show');   
             }else{
                 $('#sidabarnosetup').addClass('show');
             }
