@@ -2,8 +2,9 @@
 <?php 
 // hooks()->do_action('after_add_project', '27466'); pre(''); 
 // hooks()->do_action('after_update_project', ['project_id'=>27462,'change_log_id'=>22]); pre('');
-// hooks()->do_action('after_delete_project', '27462'); pre('');
-?>
+//hooks()->do_action('after_delete_project', '27462'); pre('');
+// hooks()->do_action('after_added_project_note', '53'); pre('');
+ ?>
 <?php init_head(); ?>
 
 <script src="<?php echo base_url('assets/js/workflow.js?v=1.2') ?>"></script>
@@ -42,6 +43,7 @@
             <div class="col-md-8" id="workflowCanvas">
                 <div class="panel_s">
                     <div class="panel-body" id="workflowwrapper" style="overflow-x: auto; overflow-y:auto; height:90vh;">
+                        <a class="h5" href="<?php echo admin_url('workflow') ?>" style="position:absolute;z-index:999"><i class="fa fa-arrow-left mright5" aria-hidden="true"></i>Back</a>
                         <ul class="tree">
 
                         </ul>
@@ -52,7 +54,7 @@
                 <div class="panel_s">
                     <div class="panel-body" style="overflow-y:auto; height:90vh;">
                         <div role="toolbar" aria-label="Node tools" aria-hidden="true" class="toolbar show">
-                            <span id="closeWorkflowSidebar" data-toggle="tooltip" data-title="Close Sidebar"><i class="fa fa-arrow-right" style="font-size:18px;margin-right:10px" aria-hidden="true"></i></span><span id="selectedBlockTitle" class="h5"><?php echo $moduleDetails['title'] ?></span>
+                            <span id="closeWorkflowSidebar" data-toggle="tooltip" data-title="Close Sidebar"><i class="fa fa-arrow-right" style="font-size:14px;margin-right:10px" aria-hidden="true"></i></span><span id="selectedBlockTitle" class="h5"><?php echo $moduleDetails['title'] ?></span>
                             <div class="pull-right">
                                 <button type="button" class="btn btn-default" data-js="deleteNode" data-toggle="tooltip" data-title="Delete Block" id="deleteNode">
                                     <i class="fa fa-trash" aria-hidden="true"></i>

@@ -95,16 +95,13 @@ class Workflow_app
                 '{project_modified_by}'=>'Deal modified by',
             ]
         ],
-        'activity_merge_fields'=>[
-            '{task_type}',
-            '{task_user_take_action}',
-            '{task_related}',
-            '{task_name}',
-            '{task_description}',
-            '{task_status}',
-            '{task_priority}',
-            '{task_startdate}',
-        ],
+        'project_note_merge_fields'=>[
+            'name'=>'Note placeholders',
+            'placeholders'=>[
+                '{project_note_description}'=>'Note description',
+                '{project_note_added_by}'=>'Note added by name',
+            ]
+        ]
     ];
 
     public function __construct()

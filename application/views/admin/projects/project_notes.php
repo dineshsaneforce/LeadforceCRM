@@ -1,8 +1,18 @@
-<?php defined('BASEPATH') or exit('No direct script access allowed'); ?>
-<p><?php echo _l('project_note_private'); ?></p>
-<hr />
+<?php defined('BASEPATH') or exit('No direct script access allowed');?>
+<style>
+  #note-add-input .dx-htmleditor-content{
+    height: 100px;
+  }
+  .dx-mention{
+    cursor: pointer;
+  }
+</style>
 <?php echo form_open(admin_url('projects/save_note/'.$project->id)); ?>
-<?php echo render_textarea('content','','',array(),array(),'','tinymce'); ?>
+<div class="dx-viewport mbot15">
+    <div id="note-add-input"></div>
+</div>
+<input type="hidden" name="content" id="content">
+<input type="hidden" name="mentions" id="mentions">
 <button type="submit" id="addprojnote" class="btn btn-info"><?php echo _l('project_save_note'); ?></button>
 <?php echo form_close(); ?>
 <div class="clearfix"></div>
@@ -53,7 +63,7 @@
         <td data-order="<?php echo $note['fullname']; ?>">
                 <?php echo $note['fullname']; ?>
         </td>
-          <td data-order="<?php echo $note['content']; ?>"><?php echo $note['content']; ?></td>
+          <td ><?php echo $note['content']; ?></td>
           <td data-order="<?php echo $note['dateadded']; ?>"><?php echo _dt($note['dateadded']); ?></td>
          
          <td>
@@ -66,3 +76,62 @@
        <?php } ?>
      </tbody>
    </table>
+
+   <script>
+    document.addEventListener("DOMContentLoaded", function(event) {
+      var editor = $("#note-add-input").dxHtmlEditor({
+          mentions: [{
+              dataSource: employees,
+              searchExpr: "text",
+              displayExpr: "text",
+              valueExpr : "id",
+          }],
+          
+      }).dxHtmlEditor("instance");
+      
+      editor.insertEmbed(0, "")
+      $('#addprojnote').on('click',function(){
+        var mentions =[]
+        $('#note-add-input .dx-htmleditor-content .dx-mention').each(function(i, obj) {
+          mentions.push($(this).data('id'));
+        });
+
+        var uniqueMentions = mentions.filter(function(value, index, self) {
+        return self.indexOf(value) === index;
+      });
+
+        $('#mentions').val(uniqueMentions);
+        var htmlEditor = $('#note-add-input').dxHtmlEditor('instance');
+        $('#content').val(htmlEditor.option('value'));
+      });
+
+
+      $('.dx-mention').on("click",function(e){
+        window.open("<?php echo admin_url('staff/member/') ?>"+$(this).data('id'), '_blank');
+      });
+  });
+
+
+  var employees = [
+    <?php if($toplevelstaffs): ?>
+      <?php foreach ($toplevelstaffs as $pikay => $pival): ?>
+      <?php if($pival['staffid'] != get_staff_user_id()): ?>
+        { 
+          id: <?php echo $pival['staffid'] ?>,
+          text: "<?php echo $pival['firstname'] . ' ' . $pival['lastname'] ?>",
+        },
+      <?php endif; ?>
+      <?php endforeach; ?>
+    <?php endif; ?>
+    <?php if($project_members): ?>
+      <?php foreach ($project_members as $pikay => $pival):?>
+        <?php if($pival['staff_id'] != get_staff_user_id()): ?>
+        { 
+          id: <?php echo $pival['staff_id'] ?>,
+          text: "<?php echo $pival['firstname'] . ' ' . $pival['lastname'] ?>",
+        },
+      <?php endif; ?>
+      <?php endforeach; ?>
+    <?php endif; ?>
+  ];
+   </script>

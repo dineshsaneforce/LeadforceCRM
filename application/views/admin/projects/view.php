@@ -57,6 +57,8 @@ $hasHIstory = $this->approval_model->hasHistory('projects', $project->id) ? true
 $hasApprovalFlow = $this->workflow_model->getflows('deal_approval', 0, ['service' => 'approval_level','inactive'=>0]);
 ?>
 <?php init_head(); ?>
+<link rel="stylesheet" href="https://cdn3.devexpress.com/jslib/19.1.5/css/dx.common.css">
+<link rel="stylesheet" href="https://cdn3.devexpress.com/jslib/19.1.5/css/dx.light.css">
 <style>
     .hover-show .hover-edit {
         margin: 0;
@@ -655,7 +657,8 @@ echo form_hidden('project_percent', $percent);
 </script>
 <?php init_tail(); ?>
 <!-- For invoices table -->
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.6/quill.min.js"></script>
+<script src="https://cdn3.devexpress.com/jslib/19.1.5/js/dx.all.js"></script>
 <script>
     $(function() {
         appValidateForm($('#DealLossReasons_form'), {

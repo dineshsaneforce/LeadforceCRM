@@ -60,6 +60,14 @@ function workflow_deal_updated($data)
     $CI->project_workflow->project_updated($project_id,$change_log_id);
 }
 
+hooks()->add_action('after_added_project_note','workflow_deal_note_added');
+
+function workflow_deal_note_added($timeline_id)
+{
+    $CI = &get_instance();
+    $CI->project_workflow->project_note_added($timeline_id);
+}
+
 hooks()->add_action('after_delete_project','workflow_deal_deleted');
 
 function workflow_deal_deleted($deal_id)

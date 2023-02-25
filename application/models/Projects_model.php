@@ -547,7 +547,7 @@ class Projects_model extends App_Model
     {
         $this->db->select('*, (select CONCAT(' . db_prefix() . 'staff.firstname, \' \', ' . db_prefix() . 'staff.lastname) as fullname from tblstaff where staffid = staff_id) as fullname');
         $this->db->where('project_id', $project_id);
-
+        $this->db->order_by('id','desc');
         return $this->db->get(db_prefix() . 'project_notes')->result_array();
     }
 
@@ -2803,11 +2803,15 @@ class Projects_model extends App_Model
 
         //     return false;
         // }
+        if(!isset($data['mentions'])){
+            $data['mentions'] ='';
+        }
         if($data['content'] != '') {
             $this->db->insert(db_prefix() . 'project_notes', [
                     'staff_id'   => get_staff_user_id(),
                     'content'    => $data['content'],
                     'project_id' => $project_id,
+                    'mentions' => $data['mentions'],
                 ]);
             $insert_id = $this->db->insert_id();
             if ($insert_id) {
@@ -5037,7 +5041,11 @@ public function all_activiites()
             'staff_id' => get_staff_user_id()
         ];
         $this->db->insert(db_prefix() . 'project_log', $log);
-        return $this->db->insert_id();
+        $time_line_id =$this->db->insert_id();
+        if($type =='note'){
+            hooks()->do_action('after_added_project_note', $time_line_id);
+        }
+        return $time_line_id;
     }
 
     public function get_timeline_activities($deal_id,$page=0)

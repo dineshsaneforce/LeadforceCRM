@@ -659,9 +659,11 @@ class Projects extends AdminController
             );
             $data['project_members'] = $this->projects_model->get_project_members($id,(array)(isset($data['project'])?$data['project']:array()));
             $data['ownerHierarchy'] = '';
-                if($data['project']) {
-                    $data['ownerHierarchy'] = $this->staff_model->printCategoryTree($data['project']->teamleader,$prefix = '');
-                }
+            $data['toplevelstaffs'] =array();
+            if($data['project']) {
+                $data['ownerHierarchy'] = $this->staff_model->printCategoryTree($data['project']->teamleader,$prefix = '');
+                $data['toplevelstaffs'] = $this->staff_model->get($data['ownerHierarchy']);
+            }
             $data['my_staffids'] = $this->staff_model->get_my_staffids();
             $data['viewIds'] = $this->staff_model->getFollowersViewList();
 			if($group == 'project_tasks'){
@@ -1907,7 +1909,7 @@ class Projects extends AdminController
 
     public function save_note($project_id)
     {
-        $new_str = str_replace("&nbsp;","",str_replace(" ","",$_POST['content']));
+        $new_str = trim($_POST['content']);
         if(trim($new_str) == '') {
             set_alert('warning', 'Cannot save empty notes.');
             redirect(admin_url('projects/view/' . $project_id . '?group=project_notes'));

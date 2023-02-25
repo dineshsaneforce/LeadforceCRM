@@ -9,12 +9,13 @@ class Project_workflow extends Workflow_app
         'title'=>'Deal',
         'description'=>'Deal module',
         'icon'=>'<i class="fa fa-handshake-o"></i>',
-        'triggers'=>['project_created','project_updated','project_deleted']
+        'triggers'=>['project_created','project_updated','project_deleted','project_note_added']
     );
 
     protected $project_id ='';
     protected $project_change_log_id =0;
     protected $project_change_log ;
+    protected $project_note_id=0 ;
     protected $project;
     protected $merge_fields =[];
 
@@ -23,18 +24,24 @@ class Project_workflow extends Workflow_app
             'title'=>'Deal Created',
             'description'=>'Workflow starts when new deal created.',
             'icon'=>'<i class="fa fa-plus text-success" aria-hidden="true"></i>',
-            'triggers'=>['condition','converted_from_lead','project_assign_staff','add_activity','send_email','send_whatsapp','send_sms'],
+            'triggers'=>['condition','project_assign_staff','add_activity','send_email','send_whatsapp','send_sms'],
         ],
         'project_updated'=>[
             'title'=>'Deal Updated',
             'description'=>'Workflow starts when deal updated.',
             'icon'=>'<i class="fa fa-pencil-square-o text-primary" aria-hidden="true"></i>',
-            'triggers'=>['project_update_event','condition','converted_from_lead','project_assign_staff','add_activity','send_email','send_whatsapp','send_sms'],
+            'triggers'=>['project_update_event','condition','project_assign_staff','add_activity','send_email','send_whatsapp','send_sms'],
         ],
         'project_deleted'=>[
             'title'=>'Deal Deleted',
             'description'=>'Workflow starts when deal deleted.',
             'icon'=>'<i class="fa fa-trash text-danger" aria-hidden="true"></i>',
+            'triggers'=>['send_email','send_whatsapp','send_sms'],
+        ],
+        'project_note_added'=>[
+            'title'=>'Note added',
+            'description'=>'Workflow starts when new note added.',
+            'icon'=>'<i class="fa fa-sticky-note text-warning" aria-hidden="true" style="color:#fad75a"></i>',
             'triggers'=>['send_email','send_whatsapp','send_sms'],
         ],
         'project_cronjob'=>[
@@ -113,7 +120,7 @@ class Project_workflow extends Workflow_app
         ],
     );
 
-    private static $mergefields =array('project_merge_fields','staff_merge_fields','others_merge_fields');
+    private static $mergefields =array('project_merge_fields','staff_merge_fields','project_note_merge_fields','others_merge_fields');
 
     public function __construct()
     {
@@ -130,6 +137,7 @@ class Project_workflow extends Workflow_app
         $this->ci->load->library('merge_fields/projects_merge_fields');
         $this->ci->load->library('merge_fields/other_merge_fields');
         $this->ci->load->library('merge_fields/staff_merge_fields');
+        $this->ci->load->library('merge_fields/project_note_merge_fields');
 
 
         $this->setMergeFields(self::$module['name'], self::$mergefields);
@@ -233,10 +241,11 @@ class Project_workflow extends Workflow_app
         }
     }
 
-    protected function initialise_project($project_created_flow,$project_id,$project_change_log_id=0)
+    protected function initialise_project($project_created_flow,$project_id,$project_change_log_id=0,$project_note_id=0)
     {
         $this->project_id =$project_id;
-        $this->change_log_id =$project_change_log_id;
+        $this->project_change_log_id =$project_change_log_id;
+        $this->project_note_id =$project_note_id;
         $this->project = $this->ci->projects_model->get($project_id);
         if($project_change_log_id){
             $this->ci->db->where('id',$project_change_log_id);
@@ -245,6 +254,30 @@ class Project_workflow extends Workflow_app
             $this->project_change_log =new stdClass();
         }
         $this->setup();
+        if($this->project_note_id){
+            $note =$this->ci->projects_model->get_notes_byid($this->project_note_id);
+            if(trim(strlen($note->mentions))>0){
+                $mentions =explode(',',$note->mentions);
+                foreach($mentions as $mention){
+                    $this->run_mergefields($mention);
+                    $subject =$this->mergefieldsContent($this->merge_fields,"{project_note_added_by} mentions you in a deal note");
+                    $fromname =$this->mergefieldsContent($this->merge_fields,"{companyname}");
+                    $message =$this->mergefieldsContent($this->merge_fields,"<span style=\"font-size: 14pt;\"><strong>Hello {staff_firstname} {staff_lastname}</strong></span><br /><br />{project_note_added_by} mentions you in a deal note.<br /><br />{project_note_description}<br /><br />Click <a href=\"{project_link}?group=project_notes\">here</a> to view the deal.");
+                    $this->ci->db->where('staffid', $mention);
+                    $staff = $this->ci->db->get(db_prefix() . 'staff')->row();
+                    if(!$staff){
+                        return;
+                    }
+                    $sendto =$staff->email;
+                    $this->sendEmail($fromname,$sendto,$subject,$message,'workflow deal created');
+                }
+                
+
+                return true;
+            }
+        }
+       
+
         $project_created_flow =$project_created_flow[0];
         $this->run(self::$module['name'],$project_created_flow->id);
     }
@@ -274,6 +307,16 @@ class Project_workflow extends Workflow_app
         }
     }
 
+    public function project_note_added($timeline_id)
+    {
+        
+        $this->ci->db->where('id',$timeline_id);
+        $timeline =$this->ci->db->get(db_prefix().'project_log')->row();
+        if($timeline){
+            $project_note_added_flow =$this->ci->workflow_model->getmoduleflows(self::$module['name'],['action'=>'project_note_added']);
+            $this->initialise_project($project_note_added_flow,$timeline->project_id,0,$timeline->type_id);
+        }
+    }
     private function setup(){
         $this->run_mergefields();
     }
@@ -287,8 +330,13 @@ class Project_workflow extends Workflow_app
         }else{
             $staff_merge_fields = $this->ci->staff_merge_fields->format($this->project->teamleader);
         }
+        if($this->project_note_id){
+            $project_note_merge_fields = $this->ci->project_note_merge_fields->format($this->project_note_id);
+        }else{
+            $project_note_merge_fields =array();
+        }
         $others_merge_fields = $this->ci->other_merge_fields->format();
-        $this->merge_fields = array_merge($projects_merge_fields, $staff_merge_fields,$others_merge_fields);
+        $this->merge_fields = array_merge($projects_merge_fields, $staff_merge_fields,$others_merge_fields,$project_note_merge_fields);
     }
 
     protected function run_condition($flow){
@@ -428,6 +476,8 @@ class Project_workflow extends Workflow_app
                 if($flow->configure){
                     $configure =$flow->configure;
                     if($this->project_change_log->field_name ==$configure['event']){
+                        return true;
+                    }elseif($this->project_change_log->field_name =='stage_of' && $this->project_change_log->field_name.'_'.$this->project_change_log->current_value == $configure['event']){
                         return true;
                     }else{
                         return false;

@@ -406,6 +406,7 @@
 
 		$(document).ready(function() {
 			var busy = false;
+			var hasMoreRecord = true;
 			var limit = <?php echo get_option('projects_kanban_limit'); ?>;
 			var offset = 0;
 
@@ -423,7 +424,11 @@
 					},
 					success: function(html) {
 						var obj = JSON.parse(html);
+						hasMoreRecord =false;
 						<?php foreach ($statuses as $status) { ?>
+							if(obj.status_<?php echo $status['id']; ?>.length >0){
+								hasMoreRecord =true;
+							}
 							$("#status_<?php echo $status['id']; ?>").append(obj.status_<?php echo $status['id']; ?>);
 						<?php } ?>
 						//$("#results").append(html);
@@ -445,11 +450,18 @@
 			          }
 			});*/
 			$('#kan-ban-tab').scroll(function() {
+				if(!hasMoreRecord){
+					return ;
+				}
 				// make sure u give the container id of the data to be loaded in.
 				// if ($(window).scrollTop() + $(window).height() > $("#results").height() ) {
-				busy = true;
-				offset = limit + offset;
-				displayRecords(limit, offset);
+					if ($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight-50) {
+						busy = true;
+						offset = limit + offset;
+						displayRecords(limit, offset);
+					}
+
+				
 				//  }
 
 			})
