@@ -321,6 +321,7 @@ foreach ($rResult as $aRow) {
     }
     $row_temp['project_status'] = $stage_of;
     $link = admin_url('projects/view/' . $aRow['id']);
+    $checkbox ='';
 	if ($hasPermissionEdit && $approvalList ==0) {
 		$checkbox = "<input type='checkbox' id='check_".$aRow['id']."' class='check_mail' onclick='check_header()' value='".$aRow['id']."'>";
 	}

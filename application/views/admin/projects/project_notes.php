@@ -67,7 +67,7 @@
           <td data-order="<?php echo $note['dateadded']; ?>"><?php echo _dt($note['dateadded']); ?></td>
          
          <td>
-            <a href="#" onclick="edit_notes(<?php echo $note['id']; ?>); return false;" class="btn btn-info btn-icon"><i class="fa fa-edit"></i></a>
+            <!-- <a href="#" onclick="edit_notes(<?php echo $note['id']; ?>); return false;" class="btn btn-info btn-icon"><i class="fa fa-edit"></i></a> -->
            <?php if($file['staffid'] == get_staff_user_id() || has_permission('projects','','delete')){ ?>
            <a href="<?php echo admin_url('projects/remove_notes/'.$project->id.'/'.$note['id']); ?>" class="btn btn-danger btn-icon _delete"><i class="fa fa-remove"></i></a>
            <?php } ?>

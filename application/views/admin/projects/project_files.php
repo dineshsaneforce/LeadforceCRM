@@ -91,6 +91,8 @@
               echo '</div>';
             }
             echo $file['subject']; ?></a>
+
+            <a data-toggle="tooltip" data-title="Download" class=" mleft10 btn-link" href="<?php echo site_url('download/file/project_attachment/'.$file['id']) ?>"><i class="fa fa-download" aria-hidden="true"></i></a>
           </td>
           <td data-order="<?php echo $file['filetype']; ?>"><?php echo $file['filetype']; ?></td>
           <td data-order="<?php echo $file['last_activity']; ?>">
