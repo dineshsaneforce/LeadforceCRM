@@ -8,7 +8,7 @@ if (is_admin(get_staff_user_id()) || $project->teamleader == get_staff_user_id()
 
 if(!$can_access_this_deal && $members){
     foreach($members as $member){
-        if($member['staff_id'] ==get_staff_user_id() || in_array($member['staff_id'], $ownerHierarchy)(!empty($my_staffids) && in_array($member['staff_id'], $my_staffids) && !in_array($member['staff_id'], $viewIds))){
+        if($member['staff_id'] ==get_staff_user_id() || in_array($member['staff_id'], $ownerHierarchy)||((!empty($my_staffids) && in_array($member['staff_id'], $my_staffids) && !in_array($member['staff_id'], $viewIds)))){
             $can_access_this_deal =true;
             break;
         }
@@ -494,13 +494,15 @@ echo form_hidden('project_percent', $percent);
                             <div class="input-group">
                                 <select id="pipeli_id" name="pipeline_id" data-live-search="true" class=" selectpicker">
                                     <?php
-                                    foreach ($pipelines as $pikay => $pival) {
-                                        $selected = '';
-                                        $pipeline_id = (isset($project) ? $project->pipeline_id : '');
-                                        if ($pipeline_id == $pival['id']) {
-                                            $selected = 'selected="selected"';
+                                    if($pipelines){
+                                        foreach ($pipelines as $pikay => $pival) {
+                                            $selected = '';
+                                            $pipeline_id = (isset($project) ? $project->pipeline_id : '');
+                                            if ($pipeline_id == $pival['id']) {
+                                                $selected = 'selected="selected"';
+                                            }
+                                            echo '<option value="' . $pival['id'] . '" ' . $selected . '>' . $pival['name'] . '</option>';
                                         }
-                                        echo '<option value="' . $pival['id'] . '" ' . $selected . '>' . $pival['name'] . '</option>';
                                     }
                                     ?>
                                 </select>
@@ -513,14 +515,17 @@ echo form_hidden('project_percent', $percent);
                                 <select id="stage_id" name="stage_id" data-live-search="true" class="selectpicker" required>
                                     <option></option>
                                     <?php
-                                    foreach ($pipestage as $pikay => $pival) {
-                                        $selected = '';
-                                        $stage_id = (isset($project) ? $project->status : '');
-                                        if ($stage_id == $pival['id']) {
-                                            $selected = 'selected="selected"';
+                                    if($pipestage){
+                                        foreach ($pipestage as $pikay => $pival) {
+                                            $selected = '';
+                                            $stage_id = (isset($project) ? $project->status : '');
+                                            if ($stage_id == $pival['id']) {
+                                                $selected = 'selected="selected"';
+                                            }
+                                            echo '<option value="' . $pival['id'] . '" ' . $selected . '>' . $pival['name'] . '</option>';
                                         }
-                                        echo '<option value="' . $pival['id'] . '" ' . $selected . '>' . $pival['name'] . '</option>';
                                     }
+                                    
                                     ?>
                                 </select>
                             </div>

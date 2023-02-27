@@ -151,17 +151,20 @@
                                 <select name="primary_contact" id="primary_contact" class="selectpicker" data-width="100%" data-none-selected-text="<?php echo _l('dropdown_non_selected_tex'); ?>">
                                     <option></option>
                                     <?php
-                                    foreach ($client_contacts as $cckey => $ccval) {
-                                        foreach ($contacts as $scckey => $sccval) {
-                                            if ($sccval['contacts_id'] == $ccval['id']) {
-                                                $selected = '';
-                                                if ($sccval['is_primary'] == 1) {
-                                                    $selected = 'selected';
+                                    if($client_contacts && $contacts){
+                                        foreach ($client_contacts as $cckey => $ccval) {
+                                            foreach ($contacts as $scckey => $sccval) {
+                                                if ($sccval['contacts_id'] == $ccval['id']) {
+                                                    $selected = '';
+                                                    if ($sccval['is_primary'] == 1) {
+                                                        $selected = 'selected';
+                                                    }
+                                                    echo '<option value="' . $ccval['id'] . '" ' . $selected . ' >' . $ccval['firstname'] . ' ' . $ccval['lastname'] . '</option>';
                                                 }
-                                                echo '<option value="' . $ccval['id'] . '" ' . $selected . ' >' . $ccval['firstname'] . ' ' . $ccval['lastname'] . '</option>';
                                             }
                                         }
                                     }
+                                    
                                     ?>
                                     <?php //foreach($statuses as $status){ 
                                     ?>
