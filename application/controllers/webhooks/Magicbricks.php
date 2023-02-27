@@ -2,7 +2,7 @@
 
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Acres99 extends App_Controller
+class Magicbricks extends App_Controller
 {
     public function __construct()
     {
@@ -228,7 +228,7 @@ class Acres99 extends App_Controller
                     if ($lead_id) {
                         $success = true;
 
-                        $this->leads_model->log_activity($lead_id, 'lead', 'addedfrom99acres', $form->id);
+                        $this->leads_model->log_activity($lead_id, 'lead', 'addedmagicbricks', $form->id);
                         // /handle_custom_fields_post
                         $custom_fields_build['leads'] = [];
                         foreach ($custom_fields as $cf) {

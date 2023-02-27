@@ -207,10 +207,15 @@
 									</select>
 								</div>
 							<?php } ?>
+              <div class="col-md-2">
+                <div class="form-group">
+                  <input type="search" name="gsearch" class="form-control input-sm" value="<?php echo (isset($gsearch)?$gsearch:''); ?>" placeholder="Search..."/>
+                </div>
+              </div>
 							<div class="col-md-1">
 								<button type="submit" class="btn btn-default"><?php echo _l('apply'); ?></button>
 							</div>
-							<div class="col-md-5 sortby-filters-wrapper">
+							<div class="col-md-3 sortby-filters-wrapper">
 								<a href="#" id="sortdropdownToggler" class="btn btn-default pull-right dropdown-toggle mleft10" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
 									<i class="fa fa-sort-amount-asc" aria-hidden="true"></i>
 								</a>
