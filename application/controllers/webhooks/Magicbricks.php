@@ -20,7 +20,11 @@ class Magicbricks extends App_Controller
             $form_id = $config->config['web_form_id'];
             $this->db->where('id', $form_id);
             $form = $this->db->get(db_prefix() . 'web_to_lead')->row();
-            if ($form) {
+            if ($form && $form->form_data) {
+                $form_fields =array();
+                foreach (json_decode($form->form_data,true) as $field) {
+                    $form_fields[] =$field['name'];
+                }
                 $GLOBALS['locale'] = get_locale_key($form->language);
 
                 $data['form_fields'] = json_decode($form->form_data);
@@ -59,12 +63,14 @@ class Magicbricks extends App_Controller
                 $custom_fields  = [];
                 foreach ($post_data as $name => $val) {
                     if (strpos($name, 'form-cf-') !== false) {
-                        array_push($custom_fields, [
-                            'name'  => $name,
-                            'value' => $val,
-                        ]);
+                        if(in_array($name,$form_fields)){
+                            array_push($custom_fields, [
+                                'name'  => $name,
+                                'value' => $val,
+                            ]);
+                        }
                     } else {
-                        if ($this->db->field_exists($name, db_prefix() . 'leads')) {
+                        if (in_array($name,$form_fields) && $this->db->field_exists($name, db_prefix() . 'leads')) {
                             if ($name == 'country') {
                                 if (!is_numeric($val)) {
                                     if ($val == '') {
