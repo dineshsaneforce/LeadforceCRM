@@ -1556,7 +1556,8 @@ class Leads_model extends App_Model {
             'type'=>$type,
             'action'=>$action,
             'type_id'=>$type_id,
-            'staff_id' => get_staff_user_id()
+            'staff_id' => get_staff_user_id(),
+            'added_at'=>date('Y-m-d H:i:s'),
         ];
         $this->db->insert(db_prefix() . 'lead_log', $log);
         return $this->db->insert_id();
