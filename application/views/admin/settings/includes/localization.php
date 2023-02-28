@@ -30,7 +30,7 @@ $date_formats = get_available_date_formats();
         <?php } ?>
     </select>
 </div>
-<hr />
+<!-- <hr />
 <div class="form-group">
     <label for="active_language" class="control-label"><?php echo _l('settings_localization_default_language'); ?></label>
     <select name="settings[active_language]" data-live-search="true" id="active_language" class="form-control selectpicker" data-none-selected-text="<?php echo _l('dropdown_non_selected_tex'); ?>">
@@ -44,4 +44,4 @@ $date_formats = get_available_date_formats();
     <hr />
     <?php render_yes_no_option('disable_language','disable_languages'); ?>
     <hr />
-    <?php render_yes_no_option('output_client_pdfs_from_admin_area_in_client_language','settings_output_client_pdfs_from_admin_area_in_client_language','settings_output_client_pdfs_from_admin_area_in_client_language_help'); ?>
+    <?php render_yes_no_option('output_client_pdfs_from_admin_area_in_client_language','settings_output_client_pdfs_from_admin_area_in_client_language','settings_output_client_pdfs_from_admin_area_in_client_language_help'); ?> -->

@@ -75,6 +75,7 @@ class Approval_model extends App_Model
             'rel_type'=>$rel_type,
             'rel_id'=>$rel_id,
             'approved_by'=>$approved_by,
+            'approved_at'=>date('Y-m-d H:i:s'),
             'reason'=>$reason,
             'remarks'=>$remarks,
             'status'=>$status,

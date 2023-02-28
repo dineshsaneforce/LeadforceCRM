@@ -138,11 +138,11 @@ function app_init_settings_tabs()
         'position' => 10,
     ]);
 
-    // $CI->app_tabs->add_settings_tab('localization', [
-    //     'name'     => _l('settings_group_localization'),
-    //     'view'     => 'admin/settings/includes/localization',
-    //     'position' => 15,
-    // ]);
+    $CI->app_tabs->add_settings_tab('localization', [
+        'name'     => _l('settings_group_localization'),
+        'view'     => 'admin/settings/includes/localization',
+        'position' => 15,
+    ]);
 
     // $CI->app_tabs->add_settings_tab('email', [
     //     'name'     => _l('settings_group_email'),

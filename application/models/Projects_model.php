@@ -5038,7 +5038,8 @@ public function all_activiites()
             'type'=>$type,
             'action'=>$action,
             'type_id'=>$type_id,
-            'staff_id' => get_staff_user_id()
+            'staff_id' => get_staff_user_id(),
+            'added_at'=>date('Y-m-d H:i:s'),
         ];
         $this->db->insert(db_prefix() . 'project_log', $log);
         $time_line_id =$this->db->insert_id();
@@ -5173,6 +5174,7 @@ public function all_activiites()
             'previous_value'=>$previous_value,
             'current_value'=>$current_value,
             'updated_by'=>get_staff_user_id(),
+            'updated_at'=>date('Y-m-d H:i:s'),
         );
         $this->db->insert(db_prefix().'project_changelogs',$data);
         $change_log_id =$this->db->insert_id();
