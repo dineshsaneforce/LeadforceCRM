@@ -924,7 +924,7 @@
                     }
                 });
 
-                appValidateForm($('form'), {
+                appValidateForm($('#project_form'), {
                     name: {
                         required: true,
                         normalizer: function(value) {
@@ -993,7 +993,7 @@
                     $('#status-error').hide();
                 });
 
-                $('form').on('submit', function() {
+                $('#project_form').on('submit', function() {
                     $('select[name="billing_type"]').prop('disabled', false);
                     $('#available_features,#available_features option').prop('disabled', false);
                     $('input[name="project_rate_per_hour"]').prop('disabled', false);
@@ -1101,7 +1101,7 @@
                 });
             }
             $(function() {
-                $('.selectpicker').selectpicker('refresh');
+                $('#project_form .selectpicker').selectpicker('refresh');
                 init_ajax_search("customer", "#clientid.ajax-search");
                 if ($('#status').length > 0) {
                     // $('.form_status .selectpicker').addClass("formstatus");
@@ -1153,7 +1153,7 @@
                     $('#project_form #pipeline_id').trigger('change');
                 }
 
-                $('#company').on('keyup', function() {
+                $('#project_form #company').on('keyup', function() {
                     var company = $(this).val();
                     var $companyExistsDiv = $('#companyname_exists_info');
 
@@ -1217,7 +1217,7 @@
                     $('.form_assigned p.text-danger').hide();
                 });
                 tinymce.init({
-                    selector: 'textarea#description',
+                    selector: '#project_form textarea#description',
                     height: 100,
                     menubar: false,
                     plugins: [
@@ -1236,7 +1236,7 @@
 
             function get_description() {
                 var text = tinyMCE.get('description').getContent();
-                $('#description').val(text.trim());
+                $('#project_form #description').val(text.trim());
                 if (text.trim() != '') {
                     $('#description-error').hide();
                 }

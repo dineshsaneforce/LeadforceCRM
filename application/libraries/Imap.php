@@ -1968,7 +1968,13 @@ class Imap
 		
 		$this->CI->db->where('uid',$inboxEmails['uid']);
 		$this->CI->db->where('message_id',$inboxEmails['message_id']);
-		if(!$this->CI->db->get(db_prefix().'localmailstorage')->row()){
+		$localmailstorage =$this->CI->db->get(db_prefix().'localmailstorage')->row();
+		if(!$localmailstorage){
+			$this->CI->db->where('uid',$inboxEmails['uid']);
+			$this->CI->db->where('message_id',$inboxEmails['message_id']);
+			$localmailstorage =$this->CI->db->get(db_prefix().'reply')->row();
+		}
+		if(!$localmailstorage){
 			$linked_deals_leads =render_deal_lead_list_by_email($inboxEmails['from']['email']);
 			$output .='
 				<div class="row" id="linktowrapper">
