@@ -1,4 +1,9 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed'); ?>
+<style>
+   .ui-widget {
+      font-size: 16px !important;
+   }
+</style>
 <?php if($lead->deleted_status ==1): ?>
    <?php  
       $this->db->where('lead_id',$lead->id);

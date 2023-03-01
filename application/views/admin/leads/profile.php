@@ -23,9 +23,9 @@ if ($openEdit == true) {
          }
          ?>>
     <div class="lead-preview-header mbot15">
-        <div>
+        <div style="width:50%">
         <?php if (isset($lead)) { ?>
-        <h4><?php echo $lead->name ?><a href="#" lead-edit class="mright10 font-medium<?php echo ($lead_locked)?' hide':'';?>">
+        <h4 class="text-single-line"><?php echo $lead->name ?><a href="#" lead-edit class="mright10 font-medium<?php echo ($lead_locked)?' hide':'';?>">
             <i class="fa fa-pencil-square-o"></i>
         </a></h4>
         </div>
@@ -194,7 +194,7 @@ if (!isset($lead)) {
                     <div class="row">
                         <div class="col-md-6">
                             <p class="lead-field-heading"><?php echo _l('lead_description'); ?></p>
-                            <p class="bold font-medium-xs"><?php echo (isset($lead) && $lead->description != '' ? $lead->description : '-') ?></p>
+                            <p class="bold font-medium-xs" style="overflow-x: hidden;"><?php echo (isset($lead) && $lead->description != '' ? $lead->description : '-') ?></p>
                         </div>
                         <div class="col-md-6">
                             <p class="lead-field-heading"><?php echo _l('lead_cost'); ?></p>
