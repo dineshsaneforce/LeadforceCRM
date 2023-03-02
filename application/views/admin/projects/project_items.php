@@ -93,6 +93,7 @@
                     $discount = '';
                     $tax_txt = '';
                     $tax_val = '';
+                    $total_tax =0;
                     $i = 1;
                     foreach ($dealproducts as $pr) {
                         if ($pr['method'] == 1) {
@@ -244,9 +245,11 @@
                                 $mult1 = $pr['total_price'] * $dec1; // gives the value for subtract from main value
                                 if ($pr['method'] == 2) {
                                     $tax_txt .= '<p class="txt_' . $i . '"> Includes Tax (' . $pr['tax'] . '%)</p>';
+                                    
                                 }
                                 if ($pr['method'] == 3) {
                                     $tax_txt .= '<p class="txt_' . $i . '"> Excludes Tax (' . $pr['tax'] . '%)</p>';
+                                    $total_tax +=number_format($mult1, 2);
                                 }
                                 $tax_val .= '<p class="amt_' . $i . '"> ' . number_format($mult1, 2) . '</p>';
                             }
@@ -265,7 +268,7 @@
                     if ($discount) {
                         $discount = '<small>(Includes discount of ' . substr($discount, 0, -1) . ')</small>';
                     }
-                    $project_cost = $project->project_cost;
+                    $project_cost = $subtotal+$total_tax;
                 } else {
                     ?>
                     <div style="height:40px;clear:both;" class="productdiv css-table-row" id="0">

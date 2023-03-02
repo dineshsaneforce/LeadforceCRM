@@ -170,7 +170,7 @@ $hasApprovalFlow = $this->workflow_model->getflows('deal_approval', 0, ['service
                                     </div>
 
                                     <?php if (!empty($deal_need_fields) && in_array("project_cost", $deal_need_fields)) : ?>
-                                        <div class="data_display mleft15 dropdown">
+                                        <div class="data_display mleft15 dropdown" style="display: block ruby;" >
                                             <span class="h4 updated_text">
                                                 <?php echo app_format_money($project->project_cost, $currency); ?>
                                             </span>
@@ -258,7 +258,7 @@ $hasApprovalFlow = $this->workflow_model->getflows('deal_approval', 0, ['service
                                         <?php if ($hasApprovalFlow && !$hasHIstory && $project->approved == 1 && $project->stage_of == 0) : ?>
                                             <a href="<?php echo admin_url('projects/sendtoapproval/' . $project->id); ?>" style="" class="btn btn-info"><?php echo _l('send_to_approval'); ?></a>
                                         <?php endif; ?>
-                                        <?php if ($deal_rejected && get_staff_user_id() == $project->created_by) { ?>
+                                        <?php if ($deal_rejected && (is_admin(get_staff_user_id()) ||get_staff_user_id() == $project->teamleader)) { ?>
                                             <a href="<?php echo admin_url('projects/approvalReopen/' . $project->id); ?>" style="" class="btn btn-info"><?php echo _l('approval_reopen'); ?></a>
                                         <?php } ?>
                                         <?php if ($project->deleted_status == 1 && $project->approved == 1) { ?>

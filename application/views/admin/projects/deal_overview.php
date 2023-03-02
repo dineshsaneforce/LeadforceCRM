@@ -352,7 +352,7 @@ $custom_fields = array_merge($custom_fields1, $custom_fields2);
                <?php if ($value) : ?>
                   <?php echo $value; ?>
                <?php else : ?>
-                  Nothing Selected
+                  _ _ _   &nbsp;  _ _ _
                <?php endif; ?>
             </span>
             <?php if (has_permission('projects', '', 'edit')) {
