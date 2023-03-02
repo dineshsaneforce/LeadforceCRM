@@ -1492,6 +1492,11 @@ class Leads_model extends App_Model {
             }
         }
 
+        $this->db->where('lead_id', $lead_id);
+        $this->db->update(db_prefix() . 'localmailstorage', ['lead_id' => 0, 'project_id' => $deal_id]);
+        $this->db->where('lead_id', $lead_id);
+        $this->db->update(db_prefix() . 'reply', ['lead_id' => 0, 'project_id' => $deal_id]);
+
         $this->db->where('id', $deal_id);
         $this->db->update(db_prefix() . 'projects', ['lead_id' => $lead_id, 'project_currency' => $lead->lead_currency]);
 

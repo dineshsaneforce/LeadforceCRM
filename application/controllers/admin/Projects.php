@@ -1563,7 +1563,7 @@ class Projects extends AdminController
 				}elseif(isset($data['teamleader']) && !empty($data['teamleader'])){
 					$success = $this->projects_model->update(array('teamleader'=>$data['teamleader'],'project_modified'=>date('Y-m-d H:i:s'),'modified_by'=>get_staff_user_id()), $data['project_id']);
                     $this->projects_model->addChangeLog($data['project_id'],'teamleader',$project_previous_value->teamleader,$data['teamleader']);
-				}elseif(isset($data['project_cost']) && !empty($data['project_cost'])){
+				}elseif(isset($data['project_cost'])){
 					$success = $this->projects_model->update(array('project_cost'=>$data['project_cost'],'project_modified'=>date('Y-m-d H:i:s'),'modified_by'=>get_staff_user_id()), $data['project_id']);
                     $this->projects_model->addChangeLog($data['project_id'],'project_cost',$project_previous_value->project_cost,$data['project_cost']);
 				}elseif(isset($data['name']) && !empty($data['name'])){

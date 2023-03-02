@@ -23,11 +23,12 @@ if ($openEdit == true) {
          }
          ?>>
     <div class="lead-preview-header mbot15">
-        <div style="width:50%">
+        <div style="width:50%;display:flex">
         <?php if (isset($lead)) { ?>
-        <h4 class="text-single-line"><?php echo $lead->name ?><a href="#" lead-edit class="mright10 font-medium<?php echo ($lead_locked)?' hide':'';?>">
+        <h4 class="text-single-line" style="width:90%"><?php echo $lead->name ?></h4>
+        <a href="#" lead-edit class="mtop15 mright10 font-medium<?php echo ($lead_locked)?' hide':'';?>">
             <i class="fa fa-pencil-square-o"></i>
-        </a></h4>
+        </a>
         </div>
         <div>
             <a href="#" class="btn btn-default pull-right dropdown-toggle mleft10" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="lead-more-btn">

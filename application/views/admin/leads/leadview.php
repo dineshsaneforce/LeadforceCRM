@@ -3,6 +3,9 @@
    .ui-widget {
       font-size: 16px !important;
    }
+   .header-notifications .dropdown-toggle.notifications-icon{
+      display: initial !important;
+   }
 </style>
 <?php if($lead->deleted_status ==1): ?>
    <?php  
@@ -108,12 +111,12 @@
          }
       }
       ?>
-      <div class="horizontal-scrollable-tabs preview-tabs-top">
+      <div class="no-mbot horizontal-scrollable-tabs preview-tabs-top">
          <div class="scroller arrow-left"><i class="fa fa-angle-left"></i></div>
          <div class="scroller arrow-right"><i class="fa fa-angle-right"></i></div>
          <div class="horizontal-tabs">
 
-      <ul class="nav-tabs-horizontal nav nav-tabs<?php if(!isset($lead)){echo ' lead-new';} ?>" role="tablist">
+      <ul class="no-mbot nav-tabs-horizontal nav nav-tabs<?php if(!isset($lead)){echo ' lead-new';} ?>" role="tablist">
          <!-- <li role="presentation" class="active" >
             <a href="#tab_lead_profile" aria-controls="tab_lead_profile" role="tab" data-toggle="tab">
             <?php echo _l('lead_profile'); ?>

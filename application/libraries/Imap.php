@@ -2046,7 +2046,8 @@ class Imap
 				$output .= '<a class="btn btn-default"  href="'.$downoad_url.'"><i class="fa fa-download" aria-hidden="true"></i> Download All</a>';
 			}
 			$output .='</div>';
-			$output .='<div class="emailViewerBody" style="margin-top:20px">'.$inboxEmails['body']['html'].'</div>';
+			$message_content =(strlen(trim($inboxEmails['body']['html'])) >0)?$inboxEmails['body']['html']:$inboxEmails['body']['plain'];
+			$output .='<div class="emailViewerBody" style="margin-top:20px">'.$message_content.'</div>';
 
 		$output .='</div>';
 		
