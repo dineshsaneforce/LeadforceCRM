@@ -174,8 +174,8 @@ class Project_workflow extends Workflow_app
                 'id'=>'project_cost',
                 'label'=>'Deal value',
                 'type'=>'string',
-                'input'=>'text',
-                'operators'=>$text_operators,
+                'input'=>'number',
+                'operators'=>['equal','not_equal','less','greater','less_or_equal','greater_or_equal'],
             )
         );
         $allstaffs =$this->ci->staff_model->get();
@@ -419,7 +419,19 @@ class Project_workflow extends Workflow_app
                     }else if($configure['stafftype'] =='designation'){
                         $staff_ids =$this->get_designations_staffs($configure['assigntodesignation']);
                     }
+                    if($staff_ids){
+                        $this->ci->db->where('active',1);
+                        $this->ci->db->where('action_for','Active');
+                        $this->ci->db->where_in('staffid',$staff_ids);
 
+                        $staff_ids =array();
+                        $staffs =$this->ci->db->get(db_prefix().'staff')->result_object();
+                        if($staffs){
+                            foreach ($staffs as $staff) {
+                                $staff_ids[] =$staff->staffid;
+                            }
+                        }
+                    }
                     if(!$staff_ids[$last_run]){
                         $last_run =0;
                     }
@@ -445,6 +457,9 @@ class Project_workflow extends Workflow_app
                         $this->ci->db->where_in('teamleader', $staff_ids);
                         $this->ci->db->group_by("teamleader");
                         $this->ci->db->order_by('COUNT(id)', 'ASC');
+                        $this->ci->db->join(db_prefix().'staffs as staffs','staff.staffid ='.db_prefix().'projects.teamleader');
+                        $this->ci->db->where('staffs.active',1);
+                        $this->ci->db->where('staffs.action_for','Active');
                         $low_project =$this->ci->db->get(db_prefix().'projects')->row();
                         if($low_project){
                             $staff_id =$low_project->teamleader;
@@ -465,6 +480,9 @@ class Project_workflow extends Workflow_app
                         $this->ci->db->where('stage_of !=', 1);
                         $this->ci->db->group_by("teamleader");
                         $this->ci->db->order_by('COUNT(id)', 'DESC');
+                        $this->ci->db->join(db_prefix().'staffs as staffs','staff.staffid ='.db_prefix().'projects.teamleader');
+                        $this->ci->db->where('staffs.active',1);
+                        $this->ci->db->where('staffs.action_for','Active');
                         $more_wins =$this->ci->db->get(db_prefix().'projects')->row();
                         if($more_wins){
                             $staff_id =$more_wins->teamleader;
@@ -490,9 +508,13 @@ class Project_workflow extends Workflow_app
                 break;
         }
         if($staff_id){
-            $this->project->teamleader =$staff_id;
-            $this->ci->db->where('id',$this->project_id);
-            $this->ci->db->update(db_prefix().'projects',['teamleader'=>$staff_id]);
+            $this->ci->db->where('active',1);
+            $this->ci->db->where('action_for','Active');
+            if($this->ci->db->get(db_prefix().'staff')->row()){
+                $this->project->teamleader =$staff_id;
+                $this->ci->db->where('id',$this->project_id);
+                $this->ci->db->update(db_prefix().'projects',['teamleader'=>$staff_id]);
+            }
         }
         
     }

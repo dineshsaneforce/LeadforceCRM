@@ -1,13 +1,13 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed'); ?>
 <?php 
-// hooks()->do_action('after_add_project', '27466'); pre(''); 
+// hooks()->do_action('after_add_project', '27450'); pre(''); 
 // hooks()->do_action('after_update_project', ['project_id'=>27462,'change_log_id'=>22]); pre('');
 //hooks()->do_action('after_delete_project', '27462'); pre('');
 // hooks()->do_action('after_added_project_note', '53'); pre('');
  ?>
 <?php init_head(); ?>
 
-<script src="<?php echo base_url('assets/js/workflow.js?v=1.2') ?>"></script>
+<script src="<?php echo base_url('assets/js/workflow.js?v=1.3') ?>"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function(event) {
         // initiating workflow

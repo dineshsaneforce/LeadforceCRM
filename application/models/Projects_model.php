@@ -3813,8 +3813,9 @@ class Projects_model extends App_Model
         $project_previous_value =$this->getProjectOnly($data['projectid']);
         $data['project_id'] = $data['projectid'];
         $data['status_id'] = $data['status'];
+        $return =$this->mark_as($data);
         $this->addChangeLog($data['project_id'],'status',$project_previous_value->status,$data['status']);
-        return $this->mark_as($data);
+        return $return;
     }
 
     

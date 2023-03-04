@@ -26,7 +26,12 @@ function render_timeline_activities($type,$type_id,$page=0)
                 $date=date_create($log->added_at);
                 $logged_at =date_format($date,"M d , Y h:i a");
 
-                $log_data ='<span class=""><i class="fa fa-calendar" aria-hidden="true"></i> '.$logged_at.'</span> | <a class="" href="'.admin_url("profile/".$log->staff_id).'"><i class="fa fa-user" aria-hidden="true"></i> '.get_staff_full_name($log->staff_id).'</a>';
+                $log_data ='<span class=""><i class="fa fa-calendar" aria-hidden="true"></i> '.$logged_at.'</span> | ';
+                if($log->action =='addedbyworkflow'){
+                    $log_data .='<a class="" href="javascript:void(0);"><i class="fa fa-desktop" aria-hidden="true"></i> System (workflow)</a>';
+                }else{
+                    $log_data .='<a class="" href="'.admin_url("profile/".$log->staff_id).'"><i class="fa fa-user" aria-hidden="true"></i> '.get_staff_full_name($log->staff_id).'</a>';
+                }
                 $meta_data ='';
                 $detailed_content ='';
                 if($log->type =='lead'){

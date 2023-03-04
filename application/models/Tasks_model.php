@@ -864,6 +864,15 @@ class Tasks_model extends App_Model
         
         $this->db->insert(db_prefix() . 'tasks', $data);
         $insert_id = $this->db->insert_id();
+
+        if (isset($data['rel_type']) && $data['rel_type'] == 'lead') {
+            $this->load->model('leads_model');
+            $this->leads_model->log_activity($data['rel_id'],'activity','addedbyworkflow',$insert_id);
+        }elseif (isset($data['rel_type']) && $data['rel_type'] == 'project') {
+            $this->load->model('projects_model');
+            $this->projects_model->add_timeline_activity($data['rel_id'],'activity','addedbyworkflow',$insert_id);
+        }
+
         if ($insert_id) {
             foreach ($checklistItems as $key => $chkID) {
                 if ($chkID != '') {

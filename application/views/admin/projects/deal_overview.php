@@ -57,7 +57,8 @@ $hasApprovalFlow = $this->workflow_model->getflows('deal_approval', 0, ['service
             <div class="deal-field-update-dropdown">
                <div class="panel_s no-mbot">
                   <div class="panel-body">
-                     <p class="text-muted">Update Organization</p>
+                     <form class="data-edit-form">
+                     <p class="text-muted"><?php echo in_array('clientid',$mandatory_fields)?'<small class="req text-danger">* </small>':''  ?>Update Organization</p>
                      <?php $selected = (isset($project) ? $project->clientid : ''); ?>
                      <div class="select-placeholder clientiddiv form-group-select-input-groups_in[] input-group-select">
                         <div class="input-group input-group-select select-groups_in[]">
@@ -78,8 +79,9 @@ $hasApprovalFlow = $this->workflow_model->getflows('deal_approval', 0, ['service
 
                      </div>
                      <br>
-                     <a class="btn btn-info pull-right data_edit_btn" data-val="clientid_copy_project">Save Changes</a>
-                     <button class="btn pull-right mright5 close-dropdown">Cancel</button>
+                     <button class="btn btn-info pull-right data_edit_btn" data-val="clientid_copy_project">Save Changes</button>
+                     <a class="btn pull-right mright5 close-dropdown">Cancel</a>
+                     </form>
                   </div>
                </div>
             </div>
@@ -152,13 +154,15 @@ $hasApprovalFlow = $this->workflow_model->getflows('deal_approval', 0, ['service
             <div class="deal-field-update-dropdown">
                <div class="panel_s no-mbot">
                   <div class="panel-body">
-                     <p class="text-muted">Update Expected Closing Date</p>
+                     <form class="data-edit-form">
+                     <p class="text-muted"><?php echo in_array('clientid',$mandatory_fields)?'<small class="req text-danger">* </small>':''  ?>Update Expected Closing Date</p>
                      <div class="input-group date">
                         <input type="text" id="deadline" name="deadline" class="form-control datepicker" data-date-min-date="<?php echo (isset($project) ? _d($project->start_date) : ' '); ?>" value="<?php echo (isset($project) ? _d($project->deadline) : ' '); ?>" autocomplete="off" readonly>
                      </div>
                      <br>
-                     <a class="btn btn-info pull-right data_edit_btn" data-val="deadline">Save Changes</a>
-                     <button class="btn pull-right mright5 close-dropdown">Cancel</button>
+                     <button class="btn btn-info pull-right data_edit_btn" data-val="deadline">Save Changes</button>
+                     <a class="btn pull-right mright5 close-dropdown">Cancel</a>
+                     </form>
                   </div>
                </div>
             </div>
@@ -363,7 +367,8 @@ $custom_fields = array_merge($custom_fields1, $custom_fields2);
                <div class="deal-field-update-dropdown">
                   <div class="panel_s no-mbot">
                      <div class="panel-body">
-                        <p class="text-muted">Update <?php echo ucfirst($field['name']); ?></p>
+                        <form class="data-edit-form-custom-fields">
+                        <p class="text-muted"><?php echo $field['required']?'<small class="req text-danger">* </small>':''  ?>Update <?php echo ucfirst($field['name']); ?></p>
                         <?php
                         switch ($field['type']) {
                            case 'textarea':
@@ -565,8 +570,9 @@ $custom_fields = array_merge($custom_fields1, $custom_fields2);
                            $data_val_type ='data-val-type="multi-checkbox"'; 
                         }
                         ?>
-                        <a class="btn btn-info pull-right data_edit_btn_custom" data-val="<?php echo $field['slug']; ?>" <?php echo $data_val_type; ?>>Save Changes</a>
-                        <button class="btn pull-right mright5 close-dropdown">Cancel</button>
+                        <button class="btn btn-info pull-right data_edit_btn_custom" data-val="<?php echo $field['slug']; ?>" <?php echo $data_val_type; ?>>Save Changes</button>
+                        <a class="btn pull-right mright5 close-dropdown">Cancel</a>
+                        </form>
                      </div>
                   </div>
                </div>

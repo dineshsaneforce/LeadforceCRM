@@ -155,14 +155,16 @@ $hasApprovalFlow = $this->workflow_model->getflows('deal_approval', 0, ['service
                                             <div class="deal-field-update-dropdown" >
                                                 <div class="panel_s no-mbot">
                                                     <div class="panel-body">
-                                                        <p class="text-muted">Update Deal Name</p>
+                                                        <form class="data-edit-form">
+                                                        <p class="text-muted"><small class="req text-danger">* </small>Update Deal Name</p>
                                                         <div class="input-group date">
-                                                            <input type="text" id="name" name="name" class="form-control" value="<?php echo (isset($project) ? $project->name : 'Deal '); ?>" autocomplete="off" aria-invalid="false">
+                                                            <input required type="text" id="name" name="name" class="form-control" value="<?php echo (isset($project) ? $project->name : 'Deal '); ?>" autocomplete="off" aria-invalid="false">
                                                         </div>
                                                         <div id="company_exists_info" class="hide"></div>
                                                         <br>
-                                                        <a class="btn btn-info pull-right data_edit_btn" data-val="name">Save Changes</a>
-                                                        <button  class="btn pull-right mright5 close-dropdown">Cancel</button>
+                                                        <button class="btn btn-info pull-right data_edit_btn" data-val="name">Save Changes</button>
+                                                        <a  class="btn pull-right mright5 close-dropdown">Cancel</a>
+                                                        </form>
                                                     </div>
                                                 </div>
                                             </div>
@@ -181,13 +183,15 @@ $hasApprovalFlow = $this->workflow_model->getflows('deal_approval', 0, ['service
                                                 <div class="deal-field-update-dropdown" >
                                                     <div class="panel_s no-mbot">
                                                         <div class="panel-body">
-                                                            <p class="text-muted">Update Deal Value</p>
+                                                            <form class="data-edit-form">
+                                                            <p class="text-muted"><?php echo in_array('project_cost',$mandatory_fields)?'<small class="req text-danger">* </small>':''  ?>Update Deal Value</p>
                                                             <div class="input-group date">
                                                                 <input type="text" id="project_cost" name="project_cost" class="form-control" value="<?php echo (isset($project) ? $project->project_cost : ''); ?>" autocomplete="off" aria-invalid="false">
                                                             </div>
                                                             <br>
-                                                            <a class="btn btn-info pull-right data_edit_btn" data-val="project_cost">Save Changes</a>
-                                                            <button  class="btn pull-right mright5 close-dropdown">Cancel</button>
+                                                            <button class="btn btn-info pull-right data_edit_btn" data-val="project_cost">Save Changes</button>
+                                                            <a  class="btn pull-right mright5 close-dropdown">Cancel</a>
+                                                            </form>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -207,7 +211,8 @@ $hasApprovalFlow = $this->workflow_model->getflows('deal_approval', 0, ['service
                                             <div class="deal-field-update-dropdown">
                                                 <div class="panel_s no-mbot">
                                                     <div class="panel-body">
-                                                        <p class="text-muted">Update Deal Owner</p>
+                                                        <form class="data-edit-form">
+                                                        <p class="text-muted"><small class="req text-danger">* </small>Update Deal Owner</p>
                                                         <div class="select-placeholder form-group-select-input-groups_in[] input-group-select">
                                                             <div style="width: 100%;" class="input-group input-group-select select-groups_in[]">
                                                                 <select id="teamleader" name="teamleader" data-live-search="true" data-width="100%" class=" selectpicker _select_input_group">
@@ -227,8 +232,9 @@ $hasApprovalFlow = $this->workflow_model->getflows('deal_approval', 0, ['service
                                                             </div>
                                                         </div>
                                                         <br>
-                                                        <a class="btn btn-info pull-right data_edit_btn" data-val="teamleader">Save Changes</a>
-                                                        <button  class="btn pull-right mright5 close-dropdown">Cancel</button>
+                                                        <button class="btn btn-info pull-right data_edit_btn" data-val="teamleader">Save Changes</button>
+                                                        <a  class="btn pull-right mright5 close-dropdown">Cancel</a>
+                                                        </form>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1555,9 +1561,21 @@ echo form_hidden('project_percent', $percent);
         //     $('.' + f + ' .data_display').hide();
         //     $('.' + f + ' .data_edit').show();
         // });
-        $('.data_edit_btn').click(function(e) {
-            
-            var f = $(this).attr("data-val");
+    
+        $('.data-edit-form').each(function() {
+            appValidateForm($(this), {
+                <?php if($mandatory_fields): ?>
+                    <?php foreach ($mandatory_fields as $field): ?>
+                        <?php if($field =='clientid'){$field ='clientid_copy_project';} ?>
+                        '<?php echo $field ?>' : 'required',
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            }, handel_data_edit_btn);
+        });
+        
+
+        function handel_data_edit_btn(form) {
+            var f =$(form).children('.data_edit_btn').attr("data-val");
             var data = {
                 project_id: <?php echo ($project->id); ?>,
                 status: $('#status').val()
@@ -1565,7 +1583,60 @@ echo form_hidden('project_percent', $percent);
             data['status'] = $('#status').val();
             data[f] = $('#' + f).val();
             field_update(data, f);
+            
+        }
+        $('.data-edit-form-custom-fields').each(function() {
+            appValidateForm($(this), {
+                <?php 
+                    $custom_fields1 = get_custom_fields('projects');
+                    $custom_fields2 = get_custom_fields('leads');
+                    $custom_fields = array_merge($custom_fields1, $custom_fields2);
+                    if($custom_fields): 
+                ?>
+                    <?php foreach ($custom_fields as $field): ?>
+                        <?php if($field['required']){ if($field['type']){$field['slug'] .='[]';}?>
+                            '<?php echo $field['slug'] ?>' : 'required',
+                        <?php } ?>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            }, handel_data_edit_btn_custom_field);
         });
+
+        function handel_data_edit_btn_custom_field(form) {
+            var btn =$(form).children('.data_edit_btn_custom');
+            var f =btn.attr("data-val");
+            if (typeof btn.attr("data-val-type") != 'undefined' && btn.attr("data-val-type") == 'multi-checkbox') {
+                var f_val = $('input[name="' + f + '[]"]:checked').map(function(_, el) {
+                    return $(el).val();
+                }).get();
+
+            } else {
+                var f_val = $('#' + f).val();
+                if (typeof f_val == 'undefined') {
+                    var f_val = $('[name="' + f + '"]').val();
+                }
+            }
+            var data = {
+                project_id: <?php echo ($project->id); ?>,
+                slug: f,
+                f_val: f_val,
+                custom_field: '2'
+            };
+            field_update(data, f);
+            
+        }
+
+        // $('.data_edit_btn').click(function(e) {
+            
+        //     var f = $(this).attr("data-val");
+        //     var data = {
+        //         project_id: <?php echo ($project->id); ?>,
+        //         status: $('#status').val()
+        //     };
+        //     data['status'] = $('#status').val();
+        //     data[f] = $('#' + f).val();
+        //     field_update(data, f);
+        // });
 
         function field_update(data, f) {
             document.getElementById('overlay').style.display = '';
@@ -1590,27 +1661,27 @@ echo form_hidden('project_percent', $percent);
                 }
             });
         }
-        $('.data_edit_btn_custom').click(function(e) {
-            var f = $(this).attr("data-val");
-            if (typeof $(this).attr("data-val-type") != 'undefined' && $(this).attr("data-val-type") == 'multi-checkbox') {
-                var f_val = $('input[name="' + f + '[]"]:checked').map(function(_, el) {
-                    return $(el).val();
-                }).get();
+        // $('.data_edit_btn_custom').click(function(e) {
+        //     var f = $(this).attr("data-val");
+        //     if (typeof $(this).attr("data-val-type") != 'undefined' && $(this).attr("data-val-type") == 'multi-checkbox') {
+        //         var f_val = $('input[name="' + f + '[]"]:checked').map(function(_, el) {
+        //             return $(el).val();
+        //         }).get();
 
-            } else {
-                var f_val = $('#' + f).val();
-                if (typeof f_val == 'undefined') {
-                    var f_val = $('[name="' + f + '"]').val();
-                }
-            }
-            var data = {
-                project_id: <?php echo ($project->id); ?>,
-                slug: f,
-                f_val: f_val,
-                custom_field: '2'
-            };
-            field_update(data, f);
-        });
+        //     } else {
+        //         var f_val = $('#' + f).val();
+        //         if (typeof f_val == 'undefined') {
+        //             var f_val = $('[name="' + f + '"]').val();
+        //         }
+        //     }
+        //     var data = {
+        //         project_id: <?php echo ($project->id); ?>,
+        //         slug: f,
+        //         f_val: f_val,
+        //         custom_field: '2'
+        //     };
+        //     field_update(data, f);
+        // });
         $('.getcontactsbyorg').click(function(e) {
             //   var data = {project_id:<?php echo ($project->id); ?>,f:$('.'+f+' data_edit').val()};
             var data = {
