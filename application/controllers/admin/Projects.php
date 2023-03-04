@@ -599,6 +599,14 @@ class Projects extends AdminController
             $data['proj_currency'] = $project->project_currency;
 			$data['need_fields'] = array();
 			$fields = get_option('deal_fields');
+            $fields1 = get_option('deal_mandatory');
+            $data['mandatory_fields'] =array();
+            if(!empty($fields1) && $fields1 != 'null'){
+                $data['mandatory_fields'] = json_decode($fields1);
+            }
+            $data['mandatory_fields'][] ='name';
+            $data['mandatory_fields'][] ='teamleader';
+
 			if(!empty($fields) && $fields != 'null'){
 				$data['need_fields'] = array();
 				$data['need_fields'] = json_decode($fields);

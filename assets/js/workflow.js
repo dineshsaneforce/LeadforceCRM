@@ -384,6 +384,7 @@ var workflowl =function(module){
     }
     workflowl.resetForm = function(id){
         $('form#'+id).validate().resetForm();
+        $('form#'+id)[0].reset();
         $('.selectpicker').selectpicker('refresh');
     }
     workflowl.renderSettings =function(){
