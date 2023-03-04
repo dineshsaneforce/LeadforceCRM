@@ -25,8 +25,8 @@ if ($openEdit == true) {
     <div class="lead-preview-header mbot15">
         <div style="width:50%;display:flex">
         <?php if (isset($lead)) { ?>
-        <h4 class="text-single-line" style="width:90%"><?php echo $lead->name ?></h4>
-        <a href="#" lead-edit class="mtop15 mright10 font-medium<?php echo ($lead_locked)?' hide':'';?>">
+        <h4 class="text-single-line" style="max-width:85%"><?php echo $lead->name ?></h4>
+        <a href="#" lead-edit class="mtop15 mleft5 mright10 font-medium<?php echo ($lead_locked)?' hide':'';?>">
             <i class="fa fa-pencil-square-o"></i>
         </a>
         </div>
@@ -314,7 +314,7 @@ if (!isset($lead)) {
                                 </div>
                             </div>
                         <?php else: ?>
-                            <p class="bold font-medium-xs"><?php echo (isset($lead) && $lead->name != '' ? $lead->name : '-') ?></p>
+                            <p class="bold font-medium-xs">-</p>
                         <?php endif; ?>
                     </div>
                     <div class="col-md-6">

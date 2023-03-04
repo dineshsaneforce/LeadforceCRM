@@ -1315,7 +1315,7 @@ class Imap
 					}
 
 					// check lead connncted
-					$this->CI->db->where('uid',$inboxEmails['uid']);
+					// $this->CI->db->where('uid',$inboxEmails['uid']);
 					$this->CI->db->where('message_id',$inboxEmails['message_id']);
 					$local_mail =$this->CI->db->get(db_prefix().'localmailstorage')->row();
 					$connect_rel_data ='';
@@ -1965,12 +1965,11 @@ class Imap
 		$add_content = "'".$_REQUEST['uid']."'";	
 		$output .= '<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button><h4 class="modal-title"><i class="fa fa-envelope"></i> '.$inboxEmails['subject'].'</h4></div>';
 		$output .= '<div class="modal-body">';
-		
-		$this->CI->db->where('uid',$inboxEmails['uid']);
+		// $this->CI->db->where('uid',$inboxEmails['uid']);
 		$this->CI->db->where('message_id',$inboxEmails['message_id']);
 		$localmailstorage =$this->CI->db->get(db_prefix().'localmailstorage')->row();
 		if(!$localmailstorage){
-			$this->CI->db->where('uid',$inboxEmails['uid']);
+			// $this->CI->db->where('uid',$inboxEmails['uid']);
 			$this->CI->db->where('message_id',$inboxEmails['message_id']);
 			$localmailstorage =$this->CI->db->get(db_prefix().'reply')->row();
 		}
