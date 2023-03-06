@@ -183,6 +183,11 @@ public function edit($id)
         if (!$id) {
             redirect(admin_url('tasktype'));
         }
+        $num_tasks = $this->tasktype_model->countTasks_by_tasktype($id);
+        if ($num_tasks > 0) {
+            set_alert('warning', _l('tasktype_has_tasks'));
+            redirect(admin_url('tasktype'));
+        }
         $response = $this->tasktype_model->deleteTasktype($id);
         if ($response == true) {
             set_alert('success', _l('deleted', _l('tasktype')));

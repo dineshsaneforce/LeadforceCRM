@@ -23,25 +23,30 @@ foreach ($rResult as $aRow)
             $_data .= '<div class="row-options">';
             $_data .= '</div>';
         }
-         elseif ($aColumns[$i] == 'status') {
+        elseif ($aColumns[$i] == 'status') {
             $checked = '';
-            if ($aRow['status'] == 1) {
+            $status = '';
+            if ($aRow['status'] == 'active') {
                 $checked = 'checked';
+                $status = 'active';
+            } else {
+                $status = 'inactive';
             }
-            if( $aRow['id'] != 1){
+            if ($aRow['id'] != 1) {
                 $_data = '<div class="onoffswitch">
-                <input type="checkbox" data-switch-url="' . admin_url() . 'tasktype/change_tasktype_status" name="onoffswitch" class="onoffswitch-checkbox task-type-toggle" id="c_' . $aRow['id'] . '" data-id="' . $aRow['id'] . '" ' . $checked . '>
-                <label class="onoffswitch-label" for="c_' . $aRow['id'] . '"></label>
-            </div>';        
-            $_data .= '<span class="hide">' . ($checked == 'checked' ? _l('is_active_export') : _l('is_not_active_export')) . '</span>';  
-            }else{
+                    <input type="checkbox" data-switch-url="' . admin_url() . 'tasktype/change_tasktype_status" name="onoffswitch" class="onoffswitch-checkbox task-type-toggle" id="c_' . $aRow['id'] . '" data-id="' . $aRow['id'] . '" ' . $checked . '>
+                    <label class="onoffswitch-label" for="c_' . $aRow['id'] . '"></label>
+                </div>';        
+                // $_data .= '<span class="hide">' . _l('is_' . $status . '_export') . '</span>';
+            } else {
                 $_data = "";
             }
         }
+        
         elseif ($aColumns[$i] == 'icon') {
             $_data = '<i class="fa ' . $aRow['icon'] . '"></i>';
         }elseif ($aColumns[$i] == 'option'&&$aRow['id'] != 1){
-            $_data = '<a href="' . admin_url('tasktype/delete_tasktype/' . $aRow['id']) . '" class="_delete text-danger"><i class="fa fa-trash"></i></a>';
+            $_data = '<a href="' . admin_url('tasktype/delete_tasktype/' . $aRow['id']) . '" class="_delete text-danger tasktype-delete-link"><i class="fa fa-trash"></i></a>';
         }        
         $row[] = $_data;
         $row['DT_RowClass'] = 'has-row-options';

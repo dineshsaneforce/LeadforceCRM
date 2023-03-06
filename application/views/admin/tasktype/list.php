@@ -104,9 +104,9 @@ function change_name(a,ch_id){
 					<?php $attrs = array('required' => true, 'onblur' => "change_name(this.value,'name')", 'onkeyup' => 'check_name()','maxlength'=>50); ?>
 					<?php echo render_input('name','name','','text',$attrs); ?>
 					<div class="text-danger" id="name_id" style="display:none">Please enter valid name</div>
-					<div class="icon-group" id="icon-control">
+					<div class="icon-group" id="icon-control" style="bottom: 7px; position: relative;">
 						<?php echo _l('icon'); ?>
-						<ul class="icons-list" name="icon">
+						<ul class="icons-list" name="icon" style="border-radius: 5px;">
 							<li id="icon-envelope" data-icon="fa-envelope"><i class="fa fa-envelope" title="Envelope" aria-hidden="true"></i></li>
 							<li id="icon-tasks" data-icon="fa-tasks"><i class="fa fa-tasks selected" title="Tasks" aria-hidden="true"></i></li>
 							<li id="icon-phone" data-icon="fa-phone"><i class="fa fa-phone" title="Phone" aria-hidden="true"></i></li>
@@ -126,8 +126,8 @@ function change_name(a,ch_id){
 						<label for="status" class="control-label" ><?php echo _l('status'); ?></label>
 						<select required="1" name="status" class="selectpicker" data-width="100%" data-none-selected-text="<?php echo _l('status'); ?>">
 						<option value=""><?php echo _l('tasktype_option_select'); ?></option>
-						<option value="1" selected  ><?php echo _l('tasktype_option_active'); ?></option>
-						<option value="0" ><?php echo _l('tasktype_option_inactive'); ?></option>
+						<option value="active" selected  ><?php echo _l('tasktype_option_active'); ?></option>
+						<option value="inactive" ><?php echo _l('tasktype_option_inactive'); ?></option>
 						</select>
 					</div>
 			</div>
@@ -152,7 +152,7 @@ function initKnowledgeBaseTablePipelines(){
 		KB_Pipelines_ServerParams[$(this).attr('name')] = '[name="' + $(this).attr('name') + '"]';
 	});
 	$('._filter_data').toggleClass('hide');
-	initDataTable('.table-tasktypes', window.location.href, undefined, undefined, KB_Pipelines_ServerParams, [1, 'desc']);
+	initDataTable('.table-tasktypes', window.location.href, undefined, undefined, KB_Pipelines_ServerParams, [0, 'asc']);
 }
 });
 document.addEventListener("DOMContentLoaded", function(event){
@@ -207,7 +207,8 @@ document.addEventListener("DOMContentLoaded", function(event){
 .modal-header{
     background: var(--theme-primary-dark);
     border-radius: 5px;
-    padding: 15px;
+    padding: 10px;
+	border-bottom: 10px solid rgb(3 18 51);
 }
 ul.icons-list{
 	border: 1px solid #bfcbd9; 

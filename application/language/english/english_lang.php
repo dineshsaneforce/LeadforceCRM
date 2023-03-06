@@ -4252,3 +4252,4 @@ $lang['system_dashboard'] = 'System Dashboard';
 $lang['edit_tasktype']							= 'Edit Activity type';
 $lang['icon']							= 'Icon';
 $lang['option']						= 'Option';
+$lang['tasktype_has_tasks']						= 'Activity type you are trying to delete has activities';
