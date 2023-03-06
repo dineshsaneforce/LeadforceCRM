@@ -80,4 +80,12 @@ class Tasktype_model extends App_Model
         }
         return false;
     }
+    public function change_tasktype_status($id, $status)
+    {
+        $this->db->where('id', $id);
+        $this->db->update(db_prefix().'tasktype', [
+            'status' => $status,
+        ]);
+        log_activity('Task Type Status Changed [id: ' . $id . ' - Status: ' . $status . ']');
+    }
 }

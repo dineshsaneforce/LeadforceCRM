@@ -28,7 +28,7 @@ class Tasktype extends AdminController
 /**
  * Add or edit Task-type
 **/
-    public function save($id = '')
+    public function save()
     {
         if (!has_permission('tasktype', '', 'view')) {
             access_denied('tasktype');
@@ -36,11 +36,16 @@ class Tasktype extends AdminController
         if ($this->input->post())
 		{
             $data = $this->input->post();
-            if ($id == '') {
+            if (!isset($data['id']) || !$data['id']) {
 				$checktasktypeexist = $this->tasktype_model->checkTasktypeexist($data['name']);
 				if(!empty($checktasktypeexist)) {
-					set_alert('warning', _l('already_exist', _l('tasktype')));
-					redirect(admin_url('tasktype'));
+
+                    $response = array(
+                        'warning' => true,
+                        'msg' => _l('already_exist', _l('tasktype'))
+                    );
+                    echo json_encode($response);
+                    return;
 				}
 				else {
 					if (!has_permission('tasktype', '', 'create')) {
@@ -48,27 +53,41 @@ class Tasktype extends AdminController
 					}
 					$id = $this->tasktype_model->addTasktype($data);
 					if ($id) {
-						set_alert('success', _l('added_successfully', _l('tasktype')));
-						redirect(admin_url('tasktype'));
+
+                        $response = array(
+                            'success' => true,
+                            'msg' => _l('added_successfully', _l('tasktype'))
+                        );
+                        echo json_encode($response);
+                        return;
 					}
 				}
             }
-			else {
+			else{
 				$checktasktypeexist = $this->tasktype_model->checkTasktypeexist($data['name']);
-				if(!empty($checktasktypeexist) && $checktasktypeexist->id != $id) {
-					set_alert('warning', _l('already_exist', _l('tasktype')));
-					redirect(admin_url('tasktype'));
+				if(!empty($checktasktypeexist) && $checktasktypeexist->id != $data['id']) {
+                    $response = array(
+                        'warning' => true,
+                        'msg' => _l('already_exist', _l('tasktype'))
+                    );
+                    echo json_encode($response);
+                    return;                    
 				}
 				else {
 					if (!has_permission('tasktype', '', 'edit')) {
 						access_denied('tasktype');
 					}
-					$success = $this->tasktype_model->updateTasktype($data, $id);
+					$success = $this->tasktype_model->updateTasktype($data, $data['id'] );
 					if ($success) {
-						set_alert('success', _l('updated_successfully', _l('tasktype')));
+                        $response = array(
+                            'success' => true,
+                            'msg' => _l('updated_successfully', _l('tasktype')),
+                            'data' => $tasktype
+                        );
 					}
-					redirect(admin_url('tasktype'));
-				}
+                    echo json_encode($response);
+                    return;				
+                }
             }
         }
         if ($id == '') {
@@ -83,7 +102,58 @@ class Tasktype extends AdminController
         $data['title']     = $title;
         $this->load->view('admin/tasktype/form', $data);
     }
-	
+
+public function edit($id)
+{ 
+    if (!has_permission('tasktype', '', 'view')) {
+        access_denied('tasktype');
+    } 
+    $tasktype = $this->tasktype_model->getTasktype($id);
+    if (!$tasktype) {
+        $response = array(
+            'success' => false,
+            'msg' => _l( _l('tasktype_not_found'))
+        );
+        echo json_encode($response);
+        return;
+    }else {
+        $response = array(
+            'success'=>true,
+            'data'=>$tasktype
+        );
+        echo json_encode($response);
+        return;
+    }
+    if ($this->input->post()) 
+    {  
+        $data = $this->input->post();
+        $data['id'] = $id;
+
+        $checktasktypeexist = $this->tasktype_model->checkTasktypeexist($data['name']);
+        if (!empty($checktasktypeexist) && $checktasktypeexist->id != $id) {
+            $response = array(
+                'warning' => true,
+                'msg' => _l('already_exist', _l('tasktype'))
+            );
+            echo json_encode($response);
+            return;
+        }
+        else {
+          
+            $success = $this->tasktype_model->updateTasktype($data, $id);
+            if ($success) {
+                $response = array(
+                    'success' => true,
+                    'msg' => _l('updated_successfully', _l('tasktype')),
+                    'data' => $tasktype
+                );
+                echo json_encode($response);
+                return;
+            }
+            $this->load->view('admin/tasktype/form', $data);
+        }
+    }
+}
 /**
  * View Task-type
 **/
@@ -120,5 +190,13 @@ class Tasktype extends AdminController
             set_alert('warning', _l('problem_deleting', _l('tasktype_lowercase')));
         }
         redirect(admin_url('tasktype'));
+    }
+ /* Change tasktype status active or inactive */
+    public function change_tasktype_status($id, $status)
+    {
+        if ($this->input->is_ajax_request()) {
+            $this->load->model('tasktype_model');
+            $this->tasktype_model->change_tasktype_status($id, $status);
+        }
     }
 }
