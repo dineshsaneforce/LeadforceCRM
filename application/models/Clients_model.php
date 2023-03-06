@@ -91,7 +91,7 @@ class Clients_model extends App_Model {
     public function get_merged_contacts($customer_id = '', $where = ['active' => 1])
     {
         if (!is_admin(get_staff_user_id())) {
-            $this->db->where('(addedfrom = ' . get_staff_user_id() . ' OR userid IN (SELECT userid FROM clients WHERE addedfrom = ' . get_staff_user_id() . ') OR contacts_id IN (SELECT contacts_id FROM project_contacts WHERE project_id IN (SELECT project_id FROM project_members WHERE staff_id = ' . get_staff_user_id() . ')) OR contacts_id IN (SELECT contacts_id FROM project_contacts WHERE project_id IN (SELECT id FROM projects WHERE teamleader = ' . get_staff_user_id() . ')))');
+            $this->db->where('(addedfrom = ' . get_staff_user_id() . ' OR userid IN (SELECT userid FROM tblclients WHERE addedfrom = ' . get_staff_user_id() . ') OR contacts_id IN (SELECT contacts_id FROM tblproject_contacts WHERE project_id IN (SELECT project_id FROM tblproject_members WHERE staff_id = ' . get_staff_user_id() . ')) OR contacts_id IN (SELECT contacts_id FROM tblproject_contacts WHERE project_id IN (SELECT id FROM tblprojects WHERE teamleader = ' . get_staff_user_id() . ')))');
         }
         $this->db->where($where);
         if ($customer_id != '') {

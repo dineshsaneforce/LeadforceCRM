@@ -1324,33 +1324,33 @@ class Projects extends AdminController
             LEFT JOIN `tblcountries` country ON clients.country = country.country_id
             WHERE (clients.active = 1 AND (clients.company LIKE '%".$gsearch."%' OR clients.zip LIKE '%".$gsearch."%' OR clients.address LIKE '%".$gsearch."%' OR clients.state LIKE '%".$gsearch."%' OR clients.country LIKE '%".$gsearch."%' OR clients.city LIKE '%".$gsearch."%' OR clients.phonenumber LIKE '%".$gsearch."%') AND clients.company != '')".$client_condition)->result_array();
 
-        if(!is_admin(get_staff_user_id())) {
+    if(!is_admin(get_staff_user_id())) {
 
-            if($my_staffids) {
-                $where = ' WHERE ('.db_prefix().'contacts.addedfrom IN (' . implode(',',$my_staffids) . ') OR (' . db_prefix() . 'contacts.userid IN (SELECT ' . db_prefix() . 'projects.clientid FROM ' . db_prefix() . 'projects join ' . db_prefix() . 'project_members  on ' . db_prefix() . 'project_members.project_id = ' . db_prefix() . 'projects.id WHERE ' . db_prefix() . 'project_members.staff_id in (' . implode(',',$my_staffids) . ')  AND tblprojects.clientid != "")) OR  (' . db_prefix() . 'contacts.userid IN (SELECT ' . db_prefix() . 'projects.clientid FROM ' . db_prefix() . 'projects where ' . db_prefix() . 'projects.teamleader in (' . implode(',',$my_staffids) . ') AND tblprojects.clientid != "" )))   AND (tblcontacts.firstname like "%'.$gsearch.'%" OR tblcontacts.email like "%'.$gsearch.'%" OR tblcontacts.phonenumber like "%'.$gsearch.'%")  AND tblcontacts.deleted_status=0 AND tblclients.deleted_status=0 '.$likeqry;
-                $where_summary_inactiveperson_qry = 'SELECT  tblcontacts.*
-                FROM tblcontacts
-                LEFT JOIN tblclients ON tblclients.userid=tblcontacts.userid LEFT JOIN tblcustomfieldsvalues as ctable_0 ON tblcontacts.id = ctable_0.relid AND ctable_0.fieldto="contacts" AND ctable_0.fieldid=7'.$where;
+        if($my_staffids) {
+            $where = ' WHERE ('.db_prefix().'contacts.addedfrom IN (' . implode(',',$my_staffids) . ') OR (' . db_prefix() . 'contacts.userid IN (SELECT ' . db_prefix() . 'projects.clientid FROM ' . db_prefix() . 'projects join ' . db_prefix() . 'project_members  on ' . db_prefix() . 'project_members.project_id = ' . db_prefix() . 'projects.id WHERE ' . db_prefix() . 'project_members.staff_id in (' . implode(',',$my_staffids) . ')  AND tblprojects.clientid != "")) OR  (' . db_prefix() . 'contacts.userid IN (SELECT ' . db_prefix() . 'projects.clientid FROM ' . db_prefix() . 'projects where ' . db_prefix() . 'projects.teamleader in (' . implode(',',$my_staffids) . ') AND tblprojects.clientid != "" )))   AND (tblcontacts.firstname like "%'.$gsearch.'%" OR tblcontacts.email like "%'.$gsearch.'%" OR tblcontacts.phonenumber like "%'.$gsearch.'%")  AND tblcontacts.deleted_status=0 AND tblclients.deleted_status=0 '.$likeqry;
+            $where_summary_inactiveperson_qry = 'SELECT  tblcontacts.*
+            FROM tblcontacts
+            LEFT JOIN tblclients ON tblclients.userid=tblcontacts.userid LEFT JOIN tblcustomfieldsvalues as ctable_0 ON tblcontacts.id = ctable_0.relid AND ctable_0.fieldto="contacts" AND ctable_0.fieldid=7'.$where;
 
-            } else {
-                $where = ' WHERE ('.db_prefix().'contacts.addedfrom = "'.get_staff_user_id().'" OR (' . db_prefix() . 'contacts.userid IN (SELECT ' . db_prefix() . 'projects.clientid FROM ' . db_prefix() . 'projects join ' . db_prefix() . 'project_members  on ' . db_prefix() . 'project_members.project_id = ' . db_prefix() . 'projects.id WHERE ' . db_prefix() . 'project_members.staff_id = "'.get_staff_user_id().'"  AND tblprojects.clientid != "")) OR  (' . db_prefix() . 'contacts.userid IN (SELECT ' . db_prefix() . 'projects.clientid FROM ' . db_prefix() . 'projects where ' . db_prefix() . 'projects.teamleader = "'.get_staff_user_id().'" AND tblprojects.clientid != "" )))   AND (tblcontacts.firstname like "%'.$gsearch.'%" OR tblcontacts.email like "%'.$gsearch.'%" OR tblcontacts.phonenumber like "%'.$gsearch.'%")  AND tblcontacts.deleted_status=0 AND tblclients.deleted_status=0 '.$likeqry;
-                $where_summary_inactiveperson_qry = 'SELECT  tblcontacts.*
-                FROM tblcontacts
-                LEFT JOIN tblclients ON tblclients.userid=tblcontacts.userid LEFT JOIN tblcustomfieldsvalues as ctable_0 ON tblcontacts.id = ctable_0.relid AND ctable_0.fieldto="contacts" AND ctable_0.fieldid=7'.$where;
-               
-                        
-            }
-            $data['contacts'] = $this->db->query($where_summary_inactiveperson_qry)->result_array();
         } else {
-           
-            $data['contacts'] = $this->clients_model->get_merged_contacts('',[
-                db_prefix() .'contacts.active' => 1," (".
-                db_prefix() ."contacts.firstname like '%".$gsearch."%' OR ".
-                db_prefix() ."contacts.email like '%".$gsearch."%' OR " .
-                db_prefix() ."contacts.phonenumber like '%".$gsearch."%'".") and ".db_prefix()."contacts.firstname != " => "",
-            ]);
+            $where = ' WHERE ('.db_prefix().'contacts.addedfrom = "'.get_staff_user_id().'" OR (' . db_prefix() . 'contacts.userid IN (SELECT ' . db_prefix() . 'projects.clientid FROM ' . db_prefix() . 'projects join ' . db_prefix() . 'project_members  on ' . db_prefix() . 'project_members.project_id = ' . db_prefix() . 'projects.id WHERE ' . db_prefix() . 'project_members.staff_id = "'.get_staff_user_id().'"  AND tblprojects.clientid != "")) OR  (' . db_prefix() . 'contacts.userid IN (SELECT ' . db_prefix() . 'projects.clientid FROM ' . db_prefix() . 'projects where ' . db_prefix() . 'projects.teamleader = "'.get_staff_user_id().'" AND tblprojects.clientid != "" )))   AND (tblcontacts.firstname like "%'.$gsearch.'%" OR tblcontacts.email like "%'.$gsearch.'%" OR tblcontacts.phonenumber like "%'.$gsearch.'%")  AND tblcontacts.deleted_status=0 AND tblclients.deleted_status=0 '.$likeqry;
+            $where_summary_inactiveperson_qry = 'SELECT  tblcontacts.*
+            FROM tblcontacts
+            LEFT JOIN tblclients ON tblclients.userid=tblcontacts.userid LEFT JOIN tblcustomfieldsvalues as ctable_0 ON tblcontacts.id = ctable_0.relid AND ctable_0.fieldto="contacts" AND ctable_0.fieldid=7'.$where;
             
+                    
         }
+        $data['contacts'] = $this->db->query($where_summary_inactiveperson_qry)->result_array();
+    } else {
+        
+        $data['contacts'] = $this->clients_model->get_merged_contacts('',[
+            db_prefix() .'contacts.active' => 1," (".
+            db_prefix() ."contacts.firstname like '%".$gsearch."%' OR ".
+            db_prefix() ."contacts.email like '%".$gsearch."%' OR " .
+            db_prefix() ."contacts.phonenumber like '%".$gsearch."%'".") and ".db_prefix()."contacts.firstname != " => "",
+        ]);
+        
+    }
 			$data['projects_count'] = count($data['projects']);
             $data['leads_count'] = count($data['leads']);
 			$data['clients_count'] = count($data['clients']);
@@ -1403,7 +1403,7 @@ class Projects extends AdminController
               }
 
               if(!empty($project['pipelinename'])){
-                $pipelinename = '<i class="fa fa-industry" mr-2"></i>' . " ".$project['pipelinename'];
+                $pipelinename = '<i class="fa fa-bar-chart mleft5 mright5 fa-flip-vertical fa-rotate-180" mr-2"></i>' . " ".$project['pipelinename'];
               }
               else{
                 $pipelinename ="";
