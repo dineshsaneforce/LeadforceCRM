@@ -32,6 +32,7 @@
     <input type="hidden" id="projectid" value="<?php echo $project->id; ?>">
     <input type="hidden" name="lead_id" id="lead_id" value="<?php echo $lead_id; ?>">
     <div class="col-md-12">
+        <div style="max-height:75vh; overflow-y:auto;overflow-x: hidden;">
                 <?php
                 $disable_type_edit = '';
                 if (isset($project)) {
@@ -516,6 +517,7 @@
                             <label for="send_created_email"><?php echo _l('project_send_created_email'); ?></label>
                         </div> -->
                 <?php } ?>
+        </div>
                 <div class="text-right">
                     <a data-dismiss="modal" class="btn btn-default">Cancel</a>
                     <button type="submit" data-form="#project_form" class="btn btn-info" autocomplete="off" data-loading-text="<?php echo _l('wait_text'); ?>"><?php echo _l('submit'); ?></button>

@@ -121,7 +121,7 @@
 		<div class="panel_s">
 			<div class="panel-body" style="padding-top:10px;padding-bottom:10px">
 				<div class="row">
-					<div class="col-md-3">
+					<div class="col-md-4">
 						<div class="_buttons">
 							<?php if (has_permission('projects', '', 'create')) { ?>
 								<a id="openNewProject" data-toggle="modal" data-target="#newDealModal" class="btn btn-info pull-left display-block mright5">
@@ -165,7 +165,7 @@
 							<a href="<?php echo $approval_url; ?>" data-toggle="tooltip" title="<?php echo _l('deal_approval_list'); ?>" class="btn <?php echo isset($_GET['approvalList']) ? 'btn-primary' : 'btn-default' ?> "><i class="fa fa-check-square-o" aria-hidden="true"></i></a>
 						</div>
 					</div>
-					<div class="col-md-9">
+					<div class="col-md-8">
 						<div class="row">
 							<?php echo form_open(admin_url('projects/kanban_noscroll'), array('method' => 'get', 'id' => 'ganttFiltersForm')); ?>
 							<div class="col-md-3 pipeselect">
@@ -208,7 +208,7 @@
 								</div>
 							<?php } ?>
               <div class="col-md-2">
-                <div class="form-group">
+                <div class="">
                   <input type="search" name="gsearch" class="form-control input-sm" value="<?php echo (isset($gsearch)?$gsearch:''); ?>" placeholder="Search..."/>
                 </div>
               </div>
