@@ -7,7 +7,7 @@
  ?>
 <?php init_head(); ?>
 
-<script src="<?php echo base_url('assets/js/workflow.js?v=1.3') ?>"></script>
+<script src="<?php echo base_url('assets/js/workflow.js?v=1.4') ?>"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function(event) {
         // initiating workflow
