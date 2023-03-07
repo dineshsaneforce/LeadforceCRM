@@ -8,12 +8,12 @@ if ($project['status'] == $status['id']) { ?>
 		<div class="row">
 			<div class="col-md-12 project-name">
 				<div class="row">
-					<div class="col-xs-10">
+					<div class="col-xs-9">
 						<a href="<?php echo admin_url('projects/view/'.$project['id']); ?>" onclick="init_project(<?php echo $project['id']; ?>);return false;" class="pull-left">
 							<span class="inline-block mbot10 text-bold"><i class="fa fa-handshake-o mright5"></i><?php echo $project['project_name']; ?></span>
 						</a>
 					</div>
-					<div class="col-xs-2">
+					<div class="col-xs-3">
 						<?php 
 							if($project['taskscount'] > 0){
 								$gas = $this->projects_model->get_activity_status($project['id']);
@@ -60,10 +60,10 @@ if ($project['status'] == $status['id']) { ?>
 			<?php if($project['contact_name']): ?>
 				<div class="col-md-12 text-muted">
 					<div class="row">
-						<div class="col-xs-10 single-line">
+						<div class="col-xs-9 single-line">
 							<span  class="text-dark" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="<?php echo $project['contact_name'];?>"><i class="fa fa-id-card-o mright5"></i><?php echo $project['contact_name'];?></span>
 						</div>
-						<div class="col-xs-2">
+						<div class="col-xs-3">
 							<?php if(isset($project['contact_phonenumber']) && !empty($project['contact_phonenumber']) && $staff_allowed_to_call == 1) { 
 								$calling_code =$this->callsettings_model->getCallingCode($project['contacts_phone_country_code']);
 								echo '<a class="deal-kanban-call-btn pull-right" href="#" onclick="callfromdeal('.$project['contact_id'].','.$project['id'].','.$project['contact_phonenumber'].',\'deal\',\''.$calling_code.'\');" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="Call now"><i class="fa fa-phone" aria-hidden="true"></i></a>';
