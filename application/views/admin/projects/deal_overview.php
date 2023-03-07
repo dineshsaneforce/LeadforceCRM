@@ -659,7 +659,7 @@ $custom_fields = array_merge($custom_fields1, $custom_fields2);
                   <div class="form-group select-placeholder">
                      <label for="status"><?php echo _l('project_primary_contacts'); ?></label>
                      <div class="clearfix"></div>
-                     <select name="primary_contact" id="primary_contact" class="selectpicker" data-width="100%" data-none-selected-text="<?php echo _l('dropdown_non_selected_tex'); ?>" required>
+                     <select name="primary_contact" id="primary_contact" class="selectpicker" data-width="100%" data-none-selected-text="<?php echo _l('dropdown_non_selected_tex'); ?>">
                         <option></option>
                         <?php
                         foreach ($client_contacts as $cckey => $ccval) {

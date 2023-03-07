@@ -14,7 +14,9 @@
     width:100%;
 }
 </style>
-<?php //pre($ownerHierarchy); ?>
+<?php //pre($ownerHierarchy); 
+$hasHIstory = $this->approval_model->hasHistory('projects', $project->id) ? true : false;
+?>
 <div class="horizontal-scrollable-tabs">
   <div class="scroller arrow-left"><i class="fa fa-angle-left"></i></div>
   <div class="scroller arrow-right"><i class="fa fa-angle-right"></i></div>
@@ -23,6 +25,9 @@
         <?php
         foreach(filter_project_visible_tabs($tabs, $project->settings->available_features) as $key => $tab){
             $dropdown = isset($tab['collapse']) ? true : false;
+            if($key =='project_approval' && $project->approved ==1 && !$hasHIstory){
+                continue;
+            }
             ?>
             <li class="<?php if($key == 'project_tasks' && !$this->input->get('group')){echo 'active ';} ?>project_tab_<?php echo $key; ?><?php if($dropdown){echo ' nav-tabs-submenu-parent';} ?>">
                 <a

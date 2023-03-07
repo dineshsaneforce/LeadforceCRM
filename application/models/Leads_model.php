@@ -1528,8 +1528,6 @@ class Leads_model extends App_Model {
     {
         $count =0;
         $this->db->where('lead_id', $lead_id);
-
-		$this->db->where('staff_id !=', 0);
         $this->db->select('count(id) AS count');
 		//$this->db->group_by('uid'); 
         $emails = $this->db->get(db_prefix() . 'localmailstorage')->row();
@@ -1538,8 +1536,6 @@ class Leads_model extends App_Model {
         }
 
         $this->db->where('lead_id', $lead_id);
-
-		$this->db->where('staff_id !=', 0);
         $this->db->select('count(id) AS count');
 		//$this->db->group_by('uid'); 
         $emails = $this->db->get(db_prefix() . 'reply')->row();

@@ -172,8 +172,8 @@ $hasApprovalFlow = $this->workflow_model->getflows('deal_approval', 0, ['service
                                     </div>
 
                                     <?php if (!empty($deal_need_fields) && in_array("project_cost", $deal_need_fields)) : ?>
-                                        <div class="data_display mleft15 dropdown" style="display: block ruby;" >
-                                            <span class="h4 updated_text">
+                                        <div class="data_display mleft15 dropdown" style="display: flex;" >
+                                            <span class="h4 updated_text" style="margin:0 5px 0 0">
                                                 <?php echo app_format_money($project->project_cost, $currency); ?>
                                             </span>
                                             <?php if ($can_user_edit == true) { ?>
@@ -396,7 +396,7 @@ $hasApprovalFlow = $this->workflow_model->getflows('deal_approval', 0, ['service
                         </div>
                     </div>
                     <div class="col-md-8">
-                        <?php if ($project->approved == 1) : ?>
+                        <?php if (true || $project->approved == 1) : ?>
                             <div class="panel_s project-menu-panel">
                                 <div class="panel-body">
                                     <?php hooks()->do_action('before_render_project_view', $project->id); ?>
@@ -436,7 +436,7 @@ $hasApprovalFlow = $this->workflow_model->getflows('deal_approval', 0, ['service
                     <?php } */ ?>
                         <div class="panel_s" style="margin-bottom: 0px;">
                             <div class="panel-body" id="projectTabContentWrapper">
-                                <?php echo $this->load->view(($project->approved == 1 && $tab['view'] ? $tab['view'] : 'admin/projects/project_approval')); ?>
+                                <?php echo $this->load->view(($tab['view'] ? $tab['view'] : 'admin/projects/project_tasks')); ?>
                             </div>
                         </div>
                     </div>
