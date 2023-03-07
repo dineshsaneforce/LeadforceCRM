@@ -107,6 +107,7 @@ function updateSMSTemplateDetails() {
             function(form) {
                 var sendto = $('#SMSConfig #sendto').val();
                 var template = $('#SMSConfig #template').val();
+                var other_staffs_group = $('#SMSConfig #other_staffs_group').val();
                 var variables = [];
                 var variablesfield = $('#SMSConfig .variablesfield');
                 $.each(variablesfield, function() {
@@ -120,6 +121,7 @@ function updateSMSTemplateDetails() {
                         template: template,
                         variables: variables,
                         sendto: sendto,
+                        other_staffs_group:other_staffs_group,
                     },
                     dataType: "json",
                     success: function(response) {

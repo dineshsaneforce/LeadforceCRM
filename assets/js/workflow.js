@@ -514,6 +514,7 @@ var workflowl =function(module){
                     }
                 }else{
                     workflowl.resetForm('LeadAssignStaffConfig');
+                    $('#LeadAssignStaffConfig [name="type"]').val('direct_assign').trigger('change');
                 }
 
                 $('#sidebarSettingsTitle').html("Assign User");
@@ -542,6 +543,7 @@ var workflowl =function(module){
                     }
                 }else{
                     workflowl.resetForm('ProjectAssignStaffConfig');
+                    $('#ProjectAssignStaffConfig [name="type"]').val('direct_assign').trigger('change');
                 }
 
                 $('#sidebarSettingsTitle').html("Assign User");
