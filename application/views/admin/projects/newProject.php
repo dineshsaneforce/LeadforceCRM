@@ -32,7 +32,7 @@
     <input type="hidden" id="projectid" value="<?php echo $project->id; ?>">
     <input type="hidden" name="lead_id" id="lead_id" value="<?php echo $lead_id; ?>">
     <div class="col-md-12">
-        <div style="max-height:75vh; overflow-y:auto;overflow-x: hidden;">
+        <div style="max-height:75vh; overflow-y:auto;overflow-x: hidden; padding-right:15px;">
                 <?php
                 $disable_type_edit = '';
                 if (isset($project)) {
@@ -788,10 +788,8 @@
                     success: function(msg) {
                         $('.contactsdiv select').html(msg.success);
                         $('.primarydiv select').html('');
-                        setTimeout(function() {
-                            $('.contactsdiv select').selectpicker('refresh');
-                            $('.primarydiv select').selectpicker('refresh');
-                        }, 500);
+                        $('.contactsdiv select').selectpicker('refresh');
+                        $('.primarydiv select').selectpicker('refresh');
                     }
                 });
             });
@@ -896,7 +894,7 @@
             $(function() {
                 <?php if ($lead_id) : ?>
                     <?php if (isset($_POST['clientid']) && $_POST['clientid']) : ?>
-                        $("select[id^=project_contacts]").trigger('change');
+                        $("select#clientid").trigger('change');
                     <?php endif; ?>
                 <?php endif; ?>
 
