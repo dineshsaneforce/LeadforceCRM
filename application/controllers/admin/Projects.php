@@ -1284,19 +1284,20 @@ class Projects extends AdminController
         // $lead_fields = "id,hash,name,title,company,description,country,zip,city,state,address,teamleader,assigned,dateadded,from_form_id,status,source,pipeline_id,lastcontact,dateassigned,last_status_change,addedfrom,email,website,leadorder,phonenumber,date_converted,lost,junk,last_lead_status,is_imported_from_email_integration,email_integration_uid,is_public,default_language,startdate,enddate,currency,rate,client_id,project_id,deleted_status,query_id,phone_country_code,lead_currency,lead_cost"
         if(!is_admin(get_staff_user_id())) {
             if($my_staffids) {
-                $data['leads'] = $this->db->query('SELECT '.$lead_fields.' FROM tblleads where ((assigned  in (' . implode(',',$my_staffids) . ')) OR id IN (select id from tblleads where id in (' . implode(',',$my_staffids) . '))) AND name like "%'.$gsearch.'%"  OR email like"%'.$gsearch.'%" OR phonenumber like "%'.$gsearch.'%" ')->result_array();
+                $data['leads'] = $this->db->query('SELECT '.$lead_fields.' FROM tblleads WHERE ((assigned  in (' . implode(',',$my_staffids) . '))) AND (name LIKE  "%'.$gsearch.'%"  OR email LIKE "%'.$gsearch.'%" OR phonenumber LIKE  "%'.$gsearch.'%") ')->result_array();
             } else {
-                $data['leads'] = $this->db->query('SELECT '.$lead_fields.' FROM tblleads where ((assigned  = "'.get_staff_user_id().'") OR id IN (select id from tblleads where id="'.get_staff_user_id().'")) AND name like "%'.$gsearch.'%"  OR email like"%'.$gsearch.'%" OR phonenumber like "%'.$gsearch.'%"')->result_array();
+                $data['leads'] = $this->db->query('SELECT '.$lead_fields.' FROM tblleads WHERE ((assigned  = "'.get_staff_user_id().'")) AND (name LIKE  "%'.$gsearch.'%"  OR email LIKE "%'.$gsearch.'%" OR phonenumber LIKE  "%'.$gsearch.'%")')->result_array();
             }
         } else {
-            $data['leads'] = $this->db->query('SELECT '.$lead_fields.' FROM tblleads WHERE id like "%'.$gsearch.'%" OR name like "%'.$gsearch.'%" OR email like"%'.$gsearch.'%" OR phonenumber like "%'.$gsearch.'%" ')->result_array();            
+            $data['leads'] = $this->db->query('SELECT '.$lead_fields.' FROM tblleads WHERE id LIKE  "%'.$gsearch.'%" OR name LIKE  "%'.$gsearch.'%" OR email LIKE "%'.$gsearch.'%" OR phonenumber LIKE  "%'.$gsearch.'%" ')->result_array();
         }
-        $project_fields = "id,name,description,status,pipeline_id,clientid,teamleader,billing_type,start_date,deadline,project_created,created_by,project_modified,modified_by,date_finished,progress,progress_from_tasks,project_cost,project_rate_per_hour,estimated_hours,addedfrom,stage_of,stage_on,loss_reason,loss_remark,deleted_status,project_currency,imported_id,lead_id";
+
+        $project_condition = '';
         if(!is_admin(get_staff_user_id())) {
             if($my_staffids) {
-                $data['projects'] = $this->db->query('SELECT '.$project_fields.' FROM tblprojects where ((teamleader in (' . implode(',',$my_staffids) . ')) OR id IN (select project_id from tblproject_members where staff_id in (' . implode(',',$my_staffids) . '))) AND name like "%'.$gsearch.'%" ')->result_array();
+                $project_condition = " AND ((projects.teamleader in (" . implode(',',$my_staffids) . ")) OR projects.id IN (select project_id FROM  " . db_prefix() . "project_members where staff_id in (" . implode(',',$my_staffids) . ")))";
             } else {
-                $data['projects'] = $this->db->query('SELECT '.$project_fields.' FROM tblprojects where ((teamleader = "'.get_staff_user_id().'") OR id IN (select project_id from tblproject_members where staff_id="'.get_staff_user_id().'")) AND name like "%'.$gsearch.'%" ')->result_array();
+                $project_condition = " AND ((projects.teamleader = '".get_staff_user_id()."') OR projects.id IN (select project_id FROM " . db_prefix() . "project_members where staff_id='".get_staff_user_id()."'))";
             }
         } 
             $data['projects'] =$this->db->query("SELECT projects.id, projects.name projectname,  projects.teamleader , projects.pipeline_id, projects.clientid,pipeline.name pipelinename, client.company ,staff.firstname, staff.lastname
@@ -1308,8 +1309,8 @@ class Projects extends AdminController
               projects.teamleader LIKE '%".$gsearch."%' OR 
               projects.pipeline_id LIKE '%".$gsearch."%' OR 
               projects.clientid LIKE '%".$gsearch."%'
-            ) AND projects.teamleader != '')")->result_array();
-        
+             ) AND projects.teamleader != '')" . $project_condition)->result_array();     
+      
     $client_condition ="";
     if(!is_admin(get_staff_user_id())) {
         if ($my_staffids) {

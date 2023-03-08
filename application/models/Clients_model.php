@@ -103,7 +103,8 @@ class Clients_model extends App_Model {
         // pre($this->db->get_compiled_select(db_prefix() . 'contacts'));
         return $this->db->get(db_prefix() . 'contacts')->result_array();
     }
-        public function get_orgdetails_byname($name = '') {
+    
+    public function get_orgdetails_byname($name = '') {
         $this->db->where('company',$name);
         return $this->db->get(db_prefix() . 'clients')->result_array();
     }
