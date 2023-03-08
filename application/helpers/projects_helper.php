@@ -119,6 +119,13 @@ function app_init_project_tabs()
         'position'                  => 45,
         'linked_to_customer_option' => ['view_timeline_log'],
     ]);
+    $CI->app_tabs->add_project_tab('project_approval', [
+        'name'                      => _l('approval'),
+        'icon'                      => 'fa fa-exclamation',
+        'view'                      => 'admin/projects/project_approval',
+        'position'                  => 45,
+        'linked_to_customer_option' => ['view_timeline_log'],
+    ]);
     // $CI->app_tabs->add_project_tab('project_timesheets', [
     //     'name'                      => _l('project_timesheets'),
     //     'icon'                      => 'fa fa-clock-o',

@@ -1318,11 +1318,36 @@ class Imap
 					// $this->CI->db->where('uid',$inboxEmails['uid']);
 					$this->CI->db->where('message_id',$inboxEmails['message_id']);
 					$local_mail =$this->CI->db->get(db_prefix().'localmailstorage')->row();
+
+					if(!$local_mail){
+						if($inboxEmails['in_reply_to'] || ($inboxEmails['references'] && isset($inboxEmails['references'][0]) && $inboxEmails['references'][0])){
+							if($inboxEmails['references']){
+								$CI->db->where('message_id',$inboxEmails['references'][0]);
+							}else{
+								$CI->db->where('message_id',$inboxEmails['in_reply_to']);
+							}
+							$local_mail = $CI->db->get(db_prefix().'localmailstorage')->row();
+		
+							if($local_mail){
+								if($local_mail->project_id){
+									$rel_type ='project';
+									$rel_id =$local_mail->project_id;
+								}else{
+									$rel_type ='lead';
+									$rel_id =$local_mail->lead_id;
+								}
+								$CI->load->library('mails/imap_mailer');
+								$CI->imap_mailer->set_rel_type($rel_type);
+								$CI->imap_mailer->set_rel_id($rel_id);
+								$CI->imap_mailer->connectEmail($inboxEmails);
+							}
+						}
+					}
 					$connect_rel_data ='';
 					if($local_mail){
-						if($local_mail->deal_id){
+						if($local_mail->project_id){
 							$this->CI->db->where('deleted_status',0);
-							$this->CI->db->where('id',$local_mail->deal_id);
+							$this->CI->db->where('id',$local_mail->project_id);
 							$deal =$this->CI->db->get(db_prefix().'projects')->row();
 							$connect_rel_data ='<a href="#" onClick="updatedeal('.$inboxEmails['uid'].');">'.htmlentities($deal->name).' (Deal)</a>';
 						}elseif($local_mail->lead_id){

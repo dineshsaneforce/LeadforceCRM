@@ -16,7 +16,7 @@
                             </ol>
                         </nav>
                         <div class="form-group">
-                            <label for="approver" class="control-label">Assing approver</label>
+                            <label for="approver" class="control-label">Assing approver <span style="color: #d2be19;margin-left: 5px;" data-toggle="tooltip" title="Deal approval can be done by upper hierarchy only" class="pull-right"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i><span></label>
                             <select name="approver" id="approver" class="form-control selectpicker" data-live-search="true" required>
                                 <option value="">Select approver</option>
                                 <option value="REPORTING_LEVEL" <?php echo (isset($configure['approver']) &&  $configure['approver']=='REPORTING_LEVEL')?"selected":'' ?>>Reporting Level <?php echo $approvalLevel; ?></option>

@@ -4813,35 +4813,34 @@ public function all_activiites()
 		$ids = rtrim($ids,",");
 		$target_ids = explode(',',$ids);
 		if (isset($data['project_contacts'])) {
-			$condition1 = array($target_ids);
-			$this->db->where_in("project_id", $condition1);
-			$condition = array('is_primary',0);
-			$this->db->where($condition);
+			$this->db->where_in("project_id", $req_ids);;
+			// $this->db->where('is_primary',0);
 			$this->db->delete('project_contacts');
 			$contact_id = array();
 			foreach($req_ids as $req_id12){
-				foreach($data['project_contacts'] as $project_contact1){
-					//if (!in_array($project_contact1, $contact_id)){
-						$contact_id[] = $project_contact1;
-						$ins_data = array('project_id'=>$req_id12,'contacts_id'=>$project_contact1,'is_primary'=>0);
-						$this->db->insert('project_contacts',$ins_data);
-					//}
-				}
+                if($req_id12){
+                    foreach($data['project_contacts'] as $project_contact1){
+                        //if (!in_array($project_contact1, $contact_id)){
+                            $contact_id[] = $project_contact1;
+                            $ins_data = array('project_id'=>$req_id12,'contacts_id'=>$project_contact1,'is_primary'=>0);
+                            $this->db->insert('project_contacts',$ins_data);
+                        //}
+                    }
+                }
+				
 			}
 			unset($data['project_contacts']);
 		}
 		if (isset($data['primary_contact'])) {
-			 $ch_data = array($ids);
 			$primary_contact = $data['primary_contact'];
-			$condition1 = array($ids);
-			$this->db->where_in("project_id", $condition1);
-			$condition = array('is_primary',1);
-			$this->db->where($condition);
+			$this->db->where_in("project_id", $req_ids);
+			$this->db->where('is_primary',1);
 			$this->db->delete('project_contacts');
-			foreach($ids as $req_id12){
+			foreach($req_ids as $req_id12){
 				if(!empty($req_id12)){
-					$ins_data = array('project_id'=>$req_id12,'contacts_id'=>$primary_contact,'is_primary'=>1);
-					$this->db->insert('project_contacts',$ins_data);
+                    $this->db->where(array('project_id'=>$req_id12,'contacts_id'=>$primary_contact));
+					$data = array('is_primary'=>1);
+					$this->db->update('project_contacts',$data);
 				}
 			}
 			unset($data['primary_contact']);
@@ -5140,7 +5139,6 @@ public function all_activiites()
         $count =0;
         $this->db->where('project_id', $project_id);
 
-		$this->db->where('staff_id !=', 0);
         $this->db->select('count(id) AS count');
 		//$this->db->group_by('uid'); 
         $emails = $this->db->get(db_prefix() . 'localmailstorage')->row();
@@ -5150,7 +5148,7 @@ public function all_activiites()
 
         $this->db->where('project_id', $project_id);
 
-		$this->db->where('staff_id !=', 0);
+
         $this->db->select('count(id) AS count');
 		//$this->db->group_by('uid'); 
         $emails = $this->db->get(db_prefix() . 'reply')->row();

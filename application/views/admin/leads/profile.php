@@ -3,6 +3,11 @@
     .addproducts,.removeproducts{
         float: none;
     }
+
+    span[data-id="client_id"].ajax-clear-values {
+        display: none;
+    }
+
 </style>
 <?php $selectedcontactid='';
     if(isset($lead) && $lead->id){
