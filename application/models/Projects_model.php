@@ -5122,6 +5122,7 @@ public function all_activiites()
         $this->db->group_start();
         $this->db->where('call_request_id !=',"");
         $this->db->or_where('call_code !=',0);
+        $this->db->or_where(db_prefix().'tasks.id IN ( Select task_id FROM '.db_prefix().'call_history)');
         $this->db->group_end();
         $this->db->select('COUNT(id) as count');
         $count =$this->db->get(db_prefix().'tasks')->row();

@@ -348,7 +348,9 @@ else {
         array_push($where, $rel_to_query);
     }
     if(isset($_GET['call'])) {
-        array_push($where, ' AND ('.db_prefix().'tasks.call_request_id != "" || '.db_prefix().'tasks.call_code != 0) ');
+        array_push($where, ' AND (('.db_prefix().'tasks.call_request_id != "" || '.db_prefix().'tasks.call_code != 0) OR '.db_prefix().'tasks.id IN ( Select task_id FROM '.db_prefix().'call_history) )');
+
+        // array_push($where, ' AND ('.db_prefix().'tasks.call_request_id != "" || '.db_prefix().'tasks.call_code != 0) ');
     }
 
     $join = [];

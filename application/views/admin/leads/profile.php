@@ -634,7 +634,7 @@ echo render_select('teamleader', $teamleaders, array('staffid', array('firstname
     <div class="row">
         <div class="col-md-6">
             <div class="form-group" app-field-wrapper="contactid">
-                <select id="contactid" name="contactid" data-live-search="true" data-width="100%" class="selectpicker" multiple data-max-options="1">
+                <select id="contactid" name="contactid" data-live-search="true" data-width="100%" class="selectpicker" multiple data-max-options="1" data-none-selected-text="New Person">
                     <?php 
                         if($selectedcontactid){
                             $rel_data = get_relation_data('contact',$selectedcontactid);
