@@ -15,6 +15,15 @@ if(!$can_access_this_deal && $members){
     }
 }
 
+if($can_access_this_deal ==false && $project->approved ==0){
+    $this->db->where('staffid',get_staff_user_id());
+    $check_staff_role = $this->db->get(db_prefix().'staff')->row();
+    if($check_staff_role->role ==1 || $check_staff_role->role ==2){
+        $can_access_this_deal = true;
+    }
+
+}
+
 if($can_access_this_deal ==false){ ?>
     <?php init_head(); ?>
     <div id="wrapper">
@@ -1904,6 +1913,13 @@ echo form_hidden('project_percent', $percent);
         $(this).parents('.dropdown').find('.deal-field-update-dropdown').hide();
     });
 </script>
+
+<?php 
+if($tab['view'] =='project_email' || $this->input->get('group') == 'project_email'){
+    $this->load->view('admin/staff/emailcomposerjs');
+}
+ 
+?>
 </body>
 
 </html>

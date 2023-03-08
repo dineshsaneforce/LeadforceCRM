@@ -156,7 +156,7 @@ class Leads_model extends App_Model {
             unset($data['view_source']);
         }
         
-        if(isset($data['client_id']) && $data['client_id']=='' && strlen(trim($data['company'])) >0){
+        if((!isset($data['client_id']) && strlen(trim($data['company'])) >0)  && (isset($data['client_id']) || $data['client_id']=='' && strlen(trim($data['company'])) >0)){
             $companyData =array(
                 'company'=>$data['company'],
                 'phonenumber'=>$data['clientphonenumber'],
@@ -176,7 +176,7 @@ class Leads_model extends App_Model {
         unset($data['clientphone_country_code']);
 
         $contactid =$data['contactid'];
-        if(isset($data['contactid']) && $data['contactid'] ==''  && strlen(trim($data['personname'])) >0){
+        if((!isset($data['contactid']) && strlen(trim($data['personname'])) >0) || (isset($data['contactid']) && $data['contactid'] ==''  && strlen(trim($data['personname'])) >0)){
             $contact_data =array(
                 'is_primary'=>0,
                 'userid'=>isset($data['client_id']) && $data['client_id']?$data['client_id']:0,
@@ -414,7 +414,7 @@ class Leads_model extends App_Model {
             unset($data['view_source']);
         }
        
-        if(isset($data['client_id']) && $data['client_id']=='' && strlen(trim($data['company'])) >0){
+        if((!isset($data['client_id']) && strlen(trim($data['company'])) >0)  && (isset($data['client_id']) || $data['client_id']=='' && strlen(trim($data['company'])) >0)){
             $companyData =array(
                 'company'=>$data['company'],
                 'phonenumber'=>$data['clientphonenumber'],
@@ -434,7 +434,7 @@ class Leads_model extends App_Model {
         unset($data['clientphone_country_code']);
 
         $contactid =$data['contactid'];
-        if(isset($data['contactid']) && $data['contactid'] ==''  && strlen(trim($data['personname'])) >0){
+        if((!isset($data['contactid']) && strlen(trim($data['personname'])) >0) || (isset($data['contactid']) && $data['contactid'] ==''  && strlen(trim($data['personname'])) >0)){
             $contact_data =array(
                 'is_primary'=>0,
                 'userid'=>isset($data['client_id']) && $data['client_id']?$data['client_id']:0,
