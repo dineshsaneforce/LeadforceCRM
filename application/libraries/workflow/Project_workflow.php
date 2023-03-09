@@ -262,7 +262,7 @@ class Project_workflow extends Workflow_app
                     $this->run_mergefields($mention);
                     $subject =$this->mergefieldsContent($this->merge_fields,"{project_note_added_by} mentions you in a deal note");
                     $fromname =$this->mergefieldsContent($this->merge_fields,"{companyname}");
-                    $message =$this->mergefieldsContent($this->merge_fields,"<span style=\"font-size: 14pt;\"><strong>Hello {staff_firstname} {staff_lastname}</strong></span><br /><br />{project_note_added_by} mentions you in a deal note.<br /><br />{project_note_description}<br /><br />Click <a href=\"{project_link}?group=project_notes\">here</a> to view the deal.");
+                    $message =$this->mergefieldsContent($this->merge_fields,"<span style=\"font-size: 14pt;\"><strong>Hello {staff_firstname} {staff_lastname}</strong></span><br /><br />{project_note_added_by} mentions you in a deal note({project_name}).<br /><br />{project_note_description}<br /><br />Click <a href=\"{project_link}?group=project_notes\">here</a> to view the deal.");
                     $this->ci->db->where('staffid', $mention);
                     $staff = $this->ci->db->get(db_prefix() . 'staff')->row();
                     if(!$staff){

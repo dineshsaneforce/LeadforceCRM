@@ -765,7 +765,8 @@
                             $('#clientid_add_group_modal input[name="company"]').val('');
                             alert_float('success', msg.message);
                             setTimeout(function() {
-                                $('#clientid').selectpicker('refresh');
+                                $('#project_form #clientid').selectpicker('refresh');
+                                $('#project_form #clientid').trigger('change');
                                 $('.clientiddiv div.filter-option-inner-inner').html(msg.company)
                             }, 500);
                             $('#clientid_add_modal').modal('hide');

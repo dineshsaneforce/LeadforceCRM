@@ -566,7 +566,7 @@ $custom_fields = array_merge($custom_fields1, $custom_fields2);
                         <br>
                         <?php 
                         $data_val_type ='';
-                        if($field['type'] ='checkbox'){
+                        if($field['type'] =='checkbox'){
                            $data_val_type ='data-val-type="multi-checkbox"'; 
                         }
                         ?>
