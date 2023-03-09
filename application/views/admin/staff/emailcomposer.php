@@ -93,6 +93,9 @@
     #emailViewerMeta p {
         font-size: 13px !important;
     }
+    #compose-modal .navbar-pills .tabs:hover{
+        cursor: pointer;
+    }
 </style>
 
 

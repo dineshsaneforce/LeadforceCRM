@@ -274,7 +274,7 @@ $hasApprovalFlow = $this->workflow_model->getflows('deal_approval', 0, ['service
                                             <a href="<?php echo admin_url('projects/sendtoapproval/' . $project->id); ?>" style="" class="btn btn-info"><?php echo _l('send_to_approval'); ?></a>
                                         <?php endif; ?>
                                         <?php if ($deal_rejected && (is_admin(get_staff_user_id()) ||get_staff_user_id() == $project->teamleader)) { ?>
-                                            <a href="<?php echo admin_url('projects/approvalReopen/' . $project->id); ?>" style="" class="btn btn-info"><?php echo _l('approval_reopen'); ?></a>
+                                            <a href="<?php echo admin_url('projects/approvalReopen/' . $project->id); ?>" style="" class="btn btn-info"><?php echo 'Resend to approval'; ?></a>
                                         <?php } ?>
                                         <?php if ($project->deleted_status == 1 && $project->approved == 1) { ?>
                                             <a href="<?php echo admin_url('projects/restore_project/' . $project->id); ?>" style="" class="btn btn-info"><?php echo _l('restore'); ?></a>
