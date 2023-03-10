@@ -213,44 +213,27 @@ to {transform: rotate(359deg);}
       </div>
     </div>
   </div>
-
-      <!-- <div class="modal" id="confirmModal" style="display: none; z-index: 1050;">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-body" id="confirmMessage">
-          </div>
-          <div class="modal-footer">
-            <?php if ($tasks < 1) { ?>
-              <button type="button" class="btn btn-primary" id="confirmOk">OK</button>
-            <?php } else { ?>
-              <button type="button" class="btn btn-primary" id="confirmOk">Yes</button>
-              <button type="button" class="btn btn-default" id="confirmCancel">Cancel</button>
-            <?php } ?>
-          </div>
-        </div>
-      </div>
-    </div> -->
-
   <div class="modal" id="confirmModal" style="display: none; z-index: 1050;">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-body" id="confirmMessage">
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-primary" id="confirmOk">Yes</button>
-          <button type="button" class="btn btn-default" id="confirmCancel">Cancel</button>
+            <button type="button" class="btn btn-primary" id="confirmOk"></button>
+            <button type="button" class="btn btn-default" id="confirmCancel"></button>
         </div>
       </div>
     </div>
+  </div>
 </div>
 <?php $this->load->view('admin/activity/activity_group.php'); ?>
 <?php init_tail(); ?>
 <script>
 $(function(){
-  $('#confirmCancel').on('click', function() {
-    document.getElementById('overlay').style.display = 'none';
-    $("#confirmModal").modal("hide");
-  });
+  // $('#confirmCancel').on('click', function() {
+  //   document.getElementById('overlay').style.display = 'none';
+  //   $("#confirmModal").modal("hide");
+  // });
   $('select#assign').on('change', function() {
     var emp_id = this.value;
     var rollbackId = $('#rollback_id').val();
@@ -295,44 +278,55 @@ $(function(){
   });
 });
 function transferall() {
-    emp_id = $('#emp_id').val();
-    assign = $('#assign').val();
-    if(emp_id) {
-      document.getElementById('overlay').style.display = '';
-      var url =  admin_url+'activity_transfer/getTransferDetails';
-      //$('.followers-div').show();
-      $.ajax({
-          type: "POST",
-          url: url,
-          data: {emp_id:emp_id, assign:assign},
-          dataType: 'json',
-        success: function(msg){
-          console.log(msg.html);
-          if(msg.html) {
-            confirmDialog(msg.html, function(){
+  emp_id = $('#emp_id').val();
+  assign = $('#assign').val();
+  if(emp_id) {
+    document.getElementById('overlay').style.display = '';
+    var url = admin_url + 'activity_transfer/getTransferDetails';
+    //$('.followers-div').show();
+    $.ajax({
+      type: "POST",
+      url: url,
+      data: {emp_id:emp_id, assign:assign},
+      dataType: 'json',
+      success: function(msg){ 
+        console.log(msg.html);
+        if (msg.html) {
+          var confirmButtonText, cancelButtonText;
+          if (msg.tasks < 1) {
+            confirmButtonText = 'Ok';
+            cancelButtonText = 'Cancel';
+          } else {
+            confirmButtonText = 'Yes';
+            cancelButtonText = 'Cancel';
+          }
+          confirmDialog(msg.html, confirmButtonText, cancelButtonText, function() {
             $('form#accountTransfer').submit();
           });
-          } else {
-            alert('Please select users to transfer the activity.');
+        } else {
+          alert('Please select users to transfer the activity.');
           return false;
-          }
         }
-      });
-    } else {
-      alert('Please select the users to transfer activity.');
-      return false;
-    }
+      }
+    });
+  } else {
+    alert('Please select the users to transfer activity.');
     return false;
+  }
+  return false;
 }
-function confirmDialog(message, onConfirm){
+function confirmDialog(message, confirmButtonText, cancelButtonText, onConfirm) {
   var fClose = function(){  
     modal.modal("hide");
   };
   var modal = $("#confirmModal");
   modal.modal("show");
   $("#confirmMessage").empty().append(message);
-  $("#confirmOk").unbind().one('click', onConfirm).one('click', fClose);
-  //$("#confirmCancel").unbind().one("click", fClose);
+  $("#confirmOk").text(confirmButtonText).unbind().one('click', onConfirm).one('click', fClose);
+  $("#confirmCancel").text(cancelButtonText).unbind().one("click", function() {
+    document.getElementById('overlay').style.display = 'none';
+    modal.modal("hide");
+  });
 }
 </script>
 </body>

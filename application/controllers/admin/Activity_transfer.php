@@ -196,14 +196,15 @@ class Activity_transfer extends AdminController
         }
 
         if($tasks <= 1) {
-            $tasks = $tasks.' - Activity';
+            $activity_tasks = $tasks.' - Activity';
         } else {
-            $tasks = $tasks.' - Activities';
+            $activity_tasks = $tasks.' - Activities';
         }
-        // $data['tasks'] = $tasks;
-        // $this->load->view('views/admin/activity/activity_to_transfer', $data);
+        
+        $data['tasks'] = $tasks;
+        // pre($data['tasks']);
         // $staffs = get_staff($id);
-        // pre($tasks);
+        
 
         $fromResult = $this->Activity_user_model->getuserDetails($id);
         $toResult = $this->Activity_user_model->getuserDetails($toid);
@@ -212,18 +213,18 @@ class Activity_transfer extends AdminController
         {
             $html = '<p style="font-size:15px;"><b>There is no activity to transfer.</b></p>
             <p><b>From:</b> '.$fromResult->firstname.' ('.$fromResult->email.'), '.$fromResult->desig.'</p>
-            <p>'.$tasks.'</p>
+            <p>'.$activity_tasks.'</p>
             <p><b>To:</b> '.$toResult->firstname.' ('.$toResult->email.'), '.$toResult->desig.'</p>';
-            $output['html'] = $html;
 
         }else{
             $html = '<p style="font-size:15px;"><b>Do you want to transfer?</b></p>
             <p><b>From:</b> '.$fromResult->firstname.' ('.$fromResult->email.'), '.$fromResult->desig.'</p>
-            <p>'.$tasks.'</p>
+            <p>'.$activity_tasks.'</p>
             <p><b>To:</b> '.$toResult->firstname.' ('.$toResult->email.'), '.$toResult->desig.'</p>';
-            $output['html'] = $html;
         }
-         
+        $output['tasks'] = $tasks;
+        $output['html'] = $html;
+
         echo json_encode($output);
     }
 
@@ -235,9 +236,9 @@ class Activity_transfer extends AdminController
         $tasks = count((array)$da->task->task_assigned);
         
         if($tasks <= 1) {
-            $tasks = $tasks.' - Activity';
+            $activity_tasks = $tasks.' - Activity';
         } else {
-            $tasks = $tasks.' - Activities';
+            $activity_tasks = $tasks.' - Activities';
         }
         
         $fromResult = $this->Activity_user_model->getuserDetails($id);
@@ -245,7 +246,7 @@ class Activity_transfer extends AdminController
         //pre($fromResult->firstname);
         $html = '<p style="font-size:15px;"><b>Bellow Datas are Rolled Back </b></p>
                 <p><b>From:</b> '.$fromResult->firstname.' ('.$fromResult->email.'), '.$fromResult->desig.'</p>
-                <p>'.$tasks.'</p>
+                <p>'.$activity_tasks.'</p>
                 <p><b>To:</b> '.$toResult->firstname.' ('.$toResult->email.'), '.$toResult->desig.'</p>';
         
         return $html;
@@ -265,14 +266,14 @@ class Activity_transfer extends AdminController
         }
         
         if($tasks <= 1) {
-            $tasks = $tasks.' - Activity';
+            $activity_tasks = $tasks.' - Activity';
         } else {
-            $tasks = $tasks.' - Activities';
+            $activity_tasks = $tasks.' - Activities';
         }
 
         $html = '<p style="font-size:15px;"><b>Bellow Datas are Transfered </b></p>
                 <p><b>From:</b> '.get_staff_full_name($id).' - <b>To:</b> '.get_staff_full_name($toid).'</p>
-                <p>'.$tasks.'</p>';
+                <p>'.$activity_tasks.'</p>';
         
         return $html;
         //echo json_encode($output);
