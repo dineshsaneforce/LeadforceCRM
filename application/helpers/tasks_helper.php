@@ -828,6 +828,7 @@ function tasks_summary_data($rel_id = null, $rel_type = null)
         $summary['color']          = $status['color'];
         $summary['name']           = $status['name'];
         $summary['status_id']      = $status['id'];
+        $summary['count_class']      = $status['count_class'];
         $tasks_summary[]           = $summary;
     }
     $b = array(2, 1, 0, 3); // rule indicating new key order
