@@ -43,6 +43,54 @@
                         </a>
                        </p>
                         <textarea class="form-control" rows="2"><iframe width="600" height="850" src="<?php echo site_url('forms/wtl/'.$form->form_key); ?>" frameborder="0" allowfullscreen></iframe></textarea>
+
+                        <div class="row">
+                              <div class="col-md-6">
+                              <div class="panel_s mtop15">
+                              <div class="panel-body">
+                                 <div class="row">
+                                    <div class="col-xs-4">
+                                       <p class="text-muted">Webhook URL</p>
+                                    </div>
+                                    <div class="col-xs-8">
+                                       <p class=""><?php echo base_url('webhooks/webforms/lead/' . $configure_id) ?></p>
+                                    </div>
+
+                                    <div class="col-xs-4">
+                                       <p class="text-muted">Method</p>
+                                    </div>
+                                    <div class="col-xs-8">
+                                       <p class="">POST</p>
+                                    </div>
+
+                                    <div class="col-xs-4">
+                                       <p class="text-muted">Format</p>
+                                    </div>
+                                    <div class="col-xs-8">
+                                       <p class="">JSON</p>
+                                    </div>
+
+                                    <div class="col-xs-4">
+                                       <p class="text-muted">Fields</p>
+                                    </div>
+                                    <div class="col-xs-8">
+                                       <?php if ($form->form_data) {
+                                          $form_fields = array();
+                                          foreach (json_decode($form->form_data) as $field) {
+                                             if ($field->name == '')
+                                                continue;
+                                             $form_fields[$field->name] = $field->label;
+                                          }
+                                          echo '<pre><code style="color: #c7254e;">' . trim(json_encode($form_fields, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)) . '</code></pre>';
+                                       } ?>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                              </div>
+                           </div>
+
+
                      </div>
                      <?php } ?>
                      <div role="tabpanel" class="tab-pane<?php if (!isset($form)) { echo ' active'; } ?>" id="tab_form_information">
