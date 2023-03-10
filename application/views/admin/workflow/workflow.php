@@ -1,7 +1,13 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed'); ?>
+<?php 
+// hooks()->do_action('after_add_project', '27450'); pre(''); 
+// hooks()->do_action('after_update_project', ['project_id'=>27462,'change_log_id'=>22]); pre('');
+//hooks()->do_action('after_delete_project', '27462'); pre('');
+// hooks()->do_action('after_added_project_note', '53'); pre('');
+ ?>
 <?php init_head(); ?>
 
-<script src="<?php echo base_url('assets/js/workflow.js?v=1.2') ?>"></script>
+<script src="<?php echo base_url('assets/js/workflow.js?v=1.4') ?>"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function(event) {
         // initiating workflow
@@ -37,6 +43,7 @@
             <div class="col-md-8" id="workflowCanvas">
                 <div class="panel_s">
                     <div class="panel-body" id="workflowwrapper" style="overflow-x: auto; overflow-y:auto; height:90vh;">
+                        <a class="h5" href="<?php echo admin_url('workflow') ?>" style="position:absolute;z-index:999"><i class="fa fa-arrow-left mright5" aria-hidden="true"></i>Back</a>
                         <ul class="tree">
 
                         </ul>
@@ -47,7 +54,7 @@
                 <div class="panel_s">
                     <div class="panel-body" style="overflow-y:auto; height:90vh;">
                         <div role="toolbar" aria-label="Node tools" aria-hidden="true" class="toolbar show">
-                            <span id="closeWorkflowSidebar" data-toggle="tooltip" data-title="Close Sidebar"><i class="fa fa-arrow-right" style="font-size:18px;margin-right:10px" aria-hidden="true"></i></span><span id="selectedBlockTitle" class="h5"><?php echo $moduleDetails['title'] ?></span>
+                            <span id="closeWorkflowSidebar" data-toggle="tooltip" data-title="Close Sidebar"><i class="fa fa-arrow-right" style="font-size:14px;margin-right:10px" aria-hidden="true"></i></span><span id="selectedBlockTitle" class="h5"><?php echo $moduleDetails['title'] ?></span>
                             <div class="pull-right">
                                 <button type="button" class="btn btn-default" data-js="deleteNode" data-toggle="tooltip" data-title="Delete Block" id="deleteNode">
                                     <i class="fa fa-trash" aria-hidden="true"></i>
@@ -84,6 +91,14 @@
                                     <?php if ($moduleDetails['name'] == 'lead') : ?>
                                         <div class="sidebar-setup" id="sidebarsetupleadstaffassign">
                                             <?php $this->load->view('admin/workflow/lead/assign_staff'); ?>
+                                        </div>
+                                    <?php endif; ?>
+                                    <?php if ($moduleDetails['name'] == 'project') : ?>
+                                        <div class="sidebar-setup" id="sidebarsetupprojectstaffassign">
+                                            <?php $this->load->view('admin/workflow/project/assign_staff'); ?>
+                                        </div>
+                                        <div class="sidebar-setup" id="sidebarsetupprojectchangeevents">
+                                            <?php $this->load->view('admin/workflow/project/change_events'); ?>
                                         </div>
                                     <?php endif; ?>
                                     <div class="sidebar-setup show" id="sidabarnosetup">
@@ -433,7 +448,9 @@
     #workflowQuerybuilder .form-control{
         width: 100%;
     }
-
+    li.hide-child-blocks ul{
+        display: none;
+    }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-extendext/1.0.0/jquery-extendext.min.js" integrity="sha512-pAU2x/rE9QHeYHtKS3RJccBEx8v8Lyyo4kVsxg+K3N+w/kbwrj2C9mp02XGQA+cOwlF1FdbEzTxnKg3DrQgWuA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dot/1.1.3/doT.min.js" integrity="sha512-mv9iHAP8cyGYB1TX54qMIFYFbHpFoqo1StdcuIUoAxTXIiFfOu22TjJGrFMpY+iR4QmGkElLlHBVx5C+PiIdvg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>

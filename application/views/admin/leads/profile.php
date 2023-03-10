@@ -3,6 +3,11 @@
     .addproducts,.removeproducts{
         float: none;
     }
+
+    span[data-id="client_id"].ajax-clear-values {
+        display: none;
+    }
+
 </style>
 <?php $selectedcontactid='';
     if(isset($lead) && $lead->id){
@@ -23,11 +28,12 @@ if ($openEdit == true) {
          }
          ?>>
     <div class="lead-preview-header mbot15">
-        <div>
+        <div style="width:50%;display:flex">
         <?php if (isset($lead)) { ?>
-        <h4><?php echo $lead->name ?><a href="#" lead-edit class="mright10 font-medium<?php echo ($lead_locked)?' hide':'';?>">
+        <h4 class="text-single-line" style="max-width:85%"><?php echo $lead->name ?></h4>
+        <a href="#" lead-edit class="mtop15 mleft5 mright10 font-medium<?php echo ($lead_locked)?' hide':'';?>">
             <i class="fa fa-pencil-square-o"></i>
-        </a></h4>
+        </a>
         </div>
         <div>
             <a href="#" class="btn btn-default pull-right dropdown-toggle mleft10" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="lead-more-btn">
@@ -118,7 +124,7 @@ if ($openEdit == true) {
       <?php echo  _l('lead_convert_to_client'); ?>
       </a>
       <?php } else { ?>
-        <a href="<?php echo admin_url('projects/project?lead_id='.$lead->id) ?>" class="btn btn-success pull-right lead-convert-to-customer lead-top-btn lead-view mbot10">
+        <a id="openNewProject" data-toggle="modal" data-target="#newDealModal" class="btn btn-success pull-right lead-convert-to-customer lead-top-btn lead-view mbot10">
         <!-- <i class="fa fa-user-o"></i> -->
         <?php echo  _l('lead_convert_to_client'); ?>
         </a>
@@ -194,7 +200,7 @@ if (!isset($lead)) {
                     <div class="row">
                         <div class="col-md-6">
                             <p class="lead-field-heading"><?php echo _l('lead_description'); ?></p>
-                            <p class="bold font-medium-xs"><?php echo (isset($lead) && $lead->description != '' ? $lead->description : '-') ?></p>
+                            <p class="bold font-medium-xs" style="overflow-x: hidden;"><?php echo (isset($lead) && $lead->description != '' ? $lead->description : '-') ?></p>
                         </div>
                         <div class="col-md-6">
                             <p class="lead-field-heading"><?php echo _l('lead_cost'); ?></p>
@@ -313,7 +319,7 @@ if (!isset($lead)) {
                                 </div>
                             </div>
                         <?php else: ?>
-                            <p class="bold font-medium-xs"><?php echo (isset($lead) && $lead->name != '' ? $lead->name : '-') ?></p>
+                            <p class="bold font-medium-xs">-</p>
                         <?php endif; ?>
                     </div>
                     <div class="col-md-6">
@@ -481,7 +487,6 @@ echo render_select('teamleader', $teamleaders, array('staffid', array('firstname
     <div class="row">
         <div class="col-md-6">
             <?php $value = (isset($lead) ? $lead->name : ''); ?>
-            <?php $value = (isset($email_data) ? $email_data['from']['email'] : $value); ?>
             <?php echo render_input('name', 'lead_add_edit_name', $value,'text',['onblur'=>'validate_lead_profile_text_input(this.value,\'name\')','maxlength'=>'150']); ?>
         </div>
         <div class="col-md-6">
@@ -629,7 +634,7 @@ echo render_select('teamleader', $teamleaders, array('staffid', array('firstname
     <div class="row">
         <div class="col-md-6">
             <div class="form-group" app-field-wrapper="contactid">
-                <select id="contactid" name="contactid" data-live-search="true" data-width="100%" class="selectpicker" multiple data-max-options="1">
+                <select id="contactid" name="contactid" data-live-search="true" data-width="100%" class="selectpicker" multiple data-max-options="1" data-none-selected-text="New Person">
                     <?php 
                         if($selectedcontactid){
                             $rel_data = get_relation_data('contact',$selectedcontactid);
@@ -1053,29 +1058,29 @@ $hascoustomfields =$this->db->get(db_prefix() . 'customfields')->row();
         <?php if (!has_permission('customers', '', 'create')): ?>
             status =true;
         <?php endif; ?>
-        $('[name="company"]').val('').attr('readonly',status);
-        $('[name="website"]').val('').attr('readonly',status);
-        $('[name="address"]').val('').attr('readonly',status);
-        $('[name="city"]').val('').attr('readonly',status);
-        $('[name="state"]').val('').attr('readonly',status);
-        $('[name="country"]').val('').attr('disabled',status).selectpicker('refresh');
-        $('[name="zip"]').val('').attr('readonly',status);
-        $('[name="clientphonenumber"]').val('').attr('readonly',status);
+        $('#lead_form [name="company"]').val('').attr('readonly',status);
+        $('#lead_form [name="website"]').val('').attr('readonly',status);
+        $('#lead_form [name="address"]').val('').attr('readonly',status);
+        $('#lead_form [name="city"]').val('').attr('readonly',status);
+        $('#lead_form [name="state"]').val('').attr('readonly',status);
+        $('#lead_form [name="country"]').val('<?php echo isset($customer_default_country)?$customer_default_country:'1'?>').attr('disabled',status).selectpicker('refresh');
+        $('#lead_form [name="zip"]').val('').attr('readonly',status);
+        $('#lead_form [name="clientphonenumber"]').val('').attr('readonly',status);
     }
     function disabled_person_fields(status=true,reset=true){
         <?php if (!has_permission('contacts', '', 'create')): ?>
             status =true;
         <?php endif; ?>
         if(reset ==true){
-            $('[name="personname"]').val('').attr('readonly',status);
-            $('[name="title"]').val('').attr('readonly',status);
-            $('[name="email"]').val('').attr('readonly',status);
-            $('[name="phonenumber"]').val('').attr('readonly',status);
+            $('#lead_form [name="personname"]').val('').attr('readonly',status);
+            $('#lead_form [name="title"]').val('').attr('readonly',status);
+            $('#lead_form [name="email"]').val('').attr('readonly',status);
+            $('#lead_form [name="phonenumber"]').val('').attr('readonly',status);
         }else{
-            $('[name="personname"]').attr('readonly',status);
-            $('[name="title"]').attr('readonly',status);
-            $('[name="email"]').attr('readonly',status);
-            $('[name="phonenumber"]').attr('readonly',status);
+            $('#lead_form [name="personname"]').attr('readonly',status);
+            $('#lead_form [name="title"]').attr('readonly',status);
+            $('#lead_form [name="email"]').attr('readonly',status);
+            $('#lead_form [name="phonenumber"]').attr('readonly',status);
         }
         
         
@@ -1088,11 +1093,11 @@ $hascoustomfields =$this->db->get(db_prefix() . 'customfields')->row();
             dataType: 'json',
             success: function(response) {
                 if(response.success ==true) {
-                    $('[name="personname"]').val(response.data.firstname+' '+response.data.lastname);
-                    $('[name="title"]').val(response.data.title);
-                    $('[name="email"]').val(response.data.email);
-                    $('[name="phonenumber"]').val(response.data.phonenumber);
-                    $('[name="phone_country_code"]').val(response.data.phone_country_code);
+                    $('#lead_form [name="personname"]').val(response.data.firstname+' '+response.data.lastname);
+                    $('#lead_form [name="title"]').val(response.data.title);
+                    $('#lead_form [name="email"]').val(response.data.email);
+                    $('#lead_form [name="phonenumber"]').val(response.data.phonenumber);
+                    $('#lead_form [name="phone_country_code"]').val(response.data.phone_country_code);
                 }
             }
         });
@@ -1183,56 +1188,56 @@ $hascoustomfields =$this->db->get(db_prefix() . 'customfields')->row();
             var country_code =$(this).attr('data-country-code').toUpperCase();
             $("#clientphone_country_code").val(country_code);
         });
-        $("#contactid").prepend('<option value="" selected="">New Person</option>');
-        $("#client_id").prepend('<option value="" selected="">New Organization</option>');
+        $("#lead_form #contactid").prepend('<option value="" selected="">New Person</option>');
+        $("#lead_form #client_id").prepend('<option value="" selected="">New Organization</option>');
         <?php if($selectedcontactid): ?>
-            $('#contactid').val('<?php echo $selectedcontactid?>');
+            $('#lead_form #contactid').val('<?php echo $selectedcontactid?>');
             set_person_detials('<?php echo $selectedcontactid?>');
             disabled_person_fields(true);
         <?php endif; ?>
 
         <?php if($selectedclientid): ?>
-            $('#client_id').val('<?php echo $selectedclientid?>');
+            $('#lead_form #client_id').val('<?php echo $selectedclientid?>');
             set_client_details('<?php echo $selectedclientid?>');
             disabled_orgaization_fields(true);
         <?php endif; ?>
 
-        $("#client_id").selectpicker("refresh");
+        $("#lead_form #client_id").selectpicker("refresh");
         <?php if(!$selectedcontactid): ?>
             get_person($('#client_id').val());
         <?php endif; ?>
-        $("#contactid").selectpicker("refresh");
-        $('#contactid').change(function(){
+        $("#lead_form #contactid").selectpicker("refresh");
+        $('#lead_form #contactid').change(function(){
             var selectedcontact =$(this).val();
             if(selectedcontact ==''){
                 disabled_person_fields(false);
             }else{
-                $('[name="personname"]').parent().removeClass("has-error");
+                $('#lead_form [name="personname"]').parent().removeClass("has-error");
                 $('.not-valid-personname').remove();
                 disabled_person_fields(true);
                 set_person_detials(selectedcontact);
             }
         });
-        $('#company').blur(function(){
-            if($("#client_id").val() ==''){
+        $('#lead_form #company').blur(function(){
+            if($("#lead_form #client_id").val() ==''){
                 if($(this).val() ==''){
-                    get_person($('#client_id').val());
+                    get_person($('#lead_form #client_id').val());
                 }else{
-                    $('#contactid').empty();
-                    $("#contactid").prepend('<option value="" selected="">New Person</option>');
-                    $('#contactid').selectpicker('refresh');
+                    $('#lead_form #contactid').empty();
+                    $("#lead_form #contactid").prepend('<option value="" selected="">New Person</option>');
+                    $('#lead_form #contactid').selectpicker('refresh');
                 }
                 
             }
         })
-        $('#client_id').change(function(){
+        $('#lead_form #client_id').change(function(){
             var selectedclientid =$(this).val();
             get_person(selectedclientid);
             if(selectedclientid ==''){
                 disabled_orgaization_fields(false);
             }else{
                 
-                $('[name="company"]').parent().removeClass("has-error");
+                $('#lead_form [name="company"]').parent().removeClass("has-error");
                 $('.not-valid-company').remove();
                 disabled_orgaization_fields(true);
                 set_client_details(selectedclientid);

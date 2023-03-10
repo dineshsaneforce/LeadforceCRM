@@ -2805,12 +2805,12 @@ $('#categoryid_add_group_modal').submit(function(e) {
     }
 });
 
-$('#addprojnote').on('click', function (e) {
-    if (tinymce.EditorManager.get('content').getContent() === '') {
-        alert('Please enter you notes.');
-        return false;
-    }
- })
+// $('#addprojnote').on('click', function (e) {
+//     if (tinymce.EditorManager.get('content').getContent() === '') {
+//         alert('Please enter you notes.');
+//         return false;
+//     }
+//  })
 
 init_ajax_search('product_category', '#categoryid.ajax-search');
 

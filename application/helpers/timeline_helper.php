@@ -1,11 +1,20 @@
 <?php 
 
 
-function render_lead_activities($lead_id,$page=0)
+
+function render_timeline_activities($type,$type_id,$page=0)
 {
     $CI = & get_instance();
     $CI->load->model('tasktype_model');
-    $logs =$CI->leads_model->get_log_activities($lead_id,$page);
+    $CI->load->model('Pipeline_model');
+    $CI->load->model('Clients_model');
+    $logs =array();
+    if($type =='lead'){
+        $logs =$CI->leads_model->get_log_activities($type_id,$page);
+    }elseif($type =='project'){
+        $logs =$CI->projects_model->get_timeline_activities($type_id,$page);
+    }
+    
     if($logs){
         ob_start(); ?>
         <?php if($page ==0): ?>
@@ -17,7 +26,12 @@ function render_lead_activities($lead_id,$page=0)
                 $date=date_create($log->added_at);
                 $logged_at =date_format($date,"M d , Y h:i a");
 
-                $log_data ='<span class=""><i class="fa fa-calendar" aria-hidden="true"></i> '.$logged_at.'</span> | <a class="" href="'.admin_url("profile/".$log->staff_id).'"><i class="fa fa-user" aria-hidden="true"></i> '.get_staff_full_name($log->staff_id).'</a>';
+                $log_data ='<span class=""><i class="fa fa-calendar" aria-hidden="true"></i> '.$logged_at.'</span> | ';
+                if($log->action =='addedbyworkflow'){
+                    $log_data .='<a class="" href="javascript:void(0);"><i class="fa fa-desktop" aria-hidden="true"></i> System (workflow)</a>';
+                }else{
+                    $log_data .='<a class="" href="'.admin_url("profile/".$log->staff_id).'"><i class="fa fa-user" aria-hidden="true"></i> '.get_staff_full_name($log->staff_id).'</a>';
+                }
                 $meta_data ='';
                 $detailed_content ='';
                 if($log->type =='lead'){
@@ -36,6 +50,63 @@ function render_lead_activities($lead_id,$page=0)
 
                     }else{
                         $title ='Lead manually created';
+                    }
+                    
+                }elseif($log->type =='project'){
+                    $icon ='<i class="fa fa-handshake-o"></i>';
+                    if($log->action =='addedfromlead'){
+                        $title ='Deal created from lead';
+                    }elseif($log->action =='updated'){
+                        $CI->db->where('id',$log->type_id);
+                        $change_log =$CI->db->get(db_prefix().'project_changelogs')->row();
+                        if($change_log){
+                            if($change_log->field_name =='name'){
+                                $title ='Deal name updated';
+                                $meta_data .='<span>'.$change_log->previous_value.'</span><i class="fa fa-arrow-right text-muted" style="margin-right:5px;margin-left:5px;" aria-hidden="true"></i><span>'.$change_log->current_value.'</span>';
+                            }elseif($change_log->field_name =='project_cost'){
+                                $title ='Deal value updated';
+                                $meta_data .='<span>'.$change_log->previous_value.'</span><i class="fa fa-arrow-right text-muted" style="margin-right:5px;margin-left:5px;" aria-hidden="true"></i><span>'.$change_log->current_value.'</span>';
+                            }elseif($change_log->field_name =='deadline'){
+                                $title ='Deal expected closing date updated';
+                                $meta_data .='<span>'._d($change_log->previous_value).'</span><i class="fa fa-arrow-right text-muted" style="margin-right:5px;margin-left:5px;" aria-hidden="true"></i><span>'._d($change_log->current_value).'</span>';
+                            }elseif($change_log->field_name =='pipeline_id'){
+                                $title ='Deal pipeline changed';
+                                $previous_pipeline =$CI->Pipeline_model->getpipelinebyId($change_log->previous_value);
+                                $current_pipeline =$CI->Pipeline_model->getpipelinebyId($change_log->current_value);
+                                $meta_data .='<span>'.$previous_pipeline->name.'</span><i class="fa fa-arrow-right text-muted" style="margin-right:5px;margin-left:5px;" aria-hidden="true"></i><span>'.$current_pipeline->name.'</span>';
+                            }elseif($change_log->field_name =='status'){
+                                $title ='Deal stage changed';
+                                $previous_stage =$CI->Pipeline_model->get_pipeline_stage($change_log->previous_value)[0];
+                                $current_stage =$CI->Pipeline_model->get_pipeline_stage($change_log->current_value)[0];
+                                $meta_data .='<span>'.$previous_stage['name'].'</span><i class="fa fa-arrow-right text-muted" style="margin-right:5px;margin-left:5px;" aria-hidden="true"></i><span>'.$current_stage['name'].'</span>';
+                            }elseif($change_log->field_name =='clientid'){
+                                $title ='Deal organization changed';
+                                $previous_org =$CI->Clients_model->get($change_log->previous_value);
+                                $current_org =$CI->Clients_model->get($change_log->current_value);
+
+                                $meta_data .='<span>'.$previous_org->company.'</span><i class="fa fa-arrow-right text-muted" style="margin-right:5px;margin-left:5px;" aria-hidden="true"></i><span>'.$current_org->company.'</span>';
+                            }elseif($change_log->field_name =='teamleader'){
+                                $title ='Deal Owner changed';
+                                $meta_data .='<span><a class="" href="'.admin_url("profile/".$change_log->previous_value).'"><i class="fa fa-user" aria-hidden="true"></i> '.get_staff_full_name($change_log->previous_value).'</a></span><i class="fa fa-arrow-right text-muted" style="margin-right:5px;margin-left:5px;" aria-hidden="true"></i><span><a class="" href="'.admin_url("profile/".$change_log->current_value).'"><i class="fa fa-user" aria-hidden="true"></i> '.get_staff_full_name($change_log->current_value).'</a></span>';
+                            }elseif($change_log->field_name =='stage_of'){
+                                if($change_log->current_value ==0){
+                                    $title ='Deal Reopened';
+                                }elseif($change_log->current_value ==1){
+                                    $title ='Deal marked as own';
+                                }elseif($change_log->current_value ==2){
+                                    $title ='Deal marked as lost';
+                                }else{
+                                    continue;
+                                }
+                            }else{
+                                continue;
+                            }
+                        }else{
+                            continue;
+                        }
+                        
+                    }else{
+                        $title ='Deal manually created';
                     }
                     
                 }elseif($log->type =='activity'){
@@ -67,14 +138,15 @@ function render_lead_activities($lead_id,$page=0)
                     }
                     
                     $title ='<i class="fa fa-circle '.$activitystatusclass.'" aria-hidden="true"></i>   <a class="'.$activitystatusclass.'" herf="#" onclick="edit_task('.$activity->id.'); return false;" style="cursor:pointer">'.$activity->name.'</a>';
-                    if($log->action =='called'){
+                    // if($log->action =='called'){
                         $CI->db->where('task_id',$activity->id);
                         $CI->db->order_by("id", "desc");
                         $call_log =$CI->db->get(db_prefix().'call_history')->row();
                         if($call_log){
+                            $icon ='<i class="fa fa-phone" aria-hidden="true"></i>';
                             $meta_data .='<audio id="myAudio" controls><source src="'.base_url('uploads/recordings/'.$call_log->filename).'"></audio><br>';
                         }
-                    }
+                    // }
                     $meta_data .='<span><i class="fa fa-star" aria-hidden="true"></i>  '.$taskType->name.'</span> | <span><a class="" href="'.admin_url("profile/".$taskassinged['assigneeid']).'"><i class="fa fa-user" aria-hidden="true"></i> '.$taskassinged['full_name'].'</a></span> | <span class=""><i class="fa fa-calendar" aria-hidden="true"></i> '.$activity_start_date.'</span>';
                     if($activity->description){
                         $detailed_content ='<div id="activitycontent'.$activity->id.'">
@@ -85,13 +157,23 @@ function render_lead_activities($lead_id,$page=0)
                     }
                     
                 }elseif($log->type =='note'){
-                    $note =$CI->misc_model->get_note($log->type_id);
+                    if($type =='project'){
+                        $note =$CI->projects_model->get_notes_byid($log->type_id);
+                        if($note){
+                            $detailed_content ='<div class="comment note-bg">'.$note->content.'</div>';
+                        }
+                    }else{
+                        $note =$CI->misc_model->get_note($log->type_id);
+                        if($note){
+                            $detailed_content ='<div class="comment note-bg">'.$note->description.'</div>';
+                        }
+                    }
                     if(!$note){
                         continue;
                     }
                     $icon ='<i class="fa fa-sticky-note"></i>';
                     $subject ='has added new  <i class="fa fa-sticky-note"></i> note';
-                    $detailed_content ='<div class="comment note-bg">'.$note->description.'</div>';
+                    
                 }elseif($log->type =='email'){
                     $CI->db->where('id',$log->type_id);
                     if($log->action =='added'){
@@ -116,12 +198,25 @@ function render_lead_activities($lead_id,$page=0)
                   </div>';
                 }elseif($log->type =='attachment'){
                     $CI->db->where('id',$log->type_id);
-                    $file = $CI->db->get('files')->row();
+                    if($type =='project'){
+                        $file = $CI->db->get('project_files')->row();
+                    }else{
+                        $file = $CI->db->get('files')->row();
+                    }
+                    
                     if(!$file){
                         continue;
                     }
-                    $attachment_url = site_url('download/file/lead_attachment/'.$file->id);
-                    $path = get_upload_path_by_type('lead') . $file->rel_id . '/' . $file->file_name;
+                    if($type =='project'){
+                        
+                        $attachment_url = site_url('download/file/project_attachment/'.$file->id);
+                        $path = get_upload_path_by_type('project') . $file->project_id . '/' . $file->file_name;
+                    }else{
+                        $attachment_url = site_url('download/file/lead_attachment/'.$file->id);
+                        $path = get_upload_path_by_type('lead') . $file->rel_id . '/' . $file->file_name;
+
+                    }
+                   
                     $filesize =convertToReadableSize(filesize($path));
                     if(!empty($file->external)){
                         $attachment_url = $file->external_link;
@@ -175,7 +270,6 @@ function render_lead_activities($lead_id,$page=0)
     }
     return $content;
 }
-
 function convertToReadableSize($size){
     $base = log($size) / log(1024);
     $suffix = array("", "KB", "MB", "GB", "TB");

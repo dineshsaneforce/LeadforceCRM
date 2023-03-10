@@ -1608,6 +1608,25 @@ exit;
 		$query = $this->db2->get();
 		if ( $query->num_rows() > 0 )
     	{
+
+			$india_mart_swapped_array = array(
+				'QUERY_ID'=>'UNIQUE_QUERY_ID',
+				'QTYPE'=>'QUERY_TYPE',
+				'SENDERNAME'=>'SENDER_NAME',
+				'SENDERMAIL'=>'SENDER_EMAIL',
+				'MOB'=>'SENDER_MOBILE',
+				'ENQ_ADDRESS'=>'SENDER_ADDRESS' ,
+				'ENQ_CITY'=>'SENDER_CITY' ,
+				'ENQ_STATE'=>'SENDER_STATE' ,
+				'COUNTRY_ISO'=>'SENDER_COUNTRY_ISO' ,
+				'PRODUCT_NAME'=>'QUERY_PRODUCT_NAME' ,
+				'ENQ_MESSAGE'=>'QUERY_MESSAGE' ,
+				'ENQ_CALL_DURATION'=>'CALL_DURATION' ,
+				'ENQ_RECEIVER_MOB'=>'RECEIVER_MOBILE' ,
+				'EMAIL_ALT'=>'SENDER_EMAIL_ALT' ,
+				'MOBILE_ALT'=>'SENDER_MOBILE_ALT' 
+		);
+
 			$row = $query->row_array();
 			$fvs = json_decode($row['fields']);
 			//pre($row);
@@ -1648,33 +1667,86 @@ exit;
 							$insertData = array();
 							$nameData = $cnameData = '';
 							$name = explode(',',$fvs->name);
+							
 							$q = $name[0];
-							//pre($val->$name[0]);
+							
 							if(isset($name[0])) {
 								$n = $name[0];
-								$nameData = $val->$n;
+
+								if(isset($val->$n))
+									$nameData = $val->$n;
+								else{
+									$swappedname =$india_mart_swapped_array[$n];
+									if(isset($val->$swappedname)){
+										$nameData = $val->$swappedname;
+									}
+								}
+								
 							}
 							if(isset($name[1])) {
 								$n = $name[1];
-								$nameData = $nameData.'_'.$val->$n;
+								if(isset($val->$n))
+									$nameData = $nameData.'_'.$val->$n;
+								else{
+									$swappedname =$india_mart_swapped_array[$n];
+									if(isset($val->$swappedname)){
+										$nameData = $nameData.'_'.$val->$swappedname;
+									}
+								}
+
 							}
 							if(isset($name[2])) {
 								$n = $name[2];
-								$nameData = $nameData.'_'.$val->$n;
+
+								if(isset($val->$n))
+									$nameData = $nameData.'_'.$val->$n;
+								else{
+									$swappedname =$india_mart_swapped_array[$n];
+									if(isset($val->$swappedname)){
+										$nameData = $nameData.'_'.$val->$swappedname;
+									}
+								}
 							}
 							$cname = explode(',',$fvs->lead_company);
 							if(isset($cname[0])) {
 								$c = $cname[0];
 								$cnameData = $val->$c;
+
+								if(isset($val->$c))
+									$cnameData = $val->$c;
+								else{
+									$swappedname =$india_mart_swapped_array[$c];
+									if(isset($val->$swappedname)){
+										$cnameData = $val->$swappedname;
+									}
+								}
 							}
 							if(isset($cname[1])) {
 								$c = $cname[1];
-								$cnameData = $cnameData.'_'.$val->$c;
+								if(isset($val->$c))
+									$cnameData = $cnameData.'_'.$val->$c;
+								else{
+									$swappedname =$india_mart_swapped_array[$c];
+									if(isset($val->$swappedname)){
+										$cnameData = $cnameData.'_'.$val->$swappedname;
+									}
+								}
 							}
 							if(isset($cname[2])) {
 								$c = $cname[2];
 								$cnameData = $cnameData.'_'.$val->$c;
+								if(isset($val->$c))
+									$cnameData = $cnameData.'_'.$val->$c;
+								else{
+									$swappedname =$india_mart_swapped_array[$c];
+									if(isset($val->$swappedname)){
+										$cnameData = $cnameData.'_'.$val->$swappedname;
+									}
+								}
 							}
+							
+							
+
 							$title = $fvs->title;
 							$email = $fvs->email;
 							$address = $fvs->address;
@@ -1686,29 +1758,114 @@ exit;
 							$state = $fvs->state;
 							$country = $fvs->country;
 							$zip = $fvs->zip;
+							$country_iso2 ='';
+							if(isset($val->$country)){
+								$country_iso2 = $val->$country;
+							}else{
+								$swappedname =$india_mart_swapped_array[$country];
+								if(isset($val->$swappedname)){
+									$country_iso2 = $val->$swappedname;
+								}
+							}
+							if($country_iso2) {
+								
 
-							if($val->$country) {
-								$this->db2->where('iso2', $val->$country);
+								$this->db2->where('iso2', $country_iso2);
 								$this->db2->select('*');
 								$this->db2->from(db_prefix().'countries');
 								$query2 = $this->db2->get();
 								$cntry = $query2->row();
-								$country = $cntry->country_id;
+								if($cntry){
+									$country = $cntry->country_id;
+								}else{
+									$country =0;
+								}
+							}else{
+								$country =0;
 							}
 
 							$insertData['name'] = $nameData;
 							$insertData['company'] = $cnameData;
-							$insertData['title'] = $val->$title;
-							$insertData['email'] = $val->$email;
-							$insertData['address'] = $val->$address;
-							$insertData['description'] = nl2br($val->$description);
+
+							if(isset($val->$title)){
+								$insertData['title'] = $val->$title;
+							}else{
+								$swappedname =$india_mart_swapped_array[$title];
+								if(isset($val->$swappedname)){
+									$insertData['title'] = $val->$swappedname;
+								}
+							}
+
+							if(isset($val->$email)){
+								$insertData['email'] = $val->$email;
+							}else{
+								$swappedname =$india_mart_swapped_array[$email];
+								if(isset($val->$swappedname)){
+									$insertData['email'] = $val->$swappedname;
+								}
+							}
+							if(isset($val->$address)){
+								$insertData['address'] = $val->$address;
+							}else{
+								$swappedname =$india_mart_swapped_array[$address];
+								if(isset($val->$swappedname)){
+									$insertData['address'] = $val->$swappedname;
+								}
+							}
+							if(isset($val->$description)){
+								$insertData['description'] = nl2br($val->$description);
+							}else{
+								$swappedname =$india_mart_swapped_array[$description];
+								if(isset($val->$swappedname)){
+									$insertData['description'] = nl2br($val->$swappedname);
+								}
+							}
+							if(isset($val->$website)){
+								$insertData['website'] = nl2br($val->$website);
+							}else{
+								$swappedname =$india_mart_swapped_array[$website];
+								if(isset($val->$swappedname)){
+									$insertData['website'] = nl2br($val->$swappedname);
+								}
+							}
+							if(isset($val->$phonenumber)){
+								$insertData['phonenumber'] = nl2br($val->$phonenumber);
+							}else{
+								$swappedname =$india_mart_swapped_array[$phonenumber];
+								if(isset($val->$swappedname)){
+									$insertData['phonenumber'] = nl2br($val->$swappedname);
+								}
+							}
+							if(isset($val->$city)){
+								$insertData['city'] = nl2br($val->$city);
+							}else{
+								$swappedname =$india_mart_swapped_array[$city];
+								if(isset($val->$swappedname)){
+									$insertData['city'] = nl2br($val->$swappedname);
+								}
+							}
+
+							if(isset($val->$state)){
+								$insertData['state'] = nl2br($val->$state);
+							}else{
+								$swappedname =$india_mart_swapped_array[$state];
+								if(isset($val->$swappedname)){
+									$insertData['state'] = nl2br($val->$swappedname);
+								}
+							}
+
+							if(isset($val->$zip)){
+								$insertData['state'] = nl2br($val->$zip);
+							}else{
+								$swappedname =$india_mart_swapped_array[$zip];
+								if(isset($val->$swappedname)){
+									$insertData['zip'] = nl2br($val->$swappedname);
+								}
+							}
+							
+
 							$insertData['addedfrom'] = $assigned;
-							$insertData['website'] = $val->$website;
-							$insertData['phonenumber'] = $val->$phonenumber;
-							$insertData['city'] = $val->$city;
-							$insertData['state'] = $val->$state;
 							$insertData['country'] = $country;
-							$insertData['zip'] = $val->$zip;
 							//$insertData['query_id'] = $val->QUERY_ID;
 							$insertData['query_id'] = $val->UNIQUE_QUERY_ID;
 							$insertData['assigned'] = $assigned;
@@ -1730,9 +1887,8 @@ exit;
 									$custFields['leads'][$fkey] = $val->$fval;
 								}
 							}
-							 //pre($insertData);
 							// pr($custFields);
-
+							// pre($insertData);
 							$this->db2->insert(db_prefix() . 'leads', $insertData);
 							$insert_id = $this->db2->insert_id();
 							if ($insert_id) {

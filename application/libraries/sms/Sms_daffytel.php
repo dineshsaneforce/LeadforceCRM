@@ -49,9 +49,12 @@ class Sms_daffytel
             curl_close($curl);
 
             $response =json_decode($response,true);
-            if($response && $response['rows']['data']){
-                return $response['rows']['data'][0];
+            if($response && $response['data']){
+                return $response['data'][0];
             }
+            // if($response && $response['rows']['data']){
+            //     return $response['rows']['data'][0];
+            // }
         }
         
         return array();

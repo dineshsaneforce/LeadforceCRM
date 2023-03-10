@@ -55,6 +55,7 @@ class Tasks_model extends App_Model
                 'name'           => _l('task_status_1'),
                 'order'          => 1,
                 'filter_default' => true,
+                'count_class'=>'Upcoming1',
                 ],
             //  [
             //     'id'             => self::STATUS_IN_PROGRESS,
@@ -69,6 +70,7 @@ class Tasks_model extends App_Model
                 'name'           => _l('task_status_3'),
                 'order'          => 3,
                 'filter_default' => true,
+                'count_class'=>'Today1',
                 ],
               [
                 'id'             => self::STATUS_AWAITING_FEEDBACK,
@@ -76,6 +78,7 @@ class Tasks_model extends App_Model
                 'name'           => _l('task_status_2'),
                 'order'          => 4,
                 'filter_default' => true,
+                'count_class'=>'Overdue1',
                 ], 
             [
                 'id'             => self::STATUS_COMPLETE,
@@ -83,6 +86,7 @@ class Tasks_model extends App_Model
                 'name'           => _l('task_status_5'),
                 'order'          => 100,
                 'filter_default' => true,
+                'count_class'=>'Completed1',
                 ],
             ]);
 
@@ -671,6 +675,9 @@ class Tasks_model extends App_Model
             if (isset($data['rel_type']) && $data['rel_type'] == 'lead') {
                 $this->load->model('leads_model');
                 $this->leads_model->log_activity($data['rel_id'],'activity','added',$insert_id);
+            }elseif (isset($data['rel_type']) && $data['rel_type'] == 'project') {
+                $this->load->model('projects_model');
+                $this->projects_model->add_timeline_activity($data['rel_id'],'activity','added',$insert_id);
             }
             
             if ($clientRequest == false) {
@@ -861,6 +868,15 @@ class Tasks_model extends App_Model
         
         $this->db->insert(db_prefix() . 'tasks', $data);
         $insert_id = $this->db->insert_id();
+
+        if (isset($data['rel_type']) && $data['rel_type'] == 'lead') {
+            $this->load->model('leads_model');
+            $this->leads_model->log_activity($data['rel_id'],'activity','addedbyworkflow',$insert_id);
+        }elseif (isset($data['rel_type']) && $data['rel_type'] == 'project') {
+            $this->load->model('projects_model');
+            $this->projects_model->add_timeline_activity($data['rel_id'],'activity','addedbyworkflow',$insert_id);
+        }
+
         if ($insert_id) {
             foreach ($checklistItems as $key => $chkID) {
                 if ($chkID != '') {

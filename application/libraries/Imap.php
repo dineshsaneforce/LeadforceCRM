@@ -124,6 +124,9 @@ class Imap
 	public function check_imap(array $config = [])
     {
 		$config       = array_replace_recursive($this->config, $config);
+		if(!$config || (!isset($config['host']) || !$config['host']) || (!isset($config['port']) || !$config['port'])|| (!isset($config['username']) || !$config['username'])|| (!isset($config['password']) || !$config['password'])){
+			return false;
+		}
 		$this->config = $config;
 		$this->mailbox = '{' . $config['host'] .  ':'.$config['port'].'/imap/ssl/novalidate-cert}';
 		imap_timeout(IMAP_OPENTIMEOUT, 3);
@@ -1076,7 +1079,6 @@ class Imap
 		$this->mailbox = '{' . $imapconf['host'] . ':'.$imapconf['port'].'/imap/ssl/novalidate-cert}';
 		$this->stream  = imap_open($this->mailbox, $imapconf['username'], $imapconf['password'])or die('Cannot connect to mail: ' . pr(imap_errors()));
 		$req_s = $this->get_compay_folders($imapconf);
-		$req_s = $this->get_compay_folders($imapconf);
 		
 		$this->select_folder('[Gmail]/Sent Mail');
 		$uids = $this->search();
@@ -1313,14 +1315,39 @@ class Imap
 					}
 
 					// check lead connncted
-					$this->CI->db->where('uid',$inboxEmails['uid']);
+					// $this->CI->db->where('uid',$inboxEmails['uid']);
 					$this->CI->db->where('message_id',$inboxEmails['message_id']);
 					$local_mail =$this->CI->db->get(db_prefix().'localmailstorage')->row();
+
+					if(!$local_mail){
+						if($inboxEmails['in_reply_to'] || ($inboxEmails['references'] && isset($inboxEmails['references'][0]) && $inboxEmails['references'][0])){
+							if($inboxEmails['references']){
+								$CI->db->where('message_id',$inboxEmails['references'][0]);
+							}else{
+								$CI->db->where('message_id',$inboxEmails['in_reply_to']);
+							}
+							$local_mail = $CI->db->get(db_prefix().'localmailstorage')->row();
+		
+							if($local_mail){
+								if($local_mail->project_id){
+									$rel_type ='project';
+									$rel_id =$local_mail->project_id;
+								}else{
+									$rel_type ='lead';
+									$rel_id =$local_mail->lead_id;
+								}
+								$CI->load->library('mails/imap_mailer');
+								$CI->imap_mailer->set_rel_type($rel_type);
+								$CI->imap_mailer->set_rel_id($rel_id);
+								$CI->imap_mailer->connectEmail($inboxEmails);
+							}
+						}
+					}
 					$connect_rel_data ='';
 					if($local_mail){
-						if($local_mail->deal_id){
+						if($local_mail->project_id){
 							$this->CI->db->where('deleted_status',0);
-							$this->CI->db->where('id',$local_mail->deal_id);
+							$this->CI->db->where('id',$local_mail->project_id);
 							$deal =$this->CI->db->get(db_prefix().'projects')->row();
 							$connect_rel_data ='<a href="#" onClick="updatedeal('.$inboxEmails['uid'].');">'.htmlentities($deal->name).' (Deal)</a>';
 						}elseif($local_mail->lead_id){
@@ -1895,23 +1922,25 @@ class Imap
 		$this->select_folder($current_folder);
 		$inboxEmails = $this->get_message($_REQUEST['uid']);
 		$req_to = $inboxEmails['from']['email'].',';
-		if(!empty($inboxEmails['to']) && $reply=='all'){
-			foreach($inboxEmails['to'] as $req_mail1){
-				if($req_mail1['email'] != $to_email){
-					$req_to .= $req_mail1['email'].',';
-				}
-			}
-		}
+		$cc ='';
+		// if(!empty($inboxEmails['to']) && $reply=='all'){
+		// 	foreach($inboxEmails['to'] as $req_mail1){
+		// 		if($req_mail1['email'] != $to_email){
+		// 			$req_to .= $req_mail1['email'].',';
+		// 		}
+		// 	}
+		// }
 		if(!empty($inboxEmails['cc'])  && $reply=='all'){
 			foreach($inboxEmails['cc'] as $cc_mail1){
 				if($cc_mail1['email'] != $to_email){
-					$req_to .= $cc_mail1['email'].',';
+					$cc .= $cc_mail1['email'].',';
 				}
 			}
 		}
 		$req_to = rtrim($req_to,',');
+		$cc = rtrim($cc,',');
 		
-		$data = array('subject'=>$inboxEmails['subject'],'message'=>$inboxEmails['body']['html'],'from_address'=>$inboxEmails['from']['email'],'to_address'=>$req_to,'uid'=>$_REQUEST['uid']);
+		$data = array('subject'=>$inboxEmails['subject'],'message'=>($inboxEmails['body']['html'])?$inboxEmails['body']['html']:$inboxEmails['body']['plain'],'from_address'=>$inboxEmails['from']['email'],'to_address'=>$req_to,'cc'=>$cc,'uid'=>$_REQUEST['uid']);
 		return $data; 
 		exit;
 	}
@@ -1950,13 +1979,26 @@ class Imap
 		$output = '';		
 		$this->select_folder($current_folder);
 		$inboxEmails = $this->get_message($_REQUEST['uid']);
+		$cc =$bcc =array();
+		foreach($inboxEmails['cc'] as $ccmails){
+			$cc[] ='<a>'.$ccmails['email'].'</a>';
+		}
+		foreach($inboxEmails['bcc'] as $bccmails){
+			$bcc[] ='<a>'.$bccmails['email'].'</a>';
+		}
+		
 		$add_content = "'".$_REQUEST['uid']."'";	
 		$output .= '<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button><h4 class="modal-title"><i class="fa fa-envelope"></i> '.$inboxEmails['subject'].'</h4></div>';
 		$output .= '<div class="modal-body">';
-		
-		$this->CI->db->where('uid',$inboxEmails['uid']);
+		// $this->CI->db->where('uid',$inboxEmails['uid']);
 		$this->CI->db->where('message_id',$inboxEmails['message_id']);
-		if(!$this->CI->db->get(db_prefix().'localmailstorage')->row()){
+		$localmailstorage =$this->CI->db->get(db_prefix().'localmailstorage')->row();
+		if(!$localmailstorage){
+			// $this->CI->db->where('uid',$inboxEmails['uid']);
+			$this->CI->db->where('message_id',$inboxEmails['message_id']);
+			$localmailstorage =$this->CI->db->get(db_prefix().'reply')->row();
+		}
+		if(!$localmailstorage){
 			$linked_deals_leads =render_deal_lead_list_by_email($inboxEmails['from']['email']);
 			$output .='
 				<div class="row" id="linktowrapper">
@@ -1991,14 +2033,20 @@ class Imap
 				<div class="row">
 					<div class="col-md-6">
 						<p class="no-margin" style="font-size: 13px;">From : <a>'.$inboxEmails['from']['email'].'</a></p>
-						<p class="no-margin" style="font-size: 13px;">To : <a>'.$inboxEmails['to'][0]['email'].'</a></p>
-						<p class="no-margin" style="font-size: 13px;">'.date("d-M-Y H:i A",$inboxEmails['udate']).'</p>
+						<p class="no-margin" style="font-size: 13px;">To : <a>'.$inboxEmails['to'][0]['email'].'</a></p>';
+						if($cc){
+							$output .='<p class="no-margin" style="font-size: 13px;">Cc : '.implode(',',$cc).'</p>';
+						}
+						if($bcc){
+							$output .='<p class="no-margin" style="font-size: 13px;">Bcc : '.implode(',',$bcc).'</p>';
+						}
+						$output .='<p class="no-margin" style="font-size: 13px;">'.date("d-M-Y H:i A",$inboxEmails['udate']).'</p>
 					</div>
 					<div class="col-md-6">';
 						$reply ='<div class="button-group">
-							<button type="button" data-toggle="tooltip" data-original-title="Forward" class="btn btn-default pull-right" data-toggle="modal" data-target="#forward-modal" onclick="add_content('.$add_content.')"><i class="fa fa-share" aria-hidden="true"></i></button>
-							<button type="button" data-toggle="tooltip" data-original-title="Reply" class="btn btn-default pull-right" data-toggle="modal" data-target="#reply-modal" onclick="add_to('.$add_content.')" style="margin-right:5px;"><i class="fa fa-reply" ></i></button>
-							<button type="button" data-toggle="tooltip" data-original-title="Reply All" class="btn btn-default pull-right" data-toggle="modal" data-target="#reply-modal" onclick="add_reply_all('.$add_content.')" style="margin-right:5px;"><i class="fa fa-reply-all" aria-hidden="true"></i></button>
+							<button type="button" data-toggle="tooltip" data-original-title="Forward" class="btn btn-default pull-right" data-toggle="modal" data-target="#forward-modal" onclick="add_content('.$add_content.',\''.$current_folder.'\')"><i class="fa fa-share" aria-hidden="true"></i></button>
+							<button type="button" data-toggle="tooltip" data-original-title="Reply" class="btn btn-default pull-right" data-toggle="modal" data-target="#reply-modal" onclick="add_to('.$add_content.',\''.$current_folder.'\')" style="margin-right:5px;"><i class="fa fa-reply" ></i></button>
+							<button type="button" data-toggle="tooltip" data-original-title="Reply All" class="btn btn-default pull-right" data-toggle="modal" data-target="#reply-modal" onclick="add_reply_all('.$add_content.',\''.$current_folder.'\')" style="margin-right:5px;"><i class="fa fa-reply-all" aria-hidden="true"></i></button>
 						</div>';
 					$output .=$reply;
 					$output .='</div>
@@ -2022,7 +2070,8 @@ class Imap
 				$output .= '<a class="btn btn-default"  href="'.$downoad_url.'"><i class="fa fa-download" aria-hidden="true"></i> Download All</a>';
 			}
 			$output .='</div>';
-			$output .='<div class="emailViewerBody" style="margin-top:20px">'.$inboxEmails['body']['html'].'</div>';
+			$message_content =(strlen(trim($inboxEmails['body']['html'])) >0)?$inboxEmails['body']['html']:$inboxEmails['body']['plain'];
+			$output .='<div class="emailViewerBody" style="margin-top:20px">'.$message_content.'</div>';
 
 		$output .='</div>';
 		
@@ -2390,6 +2439,7 @@ class Imap
 			'size'        => (int)$header->Size,
 			'attachments' => (array)$this->_get_attachments($uid, imap_fetchstructure($this->stream, $id)),
 			'body'        => $this->get_body($uid),
+			'folder'        => $this->folder,
 		];
 
 		$email = $this->embed_images($email);

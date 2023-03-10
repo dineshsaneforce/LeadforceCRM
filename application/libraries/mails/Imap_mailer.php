@@ -28,6 +28,7 @@ class Imap_mailer
         $this->CI = &get_instance();
 
         $this->CI->load->model('leads_model');
+        $this->CI->load->model('projects_model');
         $this->connectMail = get_option('connect_mail');
         if($this->connectMail =='no'){
             $this->CI->load->helper("tasks_helper");
@@ -144,6 +145,10 @@ class Imap_mailer
         $this->CI->email->reply_to($this->imapconf['username'], 'Replay me');
         $this->CI->email->subject($this->subject);
         $this->CI->email->message($this->message);
+        if($this->parentId){
+            $this->CI->email->set_header('In-Reply-To: ',$this->parentId);
+            $this->CI->email->set_header('References: ',$this->parentId);
+        }
         
         if(!empty($this->attachments)){
             $_FILES["attachment"] =$this->attachments;
@@ -245,10 +250,15 @@ class Imap_mailer
                 'attachment_id'=>'',
                 'body_html'=>$email['body']['html'],
                 'body_plain'=>$email['body']['plain'],
-                'folder'=>'Sent_mail',
                 'mail_by'=>'',
                 'lead_id'=>0,
             );
+
+            if(isset($email['folder'])){
+                $data['folder']=$email['folder'];
+            }else{
+                $data['folder']='Sent_mail';
+            }
             if($this->rel_type =='project')
                 $data['project_id']	= $this->rel_id;
             elseif($this->rel_type =='lead')
@@ -260,8 +270,11 @@ class Imap_mailer
             if(isset($email['ConversationId'])){
                 $data['ConversationId'] =$email['ConversationId'];
             }
+            if(isset($email['has_attachments'])){
+                $data['has_attachments'] =$email['has_attachments'];
+            }
 
-            $log_action ='';
+            $log_action ='added';
             if($this->parentId){
                 $this->CI->db->where('message_id',$this->parentId);
                 $parentMessage =$this->CI->db->get(db_prefix().'localmailstorage')->row();
@@ -286,6 +299,8 @@ class Imap_mailer
             
             if($this->rel_type =='lead' && $log_action !=''){
                 $this->CI->leads_model->log_activity($this->rel_id,'email',$log_action,$this->CI->db->insert_id());
+            }elseif($this->rel_type =='project' && $log_action !=''){
+                $this->CI->projects_model->add_timeline_activity($this->rel_id,'email',$log_action,$this->CI->db->insert_id());
             }
             
         }
@@ -307,15 +322,12 @@ class Imap_mailer
             }
         }
         else{
-            array_push($to, array(
-                "EmailAddress" => array(
-                    "Address" => trim($this->to)
-                )
-            ));
+            array_push($to, array());
         }
 
-        $cclist = explode(",", $this->cc);
-        if(!empty($cclist)){
+        $cclist = explode(",", trim($this->cc));
+        
+        if(strlen(trim($this->cc))>0 && !empty($cclist)){
             foreach ($cclist as $eachcc) {
                 if(strlen(trim($eachcc)) > 0) {
                     array_push($cc, array(
@@ -327,15 +339,11 @@ class Imap_mailer
             }
         }
         else{
-            array_push($cc, array(
-                "EmailAddress" => array(
-                    "Address" => trim($this->cc)
-                )
-            ));
+            array_push($cc, array());
         }
 
-        $bcclist = explode(",", $this->bcc);
-        if(!empty($bcclist)){
+        $bcclist = explode(",", trim($this->bcc));
+        if(strlen(trim($this->bcc))>0 && !empty($bcclist)){
             foreach ($bcclist as $eachbcc) {
                 if(strlen(trim($eachcc)) > 0) {
                     array_push($bcc, array(
@@ -347,20 +355,17 @@ class Imap_mailer
             }
         }
         else{
-            $thisbcc = array(
-                "EmailAddress" => array(
-                    "Address" => trim($_POST["bccemail"])
-                )
-            );
+            $thisbcc = array();
             array_push($bcc, $thisbcc);
         }
+
         $_FILES["attachment"] =$this->attachments;
         $request = array(
             "Message" => array(
                 "Subject" =>$this->subject,
                 "ToRecipients" => $to,
                 "CcRecipients" => $cc,
-                "BccRecipients" => $bcc,
+                "BccRecipients" => array(),
                 "Attachments" => get_attachement(),
                 "Body" => array(
                     "ContentType" => "HTML",
@@ -470,7 +475,7 @@ class Imap_mailer
             ),
             'to'=>$to,
             'cc'=>$cc,
-            'bcc'=>$cc,
+            'bcc'=>$bcc,
             'reply_to'=>$outlookmessage['ReplyTo'],
             'message_id'=>$outlookmessage['Id'],
             'in_reply_to'=>json_encode($outlookmessage['ReplyTo']),
@@ -486,6 +491,7 @@ class Imap_mailer
             'deleted'=>'',
             'draft'=>'',
             'size'=>'',
+            'has_attachments'=>$outlookmessage['HasAttachments'],
             'body'=>array(
                 'html'=>$outlookmessage['Body']['Content'],
                 'plain'=>$outlookmessage['Body']['Content'],
@@ -565,9 +571,11 @@ class Imap_mailer
 
     public function getLocalMessages($type,$type_id)
     {
-        $selects =array('uid','id','from_email','mail_to','subject','attachements','message_id','mail_by','folder','date','udate');
+        $selects =array('uid','id','from_email','mail_to','subject','attachements','message_id','mail_by','folder','date','udate','has_attachments');
         if($type =='lead'){
             $this->CI->db->where('lead_id', $type_id);
+        }elseif($type =='project'){
+            $this->CI->db->where('project_id', $type_id);
         }
         $localmailstorageselects =$selects;
         $localmailstorageselects[] ='0 as local_id';
@@ -585,6 +593,8 @@ class Imap_mailer
         
         if($type =='lead'){
             $this->CI->db->where('lead_id', $type_id);
+        }elseif($type =='project'){
+            $this->CI->db->where('project_id', $type_id);
         }
         $this->CI->db->from(db_prefix().'reply');
         $subQuery2 = $this->CI->db->get_compiled_select();

@@ -48,7 +48,7 @@
 						}
 			            if(has_permission('projects','','view') /* && !empty($need_fields) && in_array("members", $need_fields)*/){ ?>
 			            	<div class="col-md-2">
-			            		<select class="selectpicker" data-live-search="true" data-title="<?php echo _l('project_member'); ?>" name="member" data-width="100%">
+			            		<select multiple class="selectpicker" data-live-search="true" data-title="<?php echo _l('project_member'); ?>" name="member[]" data-width="100%">
 			            			<option value=""></option>
 			            			<?php foreach($project_members as $member) { ?>
 			            				<option value="<?php echo $member['staff_id']; ?>"<?php if($selectedMember == $member['staff_id']){echo ' selected'; } ?>>

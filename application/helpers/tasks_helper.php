@@ -688,16 +688,17 @@ $table_data = array();
         }
     }
 
-    if ($table_attributes['data-new-rel-type'] == 'project') {
+    if ( $table_attributes['data-new-rel-type'] == 'project') {
         
 		//echo "<a href='" . admin_url('tasks/detailed_overview?project_id=' . $table_attributes['data-new-rel-id']) . "' class='btn btn-success pull-right mbot25'>" . _l('detailed_overview') . '</a>';
-       
-		echo '<a href="#" onclick="new_task_from_relation(undefined,'."'project'".','.$table_attributes['data-new-rel-id'].'); return false;" class="btn btn-info pull-left mbot25 mright5">'._l('new_task').'</a>';
-        echo "<a href='" . admin_url('tasks/list_tasks?project_id=' . $table_attributes['data-new-rel-id'] . '&kanban=true') . "' class='btn btn-default pull-left mbot25 mright5 hidden-xs'>" . _l('view_kanban') . '</a>';
-        echo '<div class="clearfix"></div>';
-        echo $CI->load->view('admin/tasks/_bulk_actions', ['table' => '.table-rel-tasks'], true);
-        echo $CI->load->view('admin/tasks/_summary', ['rel_id' => $table_attributes['data-new-rel-id'], 'rel_type' => 'project', 'table' => $table_name], true);
-        echo '<a href="#" data-toggle="modal" data-target="#tasks_bulk_actions" class="hide bulk-actions-btn table-btn" data-table=".table-rel-tasks">' . _l('bulk_actions') . '</a>';
+		if(!isset($table_attributes['data-new-bycall'])){
+			echo '<a href="#" onclick="new_task_from_relation(undefined,'."'project'".','.$table_attributes['data-new-rel-id'].'); return false;" class="btn btn-info pull-left mbot25 mright5">'._l('new_task').'</a>';
+		}
+        // echo "<a href='" . admin_url('tasks/list_tasks?project_id=' . $table_attributes['data-new-rel-id'] . '&kanban=true') . "' class='btn btn-default pull-left mbot25 mright5 hidden-xs'>" . _l('view_kanban') . '</a>';
+        // echo '<div class="clearfix"></div>';
+        // echo $CI->load->view('admin/tasks/_bulk_actions', ['table' => '.table-rel-tasks'], true);
+        // echo $CI->load->view('admin/tasks/_summary', ['rel_id' => $table_attributes['data-new-rel-id'], 'rel_type' => 'project', 'table' => $table_name], true);
+        // echo '<a href="#" data-toggle="modal" data-target="#tasks_bulk_actions" class="hide bulk-actions-btn table-btn" data-table=".table-rel-tasks">' . _l('bulk_actions') . '</a>';
     } elseif ($table_attributes['data-new-rel-type'] == 'customer') { /*
         echo '<div class="clearfix"></div>';
         echo '<div id="tasks_related_filter">';
@@ -827,6 +828,7 @@ function tasks_summary_data($rel_id = null, $rel_type = null)
         $summary['color']          = $status['color'];
         $summary['name']           = $status['name'];
         $summary['status_id']      = $status['id'];
+        $summary['count_class']      = $status['count_class'];
         $tasks_summary[]           = $summary;
     }
     $b = array(2, 1, 0, 3); // rule indicating new key order
@@ -1013,13 +1015,27 @@ function get_smtp_setings1(){
 }
 function search_email_address($staffid,$table,$term=''){
 	$CI   = &get_instance();
+	$CI->load->model('staff_model');
+	$my_staffids = $CI->staff_model->get_my_staffids();
+	$view_ids = $CI->staff_model->getFollowersViewList();
+	$isAdmin =is_admin(get_staff_user_id());
 	$cond = array('deleted_status='=>0);
+	$CI->db->where($cond);
+	if(!$isAdmin){
+		if(empty($my_staffids)){
+			$CI->db->where_in('addedfrom', $my_staffids);
+		}else{
+			$CI->db->where('addedfrom', get_staff_user_id());
+		}
+	}
+	
 	if(!empty($term)){
 		$cond_like['email'] = $term;
-		$searches = $CI->db->where($cond)->like($cond_like)->get($table)->result_array();
+		$CI->db->like($cond_like);
+		$searches = $CI->db->get($table)->result_array();
 	}
 	else{
-		$searches = $CI->db->where($cond)->get($table)->result_array();
+		$searches = $CI->db->get($table)->result_array();
 	}
 	if(!empty($searches))
 		return $searches;

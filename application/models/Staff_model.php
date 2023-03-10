@@ -400,6 +400,8 @@ class Staff_model extends App_Model
                 $staff->permissions = $this->get_staff_permissions($id);
             }
             return $staff;
+        }elseif(is_array($id)){
+            $this->db->where_in('staffid',$id);
         }
         $this->db->order_by('staffid', 'asc');
 

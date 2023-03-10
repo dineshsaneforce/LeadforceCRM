@@ -262,18 +262,7 @@ foreach($custom_fields as $cfkey=>$cfval){
                         </ul>
                      </div>
                   </div>
-                  <div class="clearfix"></div><br>
-                  <div class="alpha-filter _filter_data">
-                      <ul>
-                      <li><a class="btn btn-default" style="padding:10px,15px; margin:0 2px;" data-cview="alphabet_All" onclick="dt_custom_view('alphabet_All','.table-clients','alphabet_All'); return false;">All</a></li>
-                  <?php foreach(range('A', 'Z') as $letter) {
-                      ?>
-                        <li><a class="btn btn-default" style="padding:10px,15px; margin:0 2px;" data-cview="alphabet_<?php echo $letter; ?>" onclick="dt_custom_view('alphabet_<?php echo $letter; ?>','.table-clients','alphabet_<?php echo $letter; ?>'); return false;"><?php echo $letter; ?></a></li>
-                  <?php  }
-                ?>
-                </ul>
-                    </div>
-                  <div class="clearfix"></div>
+<br><br>      
                   <?php if(has_permission('customers','','view') || have_assigned_customers()) {
                      $where_summary = '';
                      if(!has_permission('customers','','view')){

@@ -396,6 +396,7 @@ class Projects_model extends App_Model
                 if($project->clientid)
                     $project->client_data = $this->clients_model->get($project->clientid);
 
+
                 $project            = hooks()->apply_filters('project_get', $project);
                 $GLOBALS['project'] = $project;
 
@@ -546,7 +547,7 @@ class Projects_model extends App_Model
     {
         $this->db->select('*, (select CONCAT(' . db_prefix() . 'staff.firstname, \' \', ' . db_prefix() . 'staff.lastname) as fullname from tblstaff where staffid = staff_id) as fullname');
         $this->db->where('project_id', $project_id);
-
+        $this->db->order_by('id','desc');
         return $this->db->get(db_prefix() . 'project_notes')->result_array();
     }
 
@@ -1157,7 +1158,7 @@ class Projects_model extends App_Model
      * @param  array project_contacts
      * @param  array primary_contact
      */
-    public function add($data,$products=false,$project_contacts=false,$primary_contact=false)
+    public function add($data,$products=false,$project_contacts=false,$primary_contact=false,$lead_id=false)
     {
         if (isset($data['notify_project_members_status_change'])) {
             unset($data['notify_project_members_status_change']);
@@ -1320,7 +1321,13 @@ class Projects_model extends App_Model
 
             // hooks()->do_action('after_add_project_approval', $insert_id);
             hooks()->do_action('after_add_project', $insert_id);
-
+            if($insert_id){
+                if($lead_id){
+                    $this->add_timeline_activity($insert_id, 'project', 'addedfromlead',$insert_id);
+                }else{
+                    $this->add_timeline_activity($insert_id, 'project', 'added',$insert_id);
+                }
+            }
             log_activity('New Project Created [ID: ' . $insert_id . ']');
 
             return $insert_id;
@@ -1673,14 +1680,12 @@ class Projects_model extends App_Model
 
             return true;
         }
-
-
         return false;
     }
 	
 	public function mark_as_won_loss_reopen($data)
     {
-      
+        $project_previous_value =$this->projects_model->getProjectOnly($data['project_id']);
         $datasave['stage_of'] = $data['status_id'];
         if($datasave['stage_of'] == 2){
             $datasave['loss_remark'] = $data['loss_remark'];
@@ -1693,6 +1698,8 @@ class Projects_model extends App_Model
         $this->db->where('id', $data['project_id']);
         $this->db->update(db_prefix() . 'projects', $datasave);
         if ($this->db->affected_rows() > 0) {
+            $this->projects_model->addChangeLog($data['project_id'],'stage_of',$project_previous_value->stage_of,$data['status_id']);
+
            $this->log_activity($data['project_id'], 'project_stage_updated', '<b><lang>project-status-' . $data['status_id'] . '</lang></b>');
 
             return true;
@@ -2796,16 +2803,20 @@ class Projects_model extends App_Model
 
         //     return false;
         // }
+        if(!isset($data['mentions'])){
+            $data['mentions'] ='';
+        }
         if($data['content'] != '') {
             $this->db->insert(db_prefix() . 'project_notes', [
                     'staff_id'   => get_staff_user_id(),
                     'content'    => $data['content'],
                     'project_id' => $project_id,
+                    'mentions' => $data['mentions'],
                 ]);
             $insert_id = $this->db->insert_id();
             if ($insert_id) {
                 $staff_id = get_staff_user_id();
-                $this->log_activity($project_id, 'project_activity_added_a_new_note', '');
+                $this->add_timeline_activity($project_id, 'note', 'added',$insert_id);
                 return true;
             }
         }
@@ -2857,6 +2868,7 @@ class Projects_model extends App_Model
         $this->db->where('id', $project_id);
         $this->db->update(db_prefix() . 'projects', $data);
         if ($this->db->affected_rows() > 0) {
+            hooks()->do_action('after_delete_project', $project_id);
             return true;
         }
         /*
@@ -3097,8 +3109,8 @@ class Projects_model extends App_Model
         $file = $this->get_file($file_id);
 
         $additional_data = $file->file_name;
-        $this->log_activity($project_id, 'project_activity_uploaded_file', $additional_data, $file->visible_to_customer);
 
+        $this->add_timeline_activity($project_id, 'attachment', 'added',$file_id);
         $members           = $this->get_project_members($project_id);
         $notification_data = [
            'description' => 'not_project_file_uploaded',
@@ -3341,6 +3353,8 @@ class Projects_model extends App_Model
         $this->db->join(db_prefix() . 'pipeline', db_prefix() . 'pipeline.id=' . db_prefix() . 'projects.pipeline_id', 'left');
         $this->db->where(db_prefix() . 'projects.status', $status);
         $this->db->where(db_prefix() . 'projects.deleted_status', 0);
+
+        $this->db->where(db_prefix().'projects.approved',1);
         if (empty($_SESSION['member'])) {
             if ($my_staffids){
                 $this->db->where('((' . db_prefix() . 'projects.id IN (SELECT ' . db_prefix() . 'projects.id FROM ' . db_prefix() . 'projects join ' . db_prefix() . 'project_members  on ' . db_prefix() . 'project_members.project_id = ' . db_prefix() . 'projects.id WHERE ' . db_prefix() . 'project_members.staff_id in (' . implode(',',$my_staffids) . '))) OR  ' . db_prefix() . 'projects.teamleader in (' . implode(',',$my_staffids) . '))');
@@ -3353,7 +3367,7 @@ class Projects_model extends App_Model
         }
 
         if ($_SESSION['member']) {
-            $this->db->where('((' . db_prefix() . 'projects.id IN (SELECT ' . db_prefix() . 'projects.id FROM ' . db_prefix() . 'projects join ' . db_prefix() . 'project_members  on ' . db_prefix() . 'project_members.project_id = ' . db_prefix() . 'projects.id WHERE ' . db_prefix() . 'project_members.staff_id in (' . $_SESSION['member'] . '))) OR  ' . db_prefix() . 'projects.teamleader in (' . $_SESSION['member'] . '))');
+            $this->db->where('((' . db_prefix() . 'projects.id IN (SELECT ' . db_prefix() . 'projects.id FROM ' . db_prefix() . 'projects join ' . db_prefix() . 'project_members  on ' . db_prefix() . 'project_members.project_id = ' . db_prefix() . 'projects.id WHERE ' . db_prefix() . 'project_members.staff_id in (' . implode(',',$_SESSION['member']) . '))) OR  ' . db_prefix() . 'projects.teamleader in (' . implode(',',$_SESSION['member']) . '))');
            
         }
 
@@ -3363,13 +3377,44 @@ class Projects_model extends App_Model
         }else{
             $this->db->where(db_prefix() . 'projects.pipeline_id', $pipeline);
         }
-
+        
         if (isset($sort['sort_by']) && $sort['sort_by'] && isset($sort['sort']) && $sort['sort']) {
-            $this->db->order_by($sort['sort_by'], $sort['sort']);
+            
+            $sortorder =($sort['sort']=='desc'|| $sort['sort']=='asc')?$sort['sort']:'asc';
+            switch($sort['sort_by']){
+                
+                case 'name':
+                    
+                    $this->db->order_by(db_prefix() . 'projects.name',$sortorder);
+                    break;
+                case 'value':
+                    $this->db->order_by(db_prefix() . 'projects.project_cost',$sortorder);
+                    break;
+                case 'date_created':
+                    $this->db->order_by(db_prefix() . 'projects.project_created',$sortorder);
+                    break;
+                case 'date_modified':
+                    $this->db->order_by(db_prefix() . 'projects.project_modified',$sortorder);
+                    break;
+                case 'deadline':
+                    $this->db->order_by(db_prefix() . 'projects.deadline',$sortorder);
+                    break;
+                default:
+                    $this->db->order_by(db_prefix() . 'projects.project_created','Desc');
+                    $this->db->order_by(db_prefix() . 'projects.project_modified','Desc');
+                    break;
+                
+            }
+            
+            
         } else {
-            $this->db->order_by($default_projects_kanban_sort, $default_projects_kanban_sort_type);
+            $this->db->order_by(db_prefix() . 'projects.project_created','Desc');
+            $this->db->order_by(db_prefix() . 'projects.project_modified','Desc');
+            // $this->db->order_by($default_projects_kanban_sort, $default_projects_kanban_sort_type);
         }
+        
         $this->db->group_by(db_prefix() . 'projects.id`');
+        
         if ($count == false) {
             if ($page > 1) {
                 $page--;
@@ -3382,16 +3427,17 @@ class Projects_model extends App_Model
 
         
         if ($count == false) {
+            
             return $result = $this->db->get()->result_array();
 
         }
+       
         //echo $this->db->last_query(); exit;
         return $this->db->count_all_results();
     }
 
 
     public function do_kanban_query($status, $search = '', $page = 1, $sort = [], $count = false) {
-                
         // ROle based records
 		$my_id = get_staff_user_id();
 		if(empty($my_id)){
@@ -3403,15 +3449,18 @@ class Projects_model extends App_Model
         $default_projects_kanban_sort_type = get_option('default_projects_kanban_sort_type');
         $has_permission_view = has_permission('projects', '', 'view');
 
-        $this->db->select("".db_prefix() . 'projects.id` as id,count('.db_prefix() . 'tasks.rel_id) as taskscount,'.db_prefix() . 'projects.deadline` as deadline,projects.start_date as start_date,'.db_prefix() . 'clients.company as title ,' . db_prefix() . 'clients.website, ' . db_prefix() . 'clients.address, ' . db_prefix() . 'clients.city, ' . db_prefix() . 'clients.state, ' . db_prefix() . 'clients.country, ' . db_prefix() . 'clients.zip, ' . db_prefix() . 'projects.name as project_name,' . db_prefix() . 'pipeline.name as pipeline_name,' . db_prefix() . 'clients.company,' . db_prefix() . 'projects.status, (SELECT COUNT(id) FROM ' . db_prefix() . 'files WHERE rel_id=' . db_prefix() . 'projects.id AND rel_type="project") as total_files, (SELECT COUNT(id) FROM ' . db_prefix() . 'notes WHERE rel_id=' . db_prefix() . 'projects.id AND rel_type="project") as total_notes,(SELECT GROUP_CONCAT(name SEPARATOR ",") FROM ' . db_prefix() . 'taggables JOIN ' . db_prefix() . 'tags ON ' . db_prefix() . 'taggables.tag_id = ' . db_prefix() . 'tags.id WHERE rel_id = ' . db_prefix() . 'projects.id and rel_type="project" ORDER by tag_order ASC) as tags, '.db_prefix() . 'projects.project_cost as project_cost,'.db_prefix() . 'projects.project_currency as project_currency');
+        $this->db->select("".db_prefix() . 'projects.id` as id,count('.db_prefix() . 'tasks.rel_id) as taskscount,'.db_prefix() . 'projects.deadline` as deadline,projects.start_date as start_date,'.db_prefix() . 'clients.company as title ,' . db_prefix() . 'clients.website, ' . db_prefix() . 'clients.address, ' . db_prefix() . 'clients.city, ' . db_prefix() . 'clients.state, ' . db_prefix() . 'clients.country, ' . db_prefix() . 'clients.zip, ' . db_prefix() . 'projects.name as project_name,' . db_prefix() . 'pipeline.name as pipeline_name,' . db_prefix() . 'clients.company,' . db_prefix() . 'projects.status, (SELECT COUNT(id) FROM ' . db_prefix() . 'files WHERE rel_id=' . db_prefix() . 'projects.id AND rel_type="project") as total_files, (SELECT COUNT(id) FROM ' . db_prefix() . 'notes WHERE rel_id=' . db_prefix() . 'projects.id AND rel_type="project") as total_notes,(SELECT GROUP_CONCAT(name SEPARATOR ",") FROM ' . db_prefix() . 'taggables JOIN ' . db_prefix() . 'tags ON ' . db_prefix() . 'taggables.tag_id = ' . db_prefix() . 'tags.id WHERE rel_id = ' . db_prefix() . 'projects.id and rel_type="project" ORDER by tag_order ASC) as tags, '.db_prefix() . 'projects.project_cost as project_cost,'.db_prefix() . 'projects.project_currency as project_currency,'.db_prefix() . 'projects.teamleader` as teamleader,CONCAT('.db_prefix() . 'contacts.firstname," ",'.db_prefix() . 'contacts.lastname) as contact_name,'.db_prefix() . 'contacts.phonenumber as contact_phonenumber,'.db_prefix() . 'contacts.id as contact_id,'.db_prefix() . 'contacts.phone_country_code as contacts_phone_country_code');
         $this->db->from(db_prefix() . 'projects');
         $this->db->join(db_prefix() . 'project_members', db_prefix() . 'project_members.project_id=' . db_prefix() . 'projects.id', 'left');
 		$this->db->join(db_prefix() . 'tasks', db_prefix() . 'tasks.rel_id=' . db_prefix() . 'projects.id and ' . db_prefix() . 'tasks.rel_type="project"', 'left');
         $this->db->join(db_prefix() . 'clients', db_prefix() . 'clients.userid=' . db_prefix() . 'projects.clientid', 'left');
+        $this->db->join(db_prefix() . 'project_contacts', db_prefix() . 'project_contacts.project_id=' . db_prefix() . 'projects.id AND '.db_prefix() . 'project_contacts.is_primary=1', 'left');
+        $this->db->join(db_prefix() . 'contacts', db_prefix() . 'contacts.id=' . db_prefix() . 'project_contacts.contacts_id', 'left');
         $this->db->join(db_prefix() . 'staff', db_prefix() . 'staff.staffid=' . db_prefix() . 'project_members.staff_id', 'left');
         $this->db->join(db_prefix() . 'pipeline', db_prefix() . 'pipeline.id=' . db_prefix() . 'projects.pipeline_id', 'left');
         $this->db->where(db_prefix() . 'projects.status', $status);
         $this->db->where(db_prefix() . 'projects.deleted_status', 0);
+        $this->db->where(db_prefix().'projects.approved',1);
         if (empty($_SESSION['member'])) {
             if ($my_staffids){
                 $this->db->where('((' . db_prefix() . 'projects.id IN (SELECT ' . db_prefix() . 'projects.id FROM ' . db_prefix() . 'projects join ' . db_prefix() . 'project_members  on ' . db_prefix() . 'project_members.project_id = ' . db_prefix() . 'projects.id WHERE ' . db_prefix() . 'project_members.staff_id in (' . implode(',',$my_staffids) . '))) OR  ' . db_prefix() . 'projects.teamleader in (' . implode(',',$my_staffids) . '))');
@@ -3447,10 +3496,10 @@ class Projects_model extends App_Model
             $this->db->where(db_prefix() . 'projects.id IN (SELECT id FROM ' . db_prefix() . 'projects WHERE name like "%' . $gsearch . '%")');
         }
         if ($_SESSION['member']) {
-            $this->db->where('((' . db_prefix() . 'projects.id IN (SELECT ' . db_prefix() . 'projects.id FROM ' . db_prefix() . 'projects join ' . db_prefix() . 'project_members  on ' . db_prefix() . 'project_members.project_id = ' . db_prefix() . 'projects.id WHERE ' . db_prefix() . 'project_members.staff_id in (' . $_SESSION['member'] . '))) OR  ' . db_prefix() . 'projects.teamleader in (' . $_SESSION['member'] . '))');
+            $this->db->where('((' . db_prefix() . 'projects.id IN (SELECT ' . db_prefix() . 'projects.id FROM ' . db_prefix() . 'projects join ' . db_prefix() . 'project_members  on ' . db_prefix() . 'project_members.project_id = ' . db_prefix() . 'projects.id WHERE ' . db_prefix() . 'project_members.staff_id in (' . implode(',',$_SESSION['member']) . '))) OR  ' . db_prefix() . 'projects.teamleader in (' . implode(',',$_SESSION['member']) . '))');
             //$this->db->where('(' . db_prefix() . 'projects.id IN (SELECT ' . db_prefix() . 'projects.id FROM ' . db_prefix() . 'projects join ' . db_prefix() . 'project_members  on ' . db_prefix() . 'project_members.project_id = ' . db_prefix() . 'projects.id WHERE ' . db_prefix() . 'project_members.staff_id in (' . $_SESSION['member'] . ') OR  ' . db_prefix() . 'projects.teamleader in (' . $_SESSION['member'] . ') ))');
             //$this->db->where('(' . db_prefix() . 'projects.teamleader = ' . $_SESSION['member'] .' OR ' . db_prefix() . 'projects.id IN (SELECT project_id FROM ' . db_prefix() . 'project_members WHERE staff_id=' . $_SESSION['member'] . '))');
-        }
+           }
 
         $pipeline = $this->session->userdata('pipelines');
         if (empty($pipeline)) {
@@ -3464,9 +3513,35 @@ class Projects_model extends App_Model
         // }
 
         if (isset($sort['sort_by']) && $sort['sort_by'] && isset($sort['sort']) && $sort['sort']) {
-            $this->db->order_by($sort['sort_by'], $sort['sort']);
+            
+            $sortorder =($sort['sort']=='desc'|| $sort['sort']=='asc')?$sort['sort']:'asc';
+            switch($sort['sort_by']){
+                case 'name':
+                    $this->db->order_by(db_prefix() . 'projects.name',$sortorder);
+                    break;
+                case 'value':
+                    $this->db->order_by(db_prefix() . 'projects.project_cost',$sortorder);
+                    break;
+                case 'date_created':
+                    $this->db->order_by(db_prefix() . 'projects.project_created',$sortorder);
+                    break;
+                case 'date_modified':
+                    $this->db->order_by(db_prefix() . 'projects.project_modified',$sortorder);
+                    break;
+                case 'deadline':
+                    $this->db->order_by(db_prefix() . 'projects.deadline',$sortorder);
+                    break;
+                default:
+                    $this->db->order_by(db_prefix() . 'projects.project_created','Desc');
+                    $this->db->order_by(db_prefix() . 'projects.project_modified','Desc');
+                    break;
+                
+            }
+            
         } else {
-            $this->db->order_by($default_projects_kanban_sort, $default_projects_kanban_sort_type);
+            $this->db->order_by(db_prefix() . 'projects.project_created','Desc');
+            $this->db->order_by(db_prefix() . 'projects.project_modified','Desc');
+            // $this->db->order_by($default_projects_kanban_sort, $default_projects_kanban_sort_type);
         }
         $this->db->group_by(db_prefix() . 'projects.id`');
         if ($count == false) {
@@ -3478,15 +3553,16 @@ class Projects_model extends App_Model
                 $this->db->limit($limit);
             }
         }
-
+ 
         
         if ($count == false) {
-			
             return $result = $this->db->get()->result_array();
-
+       
         }
+        
         //echo $this->db->last_query(); exit;
-        return $this->db->count_all_results();
+        
+         $this->db->count_all_results(); 
     }
 	public function do_kanban_forecast_query($intervel, $which, $year, $count = false, $search = '', $page = 1, $sort = []) {
                 //pre($_SESSION);
@@ -3558,7 +3634,7 @@ class Projects_model extends App_Model
         }
 
         if ($_SESSION['member']) {
-            $this->db->where('((' . db_prefix() . 'projects.id IN (SELECT ' . db_prefix() . 'projects.id FROM ' . db_prefix() . 'projects join ' . db_prefix() . 'project_members  on ' . db_prefix() . 'project_members.project_id = ' . db_prefix() . 'projects.id WHERE ' . db_prefix() . 'project_members.staff_id in (' . $_SESSION['member'] . '))) OR  ' . db_prefix() . 'projects.teamleader in (' . $_SESSION['member'] . '))');
+            $this->db->where('((' . db_prefix() . 'projects.id IN (SELECT ' . db_prefix() . 'projects.id FROM ' . db_prefix() . 'projects join ' . db_prefix() . 'project_members  on ' . db_prefix() . 'project_members.project_id = ' . db_prefix() . 'projects.id WHERE ' . db_prefix() . 'project_members.staff_id in (' . implode(',',$_SESSION['member']) . '))) OR  ' . db_prefix() . 'projects.teamleader in (' . implode(',',$_SESSION['member']) . '))');
             //$this->db->where('(' . db_prefix() . 'projects.id IN (SELECT ' . db_prefix() . 'projects.id FROM ' . db_prefix() . 'projects join ' . db_prefix() . 'project_members  on ' . db_prefix() . 'project_members.project_id = ' . db_prefix() . 'projects.id WHERE ' . db_prefix() . 'project_members.staff_id in (' . $_SESSION['member'] . ') OR  ' . db_prefix() . 'projects.teamleader in (' . $_SESSION['member'] . ') ))');
             //$this->db->where('(' . db_prefix() . 'projects.teamleader = ' . $_SESSION['member'] .' OR ' . db_prefix() . 'projects.id IN (SELECT project_id FROM ' . db_prefix() . 'project_members WHERE staff_id=' . $_SESSION['member'] . '))');
         }
@@ -3665,7 +3741,7 @@ class Projects_model extends App_Model
         }
 
         if ($_SESSION['member']) {
-            $this->db->where('((' . db_prefix() . 'projects.id IN (SELECT ' . db_prefix() . 'projects.id FROM ' . db_prefix() . 'projects join ' . db_prefix() . 'project_members  on ' . db_prefix() . 'project_members.project_id = ' . db_prefix() . 'projects.id WHERE ' . db_prefix() . 'project_members.staff_id in (' . $_SESSION['member'] . '))) OR  ' . db_prefix() . 'projects.teamleader in (' . $_SESSION['member'] . '))');
+            $this->db->where('((' . db_prefix() . 'projects.id IN (SELECT ' . db_prefix() . 'projects.id FROM ' . db_prefix() . 'projects join ' . db_prefix() . 'project_members  on ' . db_prefix() . 'project_members.project_id = ' . db_prefix() . 'projects.id WHERE ' . db_prefix() . 'project_members.staff_id in (' . implode(',',$_SESSION['member']) . '))) OR  ' . db_prefix() . 'projects.teamleader in (' . implode(',',$_SESSION['member']) . '))');
             //$this->db->where('(' . db_prefix() . 'projects.id IN (SELECT ' . db_prefix() . 'projects.id FROM ' . db_prefix() . 'projects join ' . db_prefix() . 'project_members  on ' . db_prefix() . 'project_members.project_id = ' . db_prefix() . 'projects.id WHERE ' . db_prefix() . 'project_members.staff_id in (' . $_SESSION['member'] . ') OR  ' . db_prefix() . 'projects.teamleader in (' . $_SESSION['member'] . ') ))');
             //$this->db->where('(' . db_prefix() . 'projects.teamleader = ' . $_SESSION['member'] .' OR ' . db_prefix() . 'projects.id IN (SELECT project_id FROM ' . db_prefix() . 'project_members WHERE staff_id=' . $_SESSION['member'] . '))');
         }
@@ -3734,9 +3810,12 @@ class Projects_model extends App_Model
      * @return boolean
      */
     public function update_project_status($data) {
+        $project_previous_value =$this->getProjectOnly($data['projectid']);
         $data['project_id'] = $data['projectid'];
         $data['status_id'] = $data['status'];
-        return $this->mark_as($data);
+        $return =$this->mark_as($data);
+        $this->addChangeLog($data['project_id'],'status',$project_previous_value->status,$data['status']);
+        return $return;
     }
 
     
@@ -3749,7 +3828,6 @@ class Projects_model extends App_Model
         $this->db->where($where);
         if (is_numeric($id)) {
             $this->db->where('id', $id);
-
             return $this->db->get(db_prefix() . 'projects_status')->row();
         }
 
@@ -4735,35 +4813,34 @@ public function all_activiites()
 		$ids = rtrim($ids,",");
 		$target_ids = explode(',',$ids);
 		if (isset($data['project_contacts'])) {
-			$condition1 = array($target_ids);
-			$this->db->where_in("project_id", $condition1);
-			$condition = array('is_primary',0);
-			$this->db->where($condition);
+			$this->db->where_in("project_id", $req_ids);;
+			// $this->db->where('is_primary',0);
 			$this->db->delete('project_contacts');
 			$contact_id = array();
 			foreach($req_ids as $req_id12){
-				foreach($data['project_contacts'] as $project_contact1){
-					//if (!in_array($project_contact1, $contact_id)){
-						$contact_id[] = $project_contact1;
-						$ins_data = array('project_id'=>$req_id12,'contacts_id'=>$project_contact1,'is_primary'=>0);
-						$this->db->insert('project_contacts',$ins_data);
-					//}
-				}
+                if($req_id12){
+                    foreach($data['project_contacts'] as $project_contact1){
+                        //if (!in_array($project_contact1, $contact_id)){
+                            $contact_id[] = $project_contact1;
+                            $ins_data = array('project_id'=>$req_id12,'contacts_id'=>$project_contact1,'is_primary'=>0);
+                            $this->db->insert('project_contacts',$ins_data);
+                        //}
+                    }
+                }
+				
 			}
 			unset($data['project_contacts']);
 		}
 		if (isset($data['primary_contact'])) {
-			 $ch_data = array($ids);
 			$primary_contact = $data['primary_contact'];
-			$condition1 = array($ids);
-			$this->db->where_in("project_id", $condition1);
-			$condition = array('is_primary',1);
-			$this->db->where($condition);
+			$this->db->where_in("project_id", $req_ids);
+			$this->db->where('is_primary',1);
 			$this->db->delete('project_contacts');
-			foreach($ids as $req_id12){
+			foreach($req_ids as $req_id12){
 				if(!empty($req_id12)){
-					$ins_data = array('project_id'=>$req_id12,'contacts_id'=>$primary_contact,'is_primary'=>1);
-					$this->db->insert('project_contacts',$ins_data);
+                    $this->db->where(array('project_id'=>$req_id12,'contacts_id'=>$primary_contact));
+					$data = array('is_primary'=>1);
+					$this->db->update('project_contacts',$data);
 				}
 			}
 			unset($data['primary_contact']);
@@ -4951,4 +5028,163 @@ public function all_activiites()
 		return true;
 	}
 
+    /**
+     * @type : activity
+     * @action: added,updated,deleted
+     */
+    public function add_timeline_activity($deal_id, $type, $action,$type_id) {
+        $log = [
+            'project_id' => $deal_id,
+            'type'=>$type,
+            'action'=>$action,
+            'type_id'=>$type_id,
+            'staff_id' => get_staff_user_id(),
+            'added_at'=>date('Y-m-d H:i:s'),
+        ];
+        $this->db->insert(db_prefix() . 'project_log', $log);
+        $time_line_id =$this->db->insert_id();
+        if($type =='note'){
+            hooks()->do_action('after_added_project_note', $time_line_id);
+        }
+        return $time_line_id;
+    }
+
+    public function get_timeline_activities($deal_id,$page=0)
+    {
+        $this->db->where("id",$deal_id);
+        $project =$this->db->get(db_prefix().'projects')->row();
+        $selects =array('type','action','type_id','added_at','staff_id');
+        $limit =10;
+        if($project->lead_id){
+            $this->db->select($selects);
+            $this->db->where('project_id',$deal_id);
+            $subQuery1 = $this->db->get_compiled_select(db_prefix().'project_log');
+
+            $this->db->select($selects);
+            $this->db->where('lead_id',$project->lead_id);
+            $subQuery2 = $this->db->get_compiled_select(db_prefix().'lead_log');
+            return $this->db->query("select * from ($subQuery1 UNION $subQuery2) as unionTable order by added_at desc LIMIT ".$limit*$page.", ".$limit)->result_object();
+        }else{
+            
+            $this->db->select($selects);
+            $this->db->where('project_id',$deal_id);
+            $this->db->order_by('added_at', 'DESC');
+            
+            $this->db->limit($limit, $limit*$page);
+            return $this->db->get(db_prefix().'project_log')->result_object();
+        }
+    }
+
+    public function get_tabs_count($project_id,$table)
+    {
+        $this->db->where('rel_type','project');
+        $this->db->where('rel_id',$project_id);
+        $this->db->select('COUNT(id) as count');
+        $count =$this->db->get(db_prefix().$table)->row();
+        return $count->count;
+    }
+    public function get_activities_count($project_id)
+    {
+        return $this->get_tabs_count($project_id,'tasks');
+    }
+
+    public function get_proposal_count($project_id)
+    {
+        return $this->get_tabs_count($project_id,'proposals');
+    }
+
+    public function get_invoice_count($project_id)
+    {
+        $this->db->where('project_id',$project_id);
+        $this->db->select('COUNT(id) as count');
+        $count =$this->db->get(db_prefix().'invoices')->row();
+        return $count->count;
+    }
+    
+    public function get_files_count($project_id)
+    {
+        $this->db->where('project_id',$project_id);
+        $this->db->select('COUNT(id) as count');
+        $count =$this->db->get(db_prefix().'project_files')->row();
+        return $count->count;
+    }
+    public function get_notes_count($project_id)
+    {
+        $this->db->where('project_id',$project_id);
+        $this->db->select('COUNT(id) as count');
+        $count =$this->db->get(db_prefix().'project_notes')->row();
+        return $count->count;
+    }
+
+    public function get_calls_count($project_id){
+        $this->db->where('rel_type','project');
+        $this->db->where('rel_id',$project_id);
+        $this->db->group_start();
+        $this->db->where('call_request_id !=',"");
+        $this->db->or_where('call_code !=',0);
+        $this->db->or_where(db_prefix().'tasks.id IN ( Select task_id FROM '.db_prefix().'call_history)');
+        $this->db->group_end();
+        $this->db->select('COUNT(id) as count');
+        $count =$this->db->get(db_prefix().'tasks')->row();
+        return $count->count;
+    }
+    public function get_logs_count($project_id)
+    {
+        $this->db->where('project_id',$project_id);
+        $this->db->select('COUNT(id) as count');
+        $count =$this->db->get(db_prefix().'project_log')->row();
+        return $count->count;
+    }
+    public function get_emails_count($project_id)
+    {
+        $count =0;
+        $this->db->where('project_id', $project_id);
+
+        $this->db->select('count(id) AS count');
+		//$this->db->group_by('uid'); 
+        $emails = $this->db->get(db_prefix() . 'localmailstorage')->row();
+        if($emails){
+            $count +=$emails->count;
+        }
+
+        $this->db->where('project_id', $project_id);
+
+
+        $this->db->select('count(id) AS count');
+		//$this->db->group_by('uid'); 
+        $emails = $this->db->get(db_prefix() . 'reply')->row();
+        
+        if($emails){
+            $count +=$emails->count;
+        }
+
+        return $count;
+    }
+
+    public function get_emails($lead_id)
+    {
+        return $this->imap_mailer->getLocalMessages('project',$lead_id);
+    }
+
+    public function addChangeLog($project_id,$field_name,$previous_value,$current_value)
+    {
+        $data =array(
+            'project_id'=>$project_id,
+            'field_name'=>$field_name,
+            'previous_value'=>$previous_value,
+            'current_value'=>$current_value,
+            'updated_by'=>get_staff_user_id(),
+            'updated_at'=>date('Y-m-d H:i:s'),
+        );
+        $this->db->insert(db_prefix().'project_changelogs',$data);
+        $change_log_id =$this->db->insert_id();
+        $this->add_timeline_activity($project_id, 'project', 'updated',$change_log_id);
+        hooks()->do_action('after_update_project', ['project_id'=>$project_id,'change_log_id'=>$change_log_id]);
+    }
+
+    public function getProjectOnly($id)
+    {
+        $this->db->where('id',$id);
+        return $this->db->get(db_prefix().'projects')->row();
+    }
 }

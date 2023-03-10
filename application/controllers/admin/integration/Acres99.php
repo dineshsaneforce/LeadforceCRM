@@ -18,6 +18,7 @@ class Acres99 extends AdminController
             access_denied();
         }
         if($this->input->post()){
+            $this->db->where('plugin','99acres_lead');
             $this->db->where('config',json_encode(['web_form_id'=>$this->input->post('web_form')]));
             $exists =$this->db->get(db_prefix().'plugin_configs')->row();
             if($exists){

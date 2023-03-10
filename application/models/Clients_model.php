@@ -112,8 +112,10 @@ class Clients_model extends App_Model {
     public function get_deals_contacts($customer_id = '', $where = ['active' => 1]) {
        // if ($customer_id != '') {
             $this->db->where($where);
-            $d = "( userid='$customer_id')";
-            $this->db->where($d);
+            if($customer_id){
+                $d = "( userid='$customer_id')";
+                $this->db->where($d);
+            }
             $this->db->where('deleted_status',0);
             return $this->db->get(db_prefix() . 'contacts')->result_array();
         //}

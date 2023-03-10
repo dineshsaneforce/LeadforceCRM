@@ -156,7 +156,7 @@ class Leads_model extends App_Model {
             unset($data['view_source']);
         }
         
-        if(isset($data['client_id']) && $data['client_id']=='' && strlen(trim($data['company'])) >0){
+        if((!isset($data['client_id']) && strlen(trim($data['company'])) >0)  && (isset($data['client_id']) || $data['client_id']=='' && strlen(trim($data['company'])) >0)){
             $companyData =array(
                 'company'=>$data['company'],
                 'phonenumber'=>$data['clientphonenumber'],
@@ -176,7 +176,7 @@ class Leads_model extends App_Model {
         unset($data['clientphone_country_code']);
 
         $contactid =$data['contactid'];
-        if(isset($data['contactid']) && $data['contactid'] ==''  && strlen(trim($data['personname'])) >0){
+        if((!isset($data['contactid']) && strlen(trim($data['personname'])) >0) || (isset($data['contactid']) && $data['contactid'] ==''  && strlen(trim($data['personname'])) >0)){
             $contact_data =array(
                 'is_primary'=>0,
                 'userid'=>isset($data['client_id']) && $data['client_id']?$data['client_id']:0,
@@ -414,7 +414,7 @@ class Leads_model extends App_Model {
             unset($data['view_source']);
         }
        
-        if(isset($data['client_id']) && $data['client_id']=='' && strlen(trim($data['company'])) >0){
+        if((!isset($data['client_id']) && strlen(trim($data['company'])) >0)  && (isset($data['client_id']) || $data['client_id']=='' && strlen(trim($data['company'])) >0)){
             $companyData =array(
                 'company'=>$data['company'],
                 'phonenumber'=>$data['clientphonenumber'],
@@ -434,7 +434,7 @@ class Leads_model extends App_Model {
         unset($data['clientphone_country_code']);
 
         $contactid =$data['contactid'];
-        if(isset($data['contactid']) && $data['contactid'] ==''  && strlen(trim($data['personname'])) >0){
+        if((!isset($data['contactid']) && strlen(trim($data['personname'])) >0) || (isset($data['contactid']) && $data['contactid'] ==''  && strlen(trim($data['personname'])) >0)){
             $contact_data =array(
                 'is_primary'=>0,
                 'userid'=>isset($data['client_id']) && $data['client_id']?$data['client_id']:0,
@@ -1492,6 +1492,11 @@ class Leads_model extends App_Model {
             }
         }
 
+        $this->db->where('lead_id', $lead_id);
+        $this->db->update(db_prefix() . 'localmailstorage', ['lead_id' => 0, 'project_id' => $deal_id]);
+        $this->db->where('lead_id', $lead_id);
+        $this->db->update(db_prefix() . 'reply', ['lead_id' => 0, 'project_id' => $deal_id]);
+
         $this->db->where('id', $deal_id);
         $this->db->update(db_prefix() . 'projects', ['lead_id' => $lead_id, 'project_currency' => $lead->lead_currency]);
 
@@ -1523,8 +1528,6 @@ class Leads_model extends App_Model {
     {
         $count =0;
         $this->db->where('lead_id', $lead_id);
-
-		$this->db->where('staff_id !=', 0);
         $this->db->select('count(id) AS count');
 		//$this->db->group_by('uid'); 
         $emails = $this->db->get(db_prefix() . 'localmailstorage')->row();
@@ -1533,8 +1536,6 @@ class Leads_model extends App_Model {
         }
 
         $this->db->where('lead_id', $lead_id);
-
-		$this->db->where('staff_id !=', 0);
         $this->db->select('count(id) AS count');
 		//$this->db->group_by('uid'); 
         $emails = $this->db->get(db_prefix() . 'reply')->row();
@@ -1556,7 +1557,8 @@ class Leads_model extends App_Model {
             'type'=>$type,
             'action'=>$action,
             'type_id'=>$type_id,
-            'staff_id' => get_staff_user_id()
+            'staff_id' => get_staff_user_id(),
+            'added_at'=>date('Y-m-d H:i:s'),
         ];
         $this->db->insert(db_prefix() . 'lead_log', $log);
         return $this->db->insert_id();
@@ -1604,6 +1606,7 @@ class Leads_model extends App_Model {
         $this->db->group_start();
         $this->db->where('call_request_id !=',"");
         $this->db->or_where('call_code !=',0);
+        $this->db->or_where(db_prefix().'tasks.id IN ( Select task_id FROM '.db_prefix().'call_history)');
         $this->db->group_end();
         $this->db->select('COUNT(id) as count');
         $count =$this->db->get(db_prefix().'tasks')->row();

@@ -80,26 +80,28 @@ class Workflow_app
                 '{staff_lastname}'=>'Staff last name',
             ]
         ],
-        'deal_merge_fields'=>[
+        'project_merge_fields'=>[
             'name'=>'Deal placeholders',
             'placeholders'=>[
-                '{deal_name}'=>'Deal name',
-                '{deal_description}'=>'Deal description',
-                '{deal_start_date}'=>'Deal start date',
-                '{deal_deadline}'=>'Deal deadline',
-                '{deal_link}'=>'Deal link',
+                '{project_name}'=>'Deal name',
+                '{project_description}'=>'Deal description',
+                '{project_start_date}'=>'Deal start date',
+                '{project_deadline}'=>'Deal expected closing date',
+                '{project_link}'=>'Deal link',
+                '{project_teamleader}'=>'Deal Owner',
+                '{project_pipeline}'=>'Deal Pipeline',
+                '{project_status}'=>'Deal stage',
+                '{project_cost}'=>'Deal value',
+                '{project_modified_by}'=>'Deal modified by',
             ]
         ],
-        'activity_merge_fields'=>[
-            '{task_type}',
-            '{task_user_take_action}',
-            '{task_related}',
-            '{task_name}',
-            '{task_description}',
-            '{task_status}',
-            '{task_priority}',
-            '{task_startdate}',
-        ],
+        'project_note_merge_fields'=>[
+            'name'=>'Note placeholders',
+            'placeholders'=>[
+                '{project_note_description}'=>'Note description',
+                '{project_note_added_by}'=>'Note added by name',
+            ]
+        ]
     ];
 
     public function __construct()
@@ -256,6 +258,7 @@ class Workflow_app
                     case 'send_sms':
                         $this->run_sms($flow);
                         break;
+                    case 'converted_from_lead':
                     case 'condition':
                         $condition =$this->run_condition($flow);
                         if($condition){
@@ -280,7 +283,10 @@ class Workflow_app
                         $this->run_add_activity($flow);
                         break;
                     default:
-                        $this->check_flow($flow);
+                        $flow_status =$this->check_flow($flow);
+                        if($flow_status === false){
+                            $continue =true;
+                        }
                         break;
                 }
 
@@ -430,6 +436,17 @@ class Workflow_app
         }
 
         $smsconfiguration =$this->ci->sms_model->getConfig();
+
+        // echo 'To : ';
+        // pr($to);
+        // echo '<hr>';
+        // echo 'Template : ';
+        // pr($configure['template']);
+        // echo '<hr>';
+        // echo 'Fields : ';
+        // pr($smsFields);
+        // echo '<hr>';
+        // return true;
         if($smsconfiguration ){
             if($smsconfiguration['provider'] =='daffytel'){
                 $this->ci->load->library('sms/sms_daffytel');

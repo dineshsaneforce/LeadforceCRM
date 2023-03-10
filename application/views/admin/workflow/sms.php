@@ -2,11 +2,33 @@
 <?php $templates =$this->sms_model->getTemplates(); ?>
 <br>
 <?php echo form_open(admin_url('workflow/saveconfig/'), array('id' => 'SMSConfig')); ?>
-<div class="form-group">
-    <label for="sendto" class="control-label">Send to</label>
-    <select name="sendto" id="sendto" class="form-control" required>
-        <option value="customer">Customer</option>
-        <option value="staff">Staff</option>
+<?php if ($moduleDetails['name'] == 'lead') : ?>
+    <div class="form-group">
+        <label for="sendto" class="control-label">Send to</label>
+        <select name="sendto" id="sendto" class="form-control" data-live-search="true" required>
+            <option value="customer">Customer</option>
+            <option value="staff">Assigned Staff</option>
+            <option value="other_staffs">Other Staffs</option>
+        </select>
+    </div>
+<?php elseif ($moduleDetails['name'] == 'project') : ?>
+    <div class="form-group">
+        <label for="sendto" class="control-label">Send to</label>
+        <select name="sendto" id="sendto" class="form-control" data-live-search="true" required>
+            <option value="staff">Owner</option>
+            <option value="followers">Followers</option>
+            <option value="manager">Manager</option>
+            <option value="other_staffs">Other Staffs</option>
+        </select>
+    </div>
+<?php endif; ?>
+
+<div class="form-group dynamic-form-group" id="otherStaffGroup" style="display:none">
+    <label for="other_staffs_group" class="control-label">Select Staffs</label>
+    <select name="other_staffs_group[]" id="other_staffs_group" class="form-control selectpicker" data-live-search="true" multiple>
+    <?php foreach($staffs as $staffid => $staffname): ?>
+        <option value="<?php echo $staffid ?>"><?php echo $staffname ?></option>
+    <?php endforeach; ?>
     </select>
 </div>
 <div class="form-group">
@@ -68,13 +90,24 @@ function updateSMSTemplateDetails() {
     }
 
     document.addEventListener("DOMContentLoaded", function(event) {
-
+        $('#SMSConfig [name="sendto"]').change(function(){
+            var type_val =$(this).val();
+            if(type_val =='other_staffs'){
+                $('#SMSConfig #otherStaffGroup').show();
+                $('#SMSConfig #otherStaffGroup').attr('required','true');
+            }else{
+                $('#SMSConfig #otherStaffGroup').hide();
+                $('#SMSConfig #otherStaffGroup').attr('required','false');
+            }
+                
+        });
         appValidateForm(
             $('#SMSConfig'),
             {},
             function(form) {
                 var sendto = $('#SMSConfig #sendto').val();
                 var template = $('#SMSConfig #template').val();
+                var other_staffs_group = $('#SMSConfig #other_staffs_group').val();
                 var variables = [];
                 var variablesfield = $('#SMSConfig .variablesfield');
                 $.each(variablesfield, function() {
@@ -88,6 +121,7 @@ function updateSMSTemplateDetails() {
                         template: template,
                         variables: variables,
                         sendto: sendto,
+                        other_staffs_group:other_staffs_group,
                     },
                     dataType: "json",
                     success: function(response) {
@@ -97,6 +131,10 @@ function updateSMSTemplateDetails() {
                                 title ='Send to customer';
                             }else if($('#SMSConfig [name="sendto"]').val() =='staff'){
                                 title ='Send to staff';
+                            }else if ($('#SMSConfig [name="sendto"]').val() == 'followers') {
+                                title = 'Send to followers';
+                            }else if ($('#SMSConfig [name="sendto"]').val() == 'manager') {
+                                title = 'Send to manager';
                             }
 
                             var description =$('#SMSConfig #template option[value="'+template+'"]').html();

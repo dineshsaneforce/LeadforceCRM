@@ -1157,6 +1157,26 @@ class Proposals_model extends App_Model
                 $data->is_using_company = true;
             }
 
+            if($_data->client_id){
+                $this->db->where('userid', $_data->client_id);
+                $client       = $this->db->get(db_prefix() . 'clients')->row();
+                if($client){
+                    $_data->company =$client->company;
+                    $_data->zip =$client->zip;
+                    $_data->state =$client->state;
+                    $_data->city =$client->city;
+                }
+            }
+            $this->db->where('lead_id', $_data->id);
+            $contact_id       = $this->db->get(db_prefix() . 'lead_contacts')->row();
+            if($contact_id){
+                $this->db->where('id', $contact_id->contacts_id);
+                $contact       = $this->db->get(db_prefix() . 'contacts')->row();
+                if($contact){
+                    $_data->email =$contact->email;
+                }
+            }
+
             $data->company = $_data->company;
             $data->address = $_data->address;
             $data->email   = $_data->email;

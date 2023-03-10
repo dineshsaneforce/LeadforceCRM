@@ -4,13 +4,36 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 function app_init_admin_sidebar_menu_items() {
     $CI = &get_instance();
-    if (has_permission('dashboard', '', 'view')) {
+    if (has_permission('dashboard', '', 'view')) { 
         $CI->app_menu->add_sidebar_menu_item('dashboard', [
             'name' => _l('als_dashboard'),
             'href' => admin_url(),
             'position' => 1,
             'icon' => 'fa fa-tachometer',
-        ]);
+        ]);      
+     $number_of_records = $CI->db->count_all_results('dashboard_report');       
+       if ($number_of_records != 0)
+       {       
+            if (has_permission('reports', '', 'view') || has_permission('reports', '', 'create'))
+            {
+                $CI->app_menu->add_sidebar_children_item('dashboard', [
+                    'name' => _l('system_dashboard'),
+                    'href' => admin_url(),
+                    'position' => 1,
+                    'icon' => 'fa fa-tachometer',
+                ]);
+                $rResult =$CI->db->get(db_prefix().'dashboard_report')->result_array();
+                foreach ($rResult as $aRow) 
+                {
+                    $CI->app_menu->add_sidebar_children_item('dashboard', [
+                        'name' => $aRow['dashboard_name'],
+                        'href' => admin_url('dashboard/view/'.$aRow['id']),
+                        'icon' => 'fa fa-folder-open-o',
+                        'position' => 1,
+                    ]);
+                }
+            }
+        }
     }
 
     if (has_permission('leads', '', 'view')) {
@@ -32,11 +55,10 @@ function app_init_admin_sidebar_menu_items() {
         $pipelines = $CI->db->get(db_prefix() . 'pipeline')->result_array();
         //echo $CI->db->last_query(); exit;
         //echo "<pre>"; print_r($pipelines); exit;
-        //$projurl = admin_url('projects/kanban_noscroll?pipelines='.$pipelines[0]['id'].'&member=&gsearch=');
-        $projurl = admin_url('projects/kanban_noscroll?pipelines='.$pipelines[0]['id'].'&member='.get_staff_user_id().'&gsearch=');
+        $projurl = admin_url('projects/kanban_noscroll?pipelines='.$pipelines[0]['id'].'&member=&gsearch=');
         // $projurl = admin_url('projects/index_list?pipelines=&member=&gsearch=');
         if(!is_admin(get_staff_user_id())) {
-            $projurl = admin_url('projects/kanban_noscroll?pipelines='.$pipelines[0]['id'].'&member='.get_staff_user_id().'&gsearch=');
+            $projurl = admin_url('projects/kanban_noscroll?pipelines='.$pipelines[0]['id'].'&member=&gsearch=');
 			//$projurl = admin_url('projects/index_list?pipelines=&member='.get_staff_user_id().'&gsearch=');
         }
         

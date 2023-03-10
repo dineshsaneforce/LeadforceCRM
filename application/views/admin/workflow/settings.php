@@ -5,8 +5,9 @@
 <div id="wrapper">
     <div class="content">
         <div class="row">
-            <div class="col-xs-12">
-            <h3>Workflow Automation</h3>
+            <div class="col-xs-12 mbot20">
+            <h3 class="">Workflow Automation</h3>
+            <p class="text-muted">Automate your flow: boost your productivity.</p>
             </div>            
             <?php foreach ($workflowsold as $action => $workflow) : ?>
                 <div class="col-md-4">

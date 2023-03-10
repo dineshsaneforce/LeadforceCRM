@@ -152,155 +152,155 @@ $(function() {
     });
 
     /** Create New Customer **/
-    add_hotkey('Shift+C', function() {
-        var $leadModal = $('#lead-modal');
-        var $taskModal = $('#task-modal');
-        if ($leadModal.is(':visible')) {
-            convert_lead_to_customer($leadModal.find('input[name="leadid"]').val());
-        } else if ($taskModal.is(':visible')) {
-            var $taskCommentsWrapper = $taskModal.find('.tasks-comments');
-            if (!$taskCommentsWrapper.is(':visible')) {
-                $taskCommentsWrapper.css('display', 'block');
-            }
-            init_new_task_comment();
-        } else {
-            window.location.href = admin_url + 'clients/client';
-        }
-    });
+    // add_hotkey('Shift+C', function() {
+    //     var $leadModal = $('#lead-modal');
+    //     var $taskModal = $('#task-modal');
+    //     if ($leadModal.is(':visible')) {
+    //         convert_lead_to_customer($leadModal.find('input[name="leadid"]').val());
+    //     } else if ($taskModal.is(':visible')) {
+    //         var $taskCommentsWrapper = $taskModal.find('.tasks-comments');
+    //         if (!$taskCommentsWrapper.is(':visible')) {
+    //             $taskCommentsWrapper.css('display', 'block');
+    //         }
+    //         init_new_task_comment();
+    //     } else {
+    //         window.location.href = admin_url + 'clients/client';
+    //     }
+    // });
 
-    /** Create New Invoice **/
-    add_hotkey('Shift+I', function() {
-        window.location.href = admin_url + 'invoices/invoice';
-    });
+    // /** Create New Invoice **/
+    // add_hotkey('Shift+I', function() {
+    //     window.location.href = admin_url + 'invoices/invoice';
+    // });
 
-    /** Create New Estimate **/
-    add_hotkey('Shift+E', function() {
-        var $leadModal = $('#lead-modal');
-        var $taskModal = $('#task-modal');
-        if (!$leadModal.is(':visible') && !$taskModal.is(':visible')) {
-            window.location.href = admin_url + 'estimates/estimate';
-        } else {
-            if ($leadModal.is(':visible')) {
-                $('a[lead-edit]').click();
-            } else if ($taskModal.is(':visible')) {
-                edit_task($taskModal.find('[data-task-single-id]').attr('data-task-single-id'));
-            }
-        }
-    });
+    // /** Create New Estimate **/
+    // add_hotkey('Shift+E', function() {
+    //     var $leadModal = $('#lead-modal');
+    //     var $taskModal = $('#task-modal');
+    //     if (!$leadModal.is(':visible') && !$taskModal.is(':visible')) {
+    //         window.location.href = admin_url + 'estimates/estimate';
+    //     } else {
+    //         if ($leadModal.is(':visible')) {
+    //             $('a[lead-edit]').click();
+    //         } else if ($taskModal.is(':visible')) {
+    //             edit_task($taskModal.find('[data-task-single-id]').attr('data-task-single-id'));
+    //         }
+    //     }
+    // });
 
-    /** Marks task as finished when modal is opened **/
-    add_hotkey('Shift+F', function() {
-        var $taskModal = $('#task-modal');
-        if ($taskModal.is(':visible')) {
-            var $taskSingleBody = $taskModal.find('[data-task-single-id]');
-            if ($taskSingleBody.attr('data-status') != 5) {
-                mark_complete($taskSingleBody.attr('data-task-single-id'));
-            }
-        }
-    });
+    // /** Marks task as finished when modal is opened **/
+    // add_hotkey('Shift+F', function() {
+    //     var $taskModal = $('#task-modal');
+    //     if ($taskModal.is(':visible')) {
+    //         var $taskSingleBody = $taskModal.find('[data-task-single-id]');
+    //         if ($taskSingleBody.attr('data-status') != 5) {
+    //             mark_complete($taskSingleBody.attr('data-task-single-id'));
+    //         }
+    //     }
+    // });
 
-    /** Create New Proposal **/
-    add_hotkey('Ctrl+Shift+P', function() {
-        window.location.href = admin_url + 'proposals/proposal';
-    });
-    /** Create New Expense **/
-    add_hotkey('Ctrl+Shift+E', function() {
-        window.location.href = admin_url + 'expenses/expense';
-    });
+    // /** Create New Proposal **/
+    // add_hotkey('Ctrl+Shift+P', function() {
+    //     window.location.href = admin_url + 'proposals/proposal';
+    // });
+    // /** Create New Expense **/
+    // add_hotkey('Ctrl+Shift+E', function() {
+    //     window.location.href = admin_url + 'expenses/expense';
+    // });
 
-    /** Create New Lead **/
-    add_hotkey('Shift+L', function() {
-        init_lead();
-    });
-    /** Create New Task **/
-    add_hotkey('Shift+T', function() {
-        var $newTaskRelationBtn = $('.new-task-relation');
-        if ($newTaskRelationBtn.length > 0) {
-            new_task(admin_url + 'tasks/task?rel_id=' + $newTaskRelationBtn.attr('data-rel-id') + '&rel_type=' + $newTaskRelationBtn.attr('data-rel-type'));
-        } else if ($("body").hasClass('project')) {
-            new_task(admin_url + 'tasks/task?rel_id=' + project_id + '&rel_type=project');
-        } else {
-            new_task();
-        }
-    });
-    /** Create New Project **/
-    add_hotkey('Shift+P', function() {
-        window.location.href = admin_url + 'projects/project';
-    });
-    /** Create New Ticket **/
-    add_hotkey('Shift+S', function() {
-        window.location.href = admin_url + 'tickets/add';
-    });
-    /** Create New Staff Member **/
-    add_hotkey('Ctrl+Shift+S', function() {
-        window.location.href = admin_url + 'staff/member';
-    });
+    // /** Create New Lead **/
+    // add_hotkey('Shift+L', function() {
+    //     init_lead();
+    // });
+    // /** Create New Task **/
+    // add_hotkey('Shift+T', function() {
+    //     var $newTaskRelationBtn = $('.new-task-relation');
+    //     if ($newTaskRelationBtn.length > 0) {
+    //         new_task(admin_url + 'tasks/task?rel_id=' + $newTaskRelationBtn.attr('data-rel-id') + '&rel_type=' + $newTaskRelationBtn.attr('data-rel-type'));
+    //     } else if ($("body").hasClass('project')) {
+    //         new_task(admin_url + 'tasks/task?rel_id=' + project_id + '&rel_type=project');
+    //     } else {
+    //         new_task();
+    //     }
+    // });
+    // /** Create New Project **/
+    // add_hotkey('Shift+P', function() {
+    //     window.location.href = admin_url + 'projects/project';
+    // });
+    // /** Create New Ticket **/
+    // add_hotkey('Shift+S', function() {
+    //     window.location.href = admin_url + 'tickets/add';
+    // });
+    // /** Create New Staff Member **/
+    // add_hotkey('Ctrl+Shift+S', function() {
+    //     window.location.href = admin_url + 'staff/member';
+    // });
 
-    /** User logout **/
-    add_hotkey('Ctrl+Shift+L', function() {
-        logout();
-    });
+    // /** User logout **/
+    // add_hotkey('Ctrl+Shift+L', function() {
+    //     logout();
+    // });
 
-    /**
-     * List shortcuts
-     */
+    // /**
+    //  * List shortcuts
+    //  */
 
-    /** Go to dashboard **/
-    add_hotkey('Alt+D', function() {
-        window.location.href = admin_url;
-    });
-    /** List Customers **/
-    add_hotkey('Alt+C', function() {
-        window.location.href = admin_url + 'clients';
-    });
-    /** List Tasks **/
-    add_hotkey('Alt+T', function() {
-        window.location.href = admin_url + 'tasks/list_tasks';
-    });
-    /** List Invoices **/
-    add_hotkey('Alt+I', function() {
-        window.location.href = admin_url + 'invoices/list_invoices';
-    });
-    /** List Estimates **/
-    add_hotkey('Alt+E', function() {
-        window.location.href = admin_url + 'estimates/list_estimates';
-    });
-    /** List Projects **/
-    add_hotkey('Alt+P', function() {
-        window.location.href = admin_url + 'projects';
-    });
-    /** List Leads **/
-    add_hotkey('Alt+L', function() {
-        window.location.href = admin_url + 'leads';
-    });
-    /** List Tickets **/
-    add_hotkey('Ctrl+Alt+T', function() {
-        window.location.href = admin_url + 'tickets';
-    });
-    /** List Expenses **/
-    add_hotkey('Ctrl+Alt+E', function() {
-        window.location.href = admin_url + 'expenses/list_expenses';
-    });
+    // /** Go to dashboard **/
+    // add_hotkey('Alt+D', function() {
+    //     window.location.href = admin_url;
+    // });
+    // /** List Customers **/
+    // add_hotkey('Alt+C', function() {
+    //     window.location.href = admin_url + 'clients';
+    // });
+    // /** List Tasks **/
+    // add_hotkey('Alt+T', function() {
+    //     window.location.href = admin_url + 'tasks/list_tasks';
+    // });
+    // /** List Invoices **/
+    // add_hotkey('Alt+I', function() {
+    //     window.location.href = admin_url + 'invoices/list_invoices';
+    // });
+    // /** List Estimates **/
+    // add_hotkey('Alt+E', function() {
+    //     window.location.href = admin_url + 'estimates/list_estimates';
+    // });
+    // /** List Projects **/
+    // add_hotkey('Alt+P', function() {
+    //     window.location.href = admin_url + 'projects';
+    // });
+    // /** List Leads **/
+    // add_hotkey('Alt+L', function() {
+    //     window.location.href = admin_url + 'leads';
+    // });
+    // /** List Tickets **/
+    // add_hotkey('Ctrl+Alt+T', function() {
+    //     window.location.href = admin_url + 'tickets';
+    // });
+    // /** List Expenses **/
+    // add_hotkey('Ctrl+Alt+E', function() {
+    //     window.location.href = admin_url + 'expenses/list_expenses';
+    // });
 
-    /** Sales Report **/
-    add_hotkey('Alt+R', function() {
-        window.location.href = admin_url + 'reports/sales';
-    });
+    // /** Sales Report **/
+    // add_hotkey('Alt+R', function() {
+    //     window.location.href = admin_url + 'reports/sales';
+    // });
 
-    /** Settings **/
-    add_hotkey('Alt+S', function() {
-        window.location.href = admin_url + 'settings';
-    });
+    // /** Settings **/
+    // add_hotkey('Alt+S', function() {
+    //     window.location.href = admin_url + 'settings';
+    // });
 
-    /** Top Search Focus **/
-    add_hotkey('Shift+K', function() {
-        $('#search_input').focus();
-    });
+    // /** Top Search Focus **/
+    // add_hotkey('Shift+K', function() {
+    //     $('#search_input').focus();
+    // });
 
-    /* Focus on seacrh on first datatable found in the DOM */
-    add_hotkey('Shift+D', function() {
-        $('body .dataTables_wrapper').eq(0).find('.dataTables_filter input').focus();
-    });
+    // /* Focus on seacrh on first datatable found in the DOM */
+    // add_hotkey('Shift+D', function() {
+    //     $('body .dataTables_wrapper').eq(0).find('.dataTables_filter input').focus();
+    // });
 
     // Init the shortcuts
     $.Shortcuts.start();
