@@ -35,6 +35,18 @@ class Activity_transfer extends AdminController
                     $this->deavite_follow($dataUpdate,$id,$_POST['assign']);
                     //pre($content);
 
+                    $history = array();
+                    $history['trans_from'] = $id;
+                    $history['trans_to'] = $_POST['assign'];
+                    $history['activity'] = count((array)$da->task->task_assigned);
+                    $history['transfer_by'] = get_staff_user_id();
+                    $history['transfer_details'] = $dataUpdate['deavite_follow_ids'];
+                    $history['transfer_type'] = 'activity';
+                    $this->Activity_user_model->storeTransferHierarchy($history);
+
+                    $this->db->where('trans_to',$id);
+                    $this->db->where('status',1);
+                    $this->db->update(db_prefix() . 'transfer_history', ['status' => 2]);
                     if($this->db->trans_status() === FALSE){
                         $this->db->trans_rollback();
                         set_alert('warning', _l('error_transfered'));
@@ -43,7 +55,7 @@ class Activity_transfer extends AdminController
                         $this->Activity_user_model->printOwnerHierarchyWithoutAdmin($_POST['assign'],$content);
                         $this->Activity_user_model->printOwnerHierarchyWithoutAdmin($_POST['emp_id'],$content);
                     }
-                    set_alert('success', _l('activity_transfer'));
+                    set_alert('success', _l('activity_trans'));
                 }
                 
                 redirect(admin_url('Activity_transfer','refresh'));   
@@ -51,9 +63,9 @@ class Activity_transfer extends AdminController
         }
 
 //        pre($data['files']);\
-        //$data['history'] = $this->AccountTransfer_model->get_transfer_history();
+        $data['history'] = $this->Activity_user_model->get_transfer_history();
         $data['employees']    = $this->Activity_user_model->get_staffs_whom_follow();
-        $data['title']     = _l('ActivityTransfer');
+        $data['title']     = _l('Activity Transfer');
         $data['bodyclass'] = 'dynamic-create-groups';
         $this->load->view('admin/activity/activity_to_transfer', $data);
     }
@@ -188,21 +200,30 @@ class Activity_transfer extends AdminController
         } else {
             $tasks = $tasks.' - Activities';
         }
-
-// $staffs = get_staff($id);
-// pre($staffs);
+        // $data['tasks'] = $tasks;
+        // $this->load->view('views/admin/activity/activity_to_transfer', $data);
+        // $staffs = get_staff($id);
+        // pre($tasks);
 
         $fromResult = $this->Activity_user_model->getuserDetails($id);
         $toResult = $this->Activity_user_model->getuserDetails($toid);
         //pre($fromResult->firstname);
-        $html = '<p style="font-size:15px;"><b>Do you want to transfer below datas?</b></p>
-                <p><b>From:</b> '.$fromResult->firstname.' ('.$fromResult->email.'), '.$fromResult->desig.'</p>
-                <p>'.$tasks.'</p>
-                <p><b>To:</b> '.$toResult->firstname.' ('.$toResult->email.'), '.$toResult->desig.'</p>
-                <p><b style="color:red;">Note:</b></p>
-                <p><b style="color:red;">If someone already transferred their datas to you, they can’t be Rollback!</b></p>';
-        
-        $output['html'] = $html;
+        if($tasks < 1)
+        {
+            $html = '<p style="font-size:15px;"><b>There is no activity to transfer.</b></p>
+            <p><b>From:</b> '.$fromResult->firstname.' ('.$fromResult->email.'), '.$fromResult->desig.'</p>
+            <p>'.$tasks.'</p>
+            <p><b>To:</b> '.$toResult->firstname.' ('.$toResult->email.'), '.$toResult->desig.'</p>';
+            $output['html'] = $html;
+
+        }else{
+            $html = '<p style="font-size:15px;"><b>Do you want to transfer?</b></p>
+            <p><b>From:</b> '.$fromResult->firstname.' ('.$fromResult->email.'), '.$fromResult->desig.'</p>
+            <p>'.$tasks.'</p>
+            <p><b>To:</b> '.$toResult->firstname.' ('.$toResult->email.'), '.$toResult->desig.'</p>';
+            $output['html'] = $html;
+        }
+         
         echo json_encode($output);
     }
 
