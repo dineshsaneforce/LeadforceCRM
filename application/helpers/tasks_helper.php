@@ -2871,7 +2871,11 @@ function task_count_cond(){
 		$year = date("Y", strtotime ('+1 month',strtotime($date)));
 		$where_cond = " where  month(".db_prefix()."tasks.startdate) = '".$month."' and year(".db_prefix()."tasks.startdate) = '".$year."' ";
 	}  
-	if(!empty($_REQUEST['custom_tasks']) || (!empty($_REQUEST['cur_val1']) && $_REQUEST['cur_val1']=='custom_tasks')){
+	if((!empty($_REQUEST['cur_val1']) && $_REQUEST['cur_val1']=='custom_tasks') && !empty($_REQUEST['period_from'])){
+		$month_start = date('Y-m-d',strtotime($_REQUEST['period_from'])).' 00:00:00';
+		$month_end   = date('Y-m-d',strtotime($_REQUEST['period_to'])).' 23:59:59';
+		$where_cond  = " where ".db_prefix()."tasks.startdate >= '".$month_start."' and ".db_prefix()."tasks.startdate <= '".$month_end."' ";
+	}elseif(!empty($_REQUEST['custom_tasks']) || (!empty($_REQUEST['cur_val1']) && $_REQUEST['cur_val1']=='custom_tasks')){
 		$month_start = date('Y-m-d',strtotime($_REQUEST['custom_date_start_tasks'])).' 00:00:00';
 		$month_end   = date('Y-m-d',strtotime($_REQUEST['custom_date_end_tasks'])).' 23:59:59';
 		$where_cond  = " where ".db_prefix()."tasks.startdate >= '".$month_start."' and ".db_prefix()."tasks.startdate <= '".$month_end."' ";

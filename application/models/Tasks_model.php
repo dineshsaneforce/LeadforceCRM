@@ -3090,6 +3090,15 @@ class Tasks_model extends App_Model
 			}
 		}
 		$where_cond = '';
+
+        $_REQUEST['task_status_1'] =true;
+
+        $_REQUEST['task_status_2'] =true;
+
+        $_REQUEST['task_status_3'] =true;
+
+        $_REQUEST['task_status_5'] =true;
+
 		$where_cond = task_count_cond();
 		if(!empty($sWhere))
 			$where_cond = ltrim($where_cond," where");
@@ -3143,12 +3152,12 @@ class Tasks_model extends App_Model
 		// 	$req_cond = (!empty($sWhere))?" and ":" where ";
 		// 	$sWhere  .= $req_cond." month(".db_prefix()."tasks.startdate) = '".$month."' and year(".db_prefix()."tasks.startdate) = '".$year."' ";
 		// }  
-		if(!empty($_REQUEST['cur_val']) && $_REQUEST['cur_val']=='custom_tasks'){
-			$month_start = date('Y-m-d',strtotime($_REQUEST['period_from'])).' 00:00:00';
-			$month_end   = date('Y-m-d',strtotime($_REQUEST['period_to'])).' 23:59:59';
-			$req_cond = (!empty($sWhere))?" and ":" where ";
-			$sWhere  .= $req_cond.db_prefix()."tasks.startdate >= '".$month_start."' and ".db_prefix()."tasks.startdate <= '".$month_end."' ";
-		}
+		// if(!empty($_REQUEST['cur_val']) && $_REQUEST['cur_val']=='custom_tasks'){
+		// 	$month_start = date('Y-m-d',strtotime($_REQUEST['period_from'])).' 00:00:00';
+		// 	$month_end   = date('Y-m-d',strtotime($_REQUEST['period_to'])).' 23:59:59';
+		// 	$req_cond = (!empty($sWhere))?" and ":" where ";
+		// 	$sWhere  .= $req_cond.db_prefix()."tasks.startdate >= '".$month_start."' and ".db_prefix()."tasks.startdate <= '".$month_end."' ";
+		// }
 		// if(!empty($_REQUEST['cur_val']) && $_REQUEST['cur_val']=='upcoming_tasks'){
 		// 	$req_cond = (!empty($sWhere))?" and ":" where ";
 		// 	$sWhere  .= $req_cond.db_prefix()."tasks.status = '1' ";
