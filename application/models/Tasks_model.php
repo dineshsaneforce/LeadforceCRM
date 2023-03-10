@@ -3094,84 +3094,84 @@ class Tasks_model extends App_Model
 		if(!empty($sWhere))
 			$where_cond = ltrim($where_cond," where");
 		$sWhere .= $where_cond;
-		/* if(!empty($_REQUEST['cur_val']) && $_REQUEST['cur_val']=='today_tasks'){
-			$req_cond = (!empty($sWhere))?" and ":" where ";
-			$sWhere .= $req_cond.db_prefix()."tasks.startdate like '%".date('Y-m-d')."%' ";
-		}
-		if(!empty($_REQUEST['cur_val']) && $_REQUEST['cur_val']=='tomorrow_tasks'){
-			$tomorrow = date("Y-m-d", strtotime("+1 day"));
-			$req_cond = (!empty($sWhere))?" and ":" where ";
-			$sWhere  .= $req_cond.db_prefix()."tasks.startdate like '%".$tomorrow."%' ";
-		}
-		if(!empty($_REQUEST['cur_val']) && $_REQUEST['cur_val']=='yesterday_tasks'){
-			$yesterday= date("Y-m-d", strtotime("-1 day"));
-			$req_cond = (!empty($sWhere))?" and ":" where ";
-			$sWhere  .= $req_cond.db_prefix()."tasks.startdate like '%".$yesterday."%' ";
-		}
-		if(!empty($_REQUEST['cur_val']) && $_REQUEST['cur_val']=='thisweek_tasks'){
-			$week_start = date('Y-m-d',strtotime('sunday this week')).' 00:00:00';
-			$week_end = date('Y-m-d',strtotime('saturday this week')).' 23:59:59';
-			$req_cond = (!empty($sWhere))?" and ":" where ";
-			$sWhere  .= $req_cond.db_prefix()."tasks.startdate >= '".$week_start."' and ".db_prefix()."tasks.startdate >= '".$week_end."' ";
-		}
-		if(!empty($_REQUEST['cur_val']) && $_REQUEST['cur_val']=='lastweek_tasks'){
-			$week_start = date('Y-m-d',strtotime('sunday this week',strtotime("-1 week +1 day"))).' 00:00:00';
-			$week_end = date('Y-m-d',strtotime('saturday this week',strtotime("-1 week +1 day"))).' 23:59:59';
-			$req_cond = (!empty($sWhere))?" and ":" where ";
-			$sWhere  .= $req_cond.db_prefix()."tasks.startdate >= '".$week_start."' and ".db_prefix()."tasks.startdate >= '".$week_end."' ";
-		} 
-		if(!empty($_REQUEST['cur_val']) && $_REQUEST['cur_val']=='nextweek_tasks'){
-			$week_start = date('Y-m-d',strtotime('sunday this week',strtotime("+1 week +1 day"))).' 00:00:00';
-			$week_end = date('Y-m-d',strtotime('saturday this week',strtotime("+1 week +1 day"))).' 23:59:59';
-			$req_cond = (!empty($sWhere))?" and ":" where ";
-			$sWhere  .= $req_cond.db_prefix()."tasks.startdate >= '".$week_start."' and ".db_prefix()."tasks.startdate >= '".$week_end."' ";
-		}
-		if(!empty($_REQUEST['cur_val']) && $_REQUEST['cur_val']=='thismonth_tasks'){
-			$req_cond = (!empty($sWhere))?" and ":" where ";
-			$sWhere  .= $req_cond." month(".db_prefix()."tasks.startdate) = '".date('m')."' and year(".db_prefix()."tasks.startdate) = '".date('Y')."' ";
-		}
-		if(!empty($_REQUEST['cur_val']) && $_REQUEST['cur_val']=='lastmonth_tasks'){
-			$month = date('m',strtotime('last month'));
-			$year  = date('Y',strtotime('last month'));
-			$req_cond = (!empty($sWhere))?" and ":" where ";
-			$sWhere  .= $req_cond." month(".db_prefix()."tasks.startdate) = '".$month."' and year(".db_prefix()."tasks.startdate) = '".$year."' ";
-		}
-		if(!empty($_REQUEST['cur_val']) && $_REQUEST['cur_val']=='nextmonth_tasks'){
-			$date = date('01-m-Y');
-			$month = date("m", strtotime ('+1 month',strtotime($date)));
-			$year = date("Y", strtotime ('+1 month',strtotime($date)));
-			$req_cond = (!empty($sWhere))?" and ":" where ";
-			$sWhere  .= $req_cond." month(".db_prefix()."tasks.startdate) = '".$month."' and year(".db_prefix()."tasks.startdate) = '".$year."' ";
-		}  
+		// if(!empty($_REQUEST['cur_val']) && $_REQUEST['cur_val']=='today_tasks'){
+		// 	$req_cond = (!empty($sWhere))?" and ":" where ";
+		// 	$sWhere .= $req_cond.db_prefix()."tasks.startdate like '%".date('Y-m-d')."%' ";
+		// }
+		// if(!empty($_REQUEST['cur_val']) && $_REQUEST['cur_val']=='tomorrow_tasks'){
+		// 	$tomorrow = date("Y-m-d", strtotime("+1 day"));
+		// 	$req_cond = (!empty($sWhere))?" and ":" where ";
+		// 	$sWhere  .= $req_cond.db_prefix()."tasks.startdate like '%".$tomorrow."%' ";
+		// }
+		// if(!empty($_REQUEST['cur_val']) && $_REQUEST['cur_val']=='yesterday_tasks'){
+		// 	$yesterday= date("Y-m-d", strtotime("-1 day"));
+		// 	$req_cond = (!empty($sWhere))?" and ":" where ";
+		// 	$sWhere  .= $req_cond.db_prefix()."tasks.startdate like '%".$yesterday."%' ";
+		// }
+		// if(!empty($_REQUEST['cur_val']) && $_REQUEST['cur_val']=='thisweek_tasks'){
+		// 	$week_start = date('Y-m-d',strtotime('sunday this week')).' 00:00:00';
+		// 	$week_end = date('Y-m-d',strtotime('saturday this week')).' 23:59:59';
+		// 	$req_cond = (!empty($sWhere))?" and ":" where ";
+		// 	$sWhere  .= $req_cond.db_prefix()."tasks.startdate >= '".$week_start."' and ".db_prefix()."tasks.startdate >= '".$week_end."' ";
+		// }
+		// if(!empty($_REQUEST['cur_val']) && $_REQUEST['cur_val']=='lastweek_tasks'){
+		// 	$week_start = date('Y-m-d',strtotime('sunday this week',strtotime("-1 week +1 day"))).' 00:00:00';
+		// 	$week_end = date('Y-m-d',strtotime('saturday this week',strtotime("-1 week +1 day"))).' 23:59:59';
+		// 	$req_cond = (!empty($sWhere))?" and ":" where ";
+		// 	$sWhere  .= $req_cond.db_prefix()."tasks.startdate >= '".$week_start."' and ".db_prefix()."tasks.startdate >= '".$week_end."' ";
+		// } 
+		// if(!empty($_REQUEST['cur_val']) && $_REQUEST['cur_val']=='nextweek_tasks'){
+		// 	$week_start = date('Y-m-d',strtotime('sunday this week',strtotime("+1 week +1 day"))).' 00:00:00';
+		// 	$week_end = date('Y-m-d',strtotime('saturday this week',strtotime("+1 week +1 day"))).' 23:59:59';
+		// 	$req_cond = (!empty($sWhere))?" and ":" where ";
+		// 	$sWhere  .= $req_cond.db_prefix()."tasks.startdate >= '".$week_start."' and ".db_prefix()."tasks.startdate >= '".$week_end."' ";
+		// }
+		// if(!empty($_REQUEST['cur_val']) && $_REQUEST['cur_val']=='thismonth_tasks'){
+		// 	$req_cond = (!empty($sWhere))?" and ":" where ";
+		// 	$sWhere  .= $req_cond." month(".db_prefix()."tasks.startdate) = '".date('m')."' and year(".db_prefix()."tasks.startdate) = '".date('Y')."' ";
+		// }
+		// if(!empty($_REQUEST['cur_val']) && $_REQUEST['cur_val']=='lastmonth_tasks'){
+		// 	$month = date('m',strtotime('last month'));
+		// 	$year  = date('Y',strtotime('last month'));
+		// 	$req_cond = (!empty($sWhere))?" and ":" where ";
+		// 	$sWhere  .= $req_cond." month(".db_prefix()."tasks.startdate) = '".$month."' and year(".db_prefix()."tasks.startdate) = '".$year."' ";
+		// }
+		// if(!empty($_REQUEST['cur_val']) && $_REQUEST['cur_val']=='nextmonth_tasks'){
+		// 	$date = date('01-m-Y');
+		// 	$month = date("m", strtotime ('+1 month',strtotime($date)));
+		// 	$year = date("Y", strtotime ('+1 month',strtotime($date)));
+		// 	$req_cond = (!empty($sWhere))?" and ":" where ";
+		// 	$sWhere  .= $req_cond." month(".db_prefix()."tasks.startdate) = '".$month."' and year(".db_prefix()."tasks.startdate) = '".$year."' ";
+		// }  
 		if(!empty($_REQUEST['cur_val']) && $_REQUEST['cur_val']=='custom_tasks'){
 			$month_start = date('Y-m-d',strtotime($_REQUEST['period_from'])).' 00:00:00';
 			$month_end   = date('Y-m-d',strtotime($_REQUEST['period_to'])).' 23:59:59';
 			$req_cond = (!empty($sWhere))?" and ":" where ";
 			$sWhere  .= $req_cond.db_prefix()."tasks.startdate >= '".$month_start."' and ".db_prefix()."tasks.startdate <= '".$month_end."' ";
 		}
-		if(!empty($_REQUEST['cur_val']) && $_REQUEST['cur_val']=='upcoming_tasks'){
-			$req_cond = (!empty($sWhere))?" and ":" where ";
-			$sWhere  .= $req_cond.db_prefix()."tasks.status = '1' ";
-		}
-		if(!empty($_REQUEST['cur_val']) && $_REQUEST['cur_val']=='my_tasks'){
-			$req_cond = (!empty($sWhere))?" and ":" where ";
-			$sWhere  .= $req_cond.db_prefix()."tasks.id IN(SELECT taskid FROM ".db_prefix(). "task_assigned WHERE staffid=".get_staff_user_id().") ";
-		}
-		if(!empty($_REQUEST['task_type']) ){
-			$_REQUEST['task_type'] = trim($_REQUEST['task_type'],",");
-			$req_cond = (!empty($sWhere))?" and ":" where ";
-			$sWhere  .= $req_cond.db_prefix()."tasks.tasktype IN(".$_REQUEST['task_type'].") ";
-		}
-		if(!empty($_REQUEST['task_assign']) ){
-			$_REQUEST['task_assign'] = trim($_REQUEST['task_assign'],",");
-			$req_cond = (!empty($sWhere))?" and ":" where ";
-			$sWhere  .= $req_cond.db_prefix()."tasks.id IN(select taskid from ".db_prefix()."task_assigned where staffid IN(".$_REQUEST['task_assign'].")) ";
-		}
+		// if(!empty($_REQUEST['cur_val']) && $_REQUEST['cur_val']=='upcoming_tasks'){
+		// 	$req_cond = (!empty($sWhere))?" and ":" where ";
+		// 	$sWhere  .= $req_cond.db_prefix()."tasks.status = '1' ";
+		// }
+		// if(!empty($_REQUEST['cur_val']) && $_REQUEST['cur_val']=='my_tasks'){
+		// 	$req_cond = (!empty($sWhere))?" and ":" where ";
+		// 	$sWhere  .= $req_cond.db_prefix()."tasks.id IN(SELECT taskid FROM ".db_prefix(). "task_assigned WHERE staffid=".get_staff_user_id().") ";
+		// }
+		// if(!empty($_REQUEST['task_type']) ){
+		// 	$_REQUEST['task_type'] = trim($_REQUEST['task_type'],",");
+		// 	$req_cond = (!empty($sWhere))?" and ":" where ";
+		// 	$sWhere  .= $req_cond.db_prefix()."tasks.tasktype IN(".$_REQUEST['task_type'].") ";
+		// }
+		// if(!empty($_REQUEST['task_assign']) ){
+		// 	$_REQUEST['task_assign'] = trim($_REQUEST['task_assign'],",");
+		// 	$req_cond = (!empty($sWhere))?" and ":" where ";
+		// 	$sWhere  .= $req_cond.db_prefix()."tasks.id IN(select taskid from ".db_prefix()."task_assigned where staffid IN(".$_REQUEST['task_assign'].")) ";
+		// }
 		
-		if(!empty($_REQUEST['task_project']) ){
-			$req_cond = (!empty($sWhere))?" and ":" where ";
-			$sWhere  .= $req_cond.db_prefix()."tasks.rel_id = '".$_REQUEST['task_project']."' and rel_type = 'project' ";
-		} */
+		// if(!empty($_REQUEST['task_project']) ){
+		// 	$req_cond = (!empty($sWhere))?" and ":" where ";
+		// 	$sWhere  .= $req_cond.db_prefix()."tasks.rel_id = '".$_REQUEST['task_project']."' and rel_type = 'project' ";
+		// }
 		$cur_staff_id = get_staff_user_id();
 		$fields = "COUNT(DISTINCT IF(".db_prefix()."tasks.status = '1',".db_prefix(). "tasks.id,NULL)) AS upcoming,COUNT(DISTINCT IF(".db_prefix(). "tasks.status = '2',".db_prefix(). "tasks.id,NULL)) AS overdue,COUNT(DISTINCT IF(".db_prefix(). "tasks.status = '3',".db_prefix(). "tasks.id,NULL)) AS today,COUNT(DISTINCT IF(".db_prefix(). "tasks.status = '4',".db_prefix(). "tasks.id,NULL)) AS in_progress,COUNT(DISTINCT IF(".db_prefix(). "tasks.status = '5',".db_prefix(). "tasks.id,NULL)) AS completed,COUNT(DISTINCT IF(".db_prefix(). "tasks.status = '2' and ".db_prefix(). "tasks.id in(select taskid from ".db_prefix()."task_assigned where staffid = '".$cur_staff_id."'),".db_prefix(). "tasks.id,NULL)) AS overdue_me,COUNT(DISTINCT IF(".db_prefix(). "tasks.status = '1' and ".db_prefix(). "tasks.id in(select taskid from ".db_prefix()."task_assigned where staffid = '".$cur_staff_id."'),".db_prefix(). "tasks.id,NULL)) AS upcoming_me,COUNT(DISTINCT IF(".db_prefix(). "tasks.status = '3' and ".db_prefix(). "tasks.id in(select taskid from ".db_prefix()."task_assigned where staffid = '".$cur_staff_id."'),".db_prefix(). "tasks.id,NULL)) AS today_me,COUNT(DISTINCT IF(".db_prefix(). "tasks.status = '4' and ".db_prefix(). "tasks.id in(select taskid from ".db_prefix()."task_assigned where staffid = '".$cur_staff_id."'),".db_prefix(). "tasks.id,NULL)) AS in_progress_me,COUNT(DISTINCT IF(".db_prefix(). "tasks.status = '5' and ".db_prefix(). "tasks.id in(select taskid from ".db_prefix()."task_assigned where staffid = '".$cur_staff_id."'),".db_prefix(). "tasks.id,NULL)) AS completed_me";
 		
