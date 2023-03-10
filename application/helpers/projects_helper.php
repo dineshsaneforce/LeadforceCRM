@@ -281,7 +281,14 @@ function filter_project_visible_tabs($tabs, $applied_settings)
 
     return hooks()->apply_filters('project_filtered_visible_tabs', $newTabs);
 }
-
+function highlightSearchTerm($string, $searchTerm) {
+    $pos = mb_stripos($string, $searchTerm);
+    if($searchTerm =='' || $pos =='')
+        return $string;
+    $actualString =substr($string,$pos,strlen($searchTerm));
+    $highlighted_string =  substr($string, 0, $pos) . '<mark>' . $actualString . '</mark>' . substr($string, $pos + strlen($searchTerm));
+    return $highlighted_string;
+}
 /**
  * Get project by ID or current queried project
  * @param  mixed $id project id

@@ -1270,117 +1270,251 @@ class Projects extends AdminController
         }
     }
     public function header_gsearch()
-    {
+    { 
         $gsearch   = $this->input->post('globalsearch');
+        if(strlen($gsearch)<3){
+            $data['all_html'] = '';
+            if(!empty($gsearch)) {
+    
+                } else {
+                    $data['all_count'] = $data['projects_count'] = $data['clients_count'] = $data['contacts_count'] = $data['leads_count'] = 0;
+                    $data['contacts'] = $data['clients'] = $data['projects'] = $data['leads'] = '';
+                    $data['all_html'] = $data['projects_html'] = $data['clients_html'] = $data['contacts_html'] = $data['leads_html'] ='';
+                }
+                 echo json_encode($data);
+                 exit();
+        }
         $my_staffids = $this->staff_model->get_my_staffids();
         $data = array();
-		$project_fields = "id,name,description,status,pipeline_id,clientid,teamleader,billing_type,start_date,deadline,project_created,created_by,project_modified,modified_by,date_finished,progress,progress_from_tasks,project_cost,project_rate_per_hour,estimated_hours,addedfrom,stage_of,stage_on,loss_reason,loss_remark,deleted_status,project_currency,imported_id,lead_id";
-        if(!is_admin(get_staff_user_id())) {
-            if($my_staffids) {
-                $data['projects'] = $this->db->query('SELECT '.$project_fields.' FROM tblprojects where ((teamleader in (' . implode(',',$my_staffids) . ')) OR id IN (select project_id from tblproject_members where staff_id in (' . implode(',',$my_staffids) . '))) AND name like "%'.$gsearch.'%" ')->result_array();
+        $lead_fields = "id,name,phonenumber,email,company";
+        // $lead_fields = "id,hash,name,title,company,description,country,zip,city,state,address,teamleader,assigned,dateadded,from_form_id,status,source,pipeline_id,lastcontact,dateassigned,last_status_change,addedfrom,email,website,leadorder,phonenumber,date_converted,lost,junk,last_lead_status,is_imported_from_email_integration,email_integration_uid,is_public,default_language,startdate,enddate,currency,rate,client_id,project_id,deleted_status,query_id,phone_country_code,lead_currency,lead_cost"
+        if (!is_admin(get_staff_user_id())) {
+            if ($my_staffids) {
+                $data['leads'] = $this->db->query('SELECT '.$lead_fields.' FROM '.db_prefix().'leads WHERE ((assigned  in (' . implode(',',$my_staffids) . '))) AND (name LIKE  "%'.$gsearch.'%"  OR email LIKE "%'.$gsearch.'%" OR phonenumber LIKE  "%'.$gsearch.'%") ')->result_array();
             } else {
-                $data['projects'] = $this->db->query('SELECT '.$project_fields.' FROM tblprojects where ((teamleader = "'.get_staff_user_id().'") OR id IN (select project_id from tblproject_members where staff_id="'.get_staff_user_id().'")) AND name like "%'.$gsearch.'%" ')->result_array();
+                $data['leads'] = $this->db->query('SELECT '.$lead_fields.' FROM '.db_prefix().'leads WHERE ((assigned  = "'.get_staff_user_id().'")) AND (name LIKE  "%'.$gsearch.'%"  OR email LIKE "%'.$gsearch.'%" OR phonenumber LIKE  "%'.$gsearch.'%")')->result_array();
             }
         } else {
-            $data['projects'] = $this->projects_model->get('',[
-                "name like '%".$gsearch."%'" => "",
-            ]);
-        }
-         $client_fields = "userid,company,vat,phonenumber,country,city,zip,state,address,website,datecreated,active,leadid,billing_street,billing_city,billing_state,billing_zip,billing_country,shipping_street,shipping_city,shipping_state,shipping_zip,shipping_country,longitude,latitude,default_language,default_currency,show_primary_contact,stripe_id,registration_confirmed,addedfrom,deleted_status";
+            $data['leads'] = $this->db->query('SELECT '.$lead_fields.' FROM '.db_prefix().'leads WHERE id LIKE  "%'.$gsearch.'%" OR name LIKE  "%'.$gsearch.'%" OR email LIKE "%'.$gsearch.'%" OR phonenumber LIKE  "%'.$gsearch.'%" ')->result_array();
+        }        
+
+        $project_condition = '';
         if(!is_admin(get_staff_user_id())) {
             if($my_staffids) {
-                $data['clients'] = $this->db->query('SELECT '.$client_fields.' FROM tblclients where ((addedfrom in (' . implode(',',$my_staffids) . ')) OR userid IN (select clientid from tblprojects where id IN (select project_id from tblproject_members where staff_id in (' . implode(',',$my_staffids) . '))) OR userid IN ( select clientid from tblprojects where teamleader in (' . implode(',',$my_staffids) . '))) AND active = 1 AND (company like "%'.$gsearch.'%" OR phonenumber like "%'.$gsearch.'%")')->result_array();
+                $project_condition = " AND ((projects.teamleader in (" . implode(',',$my_staffids) . ")) OR projects.id IN (select project_id FROM " . db_prefix() . "project_members where staff_id in (" . implode(',',$my_staffids) . ")))";
             } else {
-                $data['clients'] = $this->db->query('SELECT '.$client_fields.' FROM tblclients where ((addedfrom="'.get_staff_user_id().'") OR userid IN (select clientid from tblprojects where id IN (select project_id from tblproject_members where staff_id="'.get_staff_user_id().'")) OR userid IN ( select clientid from tblprojects where teamleader = "'.get_staff_user_id().'")) AND active = 1 AND (company like "%'.$gsearch.'%" OR phonenumber like "%'.$gsearch.'%")')->result_array();
+                $project_condition = " AND ((projects.teamleader = '".get_staff_user_id()."') OR projects.id IN (select project_id FROM " . db_prefix() . "project_members where staff_id='".get_staff_user_id()."'))";
             }
+        } 
+        $data['projects'] =$this->db->query("SELECT projects.id, projects.name projectname,  projects.teamleader , projects.pipeline_id, projects.clientid,pipeline.name pipelinename, client.company ,staff.firstname, staff.lastname
+        FROM " . db_prefix() . "projects as projects
+        LEFT JOIN " . db_prefix() . "pipeline pipeline ON projects.pipeline_id = pipeline.id
+        LEFT JOIN " . db_prefix() . "clients AS client ON projects.clientid=client.userid
+        LEFT JOIN " . db_prefix() . "staff staff ON projects.teamleader= staff.staffid
+        WHERE(( projects.name  LIKE '%".$gsearch."%' OR
+          projects.teamleader LIKE '%".$gsearch."%' OR 
+          projects.pipeline_id LIKE '%".$gsearch."%' OR 
+          projects.clientid LIKE '%".$gsearch."%'
+         ) AND projects.teamleader != '')" . $project_condition)->result_array();
+      
+    $client_condition ="";
+    if(!is_admin(get_staff_user_id())) {
+        if ($my_staffids) {
+            $client_condition = " AND ((addedfrom IN (" . implode(',', $my_staffids) . ")) OR userid IN (SELECT clientid FROM " . db_prefix() . "projects WHERE id IN (SELECT project_id FROM " . db_prefix() . "project_members WHERE staff_id IN (" . implode(',', $my_staffids) . "))) OR userid IN (SELECT clientid FROM " . db_prefix() . "projects WHERE teamleader IN (" . implode(',', $my_staffids) . "))) AND active = 1";
+        } else {
+            $client_condition = " AND ((addedfrom='" . get_staff_user_id() . "') OR userid IN (SELECT clientid FROM " . db_prefix() . "projects WHERE id IN (SELECT project_id FROM " . db_prefix() . "project_members WHERE staff_id='" . get_staff_user_id() . "')) OR userid IN (SELECT clientid FROM " . db_prefix() . "projects WHERE teamleader = '" . get_staff_user_id() . "')) AND active = 1";
+        }
+    
+    }
+    $data['clients'] = $this->db->query("SELECT clients.userid, country.short_name , clients.company , clients.zip, clients.address,clients.state, clients.country,clients.city,clients.phonenumber
+        FROM " . db_prefix() . "clients as clients
+        LEFT JOIN " . db_prefix() . "countries country ON clients.country = country.country_id
+        WHERE (clients.active = 1 AND (clients.company LIKE '%".$gsearch."%' OR clients.zip LIKE '%".$gsearch."%' OR clients.address LIKE '%".$gsearch."%' OR clients.state LIKE '%".$gsearch."%' OR clients.country LIKE '%".$gsearch."%' OR clients.city LIKE '%".$gsearch."%' OR clients.phonenumber LIKE '%".$gsearch."%') AND clients.company != '')".$client_condition)->result_array();
+
+    if(!is_admin(get_staff_user_id())) {
+
+        if($my_staffids) {
+            $where = ' WHERE ('.db_prefix().'contacts.addedfrom IN (' . implode(',',$my_staffids) . ') OR (' . db_prefix() . 'contacts.userid IN (SELECT ' . db_prefix() . 'projects.clientid FROM ' . db_prefix() . 'projects join ' . db_prefix() . 'project_members  on ' . db_prefix() . 'project_members.project_id = ' . db_prefix() . 'projects.id WHERE ' . db_prefix() . 'project_members.staff_id in (' . implode(',',$my_staffids) . ')  AND ' . db_prefix() . 'projects.clientid != "")) OR  (' . db_prefix() . 'contacts.userid IN (SELECT ' . db_prefix() . 'projects.clientid FROM ' . db_prefix() . 'projects where ' . db_prefix() . 'projects.teamleader in (' . implode(',',$my_staffids) . ') AND ' . db_prefix() . 'projects.clientid != "" )))   AND ('.db_prefix().'contacts.firstname like "%'.$gsearch.'%" OR '.db_prefix().'contacts.email like "%'.$gsearch.'%" OR '.db_prefix().'contacts.phonenumber like "%'.$gsearch.'%")  AND '.db_prefix().'contacts.deleted_status=0 AND '.db_prefix().'clients.deleted_status=0 '.$likeqry;
+
+            $where_summary_inactiveperson_qry = 'SELECT  '.db_prefix().'contacts.*
+            FROM '.db_prefix().'contacts
+            LEFT JOIN '.db_prefix().'clients ON '.db_prefix().'clients.userid='.db_prefix().'contacts.userid LEFT JOIN '.db_prefix().'customfieldsvalues as ctable_0 ON '.db_prefix().'contacts.id = ctable_0.relid AND ctable_0.fieldto="contacts" AND ctable_0.fieldid=7'.$where;
             
+
         } else {
-            $data['clients'] = $this->clients_model->get('',[
-                db_prefix() .'clients.active' => 1, " (".
-                db_prefix() ."clients.company like '%".$gsearch."%'" . " OR ".
-                db_prefix() ."clients.phonenumber like '%".$gsearch."%'" .") and ".db_prefix()."clients.company != " => "",
-            ]);
+            $where = ' WHERE ('.db_prefix().'contacts.addedfrom = "'.get_staff_user_id().'" OR (' . db_prefix() . 'contacts.userid IN (SELECT ' . db_prefix() . 'projects.clientid FROM ' . db_prefix() . 'projects join ' . db_prefix() . 'project_members  on ' . db_prefix() . 'project_members.project_id = ' . db_prefix() . 'projects.id WHERE ' . db_prefix() . 'project_members.staff_id = "'.get_staff_user_id().'"  AND ' . db_prefix() . 'projects.clientid != "")) OR  (' . db_prefix() . 'contacts.userid IN (SELECT ' . db_prefix() . 'projects.clientid FROM ' . db_prefix() . 'projects where ' . db_prefix() . 'projects.teamleader = "'.get_staff_user_id().'" AND ' . db_prefix() . 'projects.clientid != "" )))   AND (' . db_prefix() . 'contacts.firstname like "%'.$gsearch.'%" OR ' . db_prefix() . 'contacts.email like "%'.$gsearch.'%" OR ' . db_prefix() . 'contacts.phonenumber like "%'.$gsearch.'%")  AND ' . db_prefix() . 'contacts.deleted_status=0 AND ' . db_prefix() . 'clients.deleted_status=0 '.$likeqry;
+
+            $where_summary_inactiveperson_qry = 'SELECT  ' . db_prefix() . 'contacts.*
+            FROM ' . db_prefix() . 'contacts
+            LEFT JOIN ' . db_prefix() . 'clients ON ' . db_prefix() . 'clients.userid=' . db_prefix() . 'contacts.userid LEFT JOIN ' . db_prefix() . 'customfieldsvalues as ctable_0 ON ' . db_prefix() . 'contacts.id = ctable_0.relid AND ctable_0.fieldto="contacts" AND ctable_0.fieldid=7'.$where;
+            
+                    
         }
-
-        if(!is_admin(get_staff_user_id())) {
-            if($my_staffids) {
-                $where = ' WHERE ('.db_prefix().'contacts.addedfrom IN (' . implode(',',$my_staffids) . ') OR (' . db_prefix() . 'contacts.userid IN (SELECT ' . db_prefix() . 'projects.clientid FROM ' . db_prefix() . 'projects join ' . db_prefix() . 'project_members  on ' . db_prefix() . 'project_members.project_id = ' . db_prefix() . 'projects.id WHERE ' . db_prefix() . 'project_members.staff_id in (' . implode(',',$my_staffids) . ')  AND tblprojects.clientid != "")) OR  (' . db_prefix() . 'contacts.userid IN (SELECT ' . db_prefix() . 'projects.clientid FROM ' . db_prefix() . 'projects where ' . db_prefix() . 'projects.teamleader in (' . implode(',',$my_staffids) . ') AND tblprojects.clientid != "" )))   AND (tblcontacts.firstname like "%'.$gsearch.'%" OR tblcontacts.email like "%'.$gsearch.'%" OR tblcontacts.phonenumber like "%'.$gsearch.'%")  AND tblcontacts.deleted_status=0 AND tblclients.deleted_status=0 '.$likeqry;
-                $where_summary_inactiveperson_qry = 'SELECT  tblcontacts.*
-                FROM tblcontacts
-                LEFT JOIN tblclients ON tblclients.userid=tblcontacts.userid LEFT JOIN tblcustomfieldsvalues as ctable_0 ON tblcontacts.id = ctable_0.relid AND ctable_0.fieldto="contacts" AND ctable_0.fieldid=7'.$where;
-
-            } else {
-                $where = ' WHERE ('.db_prefix().'contacts.addedfrom = "'.get_staff_user_id().'" OR (' . db_prefix() . 'contacts.userid IN (SELECT ' . db_prefix() . 'projects.clientid FROM ' . db_prefix() . 'projects join ' . db_prefix() . 'project_members  on ' . db_prefix() . 'project_members.project_id = ' . db_prefix() . 'projects.id WHERE ' . db_prefix() . 'project_members.staff_id = "'.get_staff_user_id().'"  AND tblprojects.clientid != "")) OR  (' . db_prefix() . 'contacts.userid IN (SELECT ' . db_prefix() . 'projects.clientid FROM ' . db_prefix() . 'projects where ' . db_prefix() . 'projects.teamleader = "'.get_staff_user_id().'" AND tblprojects.clientid != "" )))   AND (tblcontacts.firstname like "%'.$gsearch.'%" OR tblcontacts.email like "%'.$gsearch.'%" OR tblcontacts.phonenumber like "%'.$gsearch.'%")  AND tblcontacts.deleted_status=0 AND tblclients.deleted_status=0 '.$likeqry;
-                $where_summary_inactiveperson_qry = 'SELECT  tblcontacts.*
-                FROM tblcontacts
-                LEFT JOIN tblclients ON tblclients.userid=tblcontacts.userid LEFT JOIN tblcustomfieldsvalues as ctable_0 ON tblcontacts.id = ctable_0.relid AND ctable_0.fieldto="contacts" AND ctable_0.fieldid=7'.$where;
-               
-                        
-            }
-            $data['contacts'] = $this->db->query($where_summary_inactiveperson_qry)->result_array();
-        } else {
-            $data['contacts'] = $this->clients_model->get_contacts('',[
-                db_prefix() .'contacts.active' => 1," (".
-                db_prefix() ."contacts.firstname like '%".$gsearch."%' OR ".
-                db_prefix() ."contacts.email like '%".$gsearch."%' OR " .
-                db_prefix() ."contacts.phonenumber like '%".$gsearch."%'".") and ".db_prefix()."contacts.firstname != " => "",
-            ]);
-        }
-
+        $data['contacts'] = $this->db->query($where_summary_inactiveperson_qry)->result_array();
+    } else {
+        
+        $data['contacts'] = $this->clients_model->get_merged_contacts('',[
+            db_prefix() .'contacts.active' => 1," (".
+            db_prefix() ."contacts.firstname like '%".$gsearch."%' OR ".
+            db_prefix() ."contacts.email like '%".$gsearch."%' OR " .
+            db_prefix() ."contacts.phonenumber like '%".$gsearch."%'".") and ".db_prefix()."contacts.firstname != " => "",
+        ]);
+        
+    }
 			$data['projects_count'] = count($data['projects']);
+            $data['leads_count'] = count($data['leads']);
 			$data['clients_count'] = count($data['clients']);
 			$data['contacts_count'] = count($data['contacts']);
-			$data['all_count'] = $data['contacts_count'] + $data['clients_count'] + $data['projects_count'];
-			
-			$data['all_html'] = $data['projects_html'] = $data['clients_html'] = $data['contacts_html'] = '';
-			
-			foreach($data['clients'] as $client){ 
-				$data['clients_html'] .= '<li class="relative notification-wrapper thsr-client">
-		<div class="media">
-			<div class="media-body">
-			 <h5 class="media-heading mtop5">
-				<a href="'.admin_url('clients/client/'.$client["userid"]).'">'.$client['company'].'</a>
-			 </h5>
-			</div>
-		</div>
-	</li>';
-			}
-			
-			$data['all_html'] .= $data['clients_html'];
-
-			foreach($data['projects'] as $project){ 
-				$data['projects_html'] .= '<li class="relative notification-wrapper thsr-client">
-		<div class="media">
-			<div class="media-body">
-			 <h5 class="media-heading mtop5">
-				<a href="'.admin_url('projects/view/'.$project["id"]).'">'.$project['name'].'</a>
-			 </h5>
-			</div>
-		</div>
-	</li>';
-			}
-			
-			$data['all_html'] .= $data['projects_html'];
             
-			foreach($data['contacts'] as $contact){ 
-				$data['contacts_html'] .= '<li class="relative notification-wrapper thsr-client">
-		<div class="media">
-			<div class="media-body">
-			 <h5 class="media-heading mtop5">
-				<a href="'.admin_url('clients/view_contact/'.$contact["id"]).'">'.get_contact_full_name($contact['id']).'</a>
-			 </h5>
-			</div>
-		</div>
-	</li>';
-			}
+			$data['all_count'] = $data['contacts_count'] + $data['clients_count'] + $data['projects_count'] + $data['leads_count'];
 			
-			$data['all_html'] .= $data['contacts_html'];
-            if(!empty($gsearch)) {
+			$data['all_html'] = $data['projects_html'] = $data['clients_html'] = $data['contacts_html'] = $data['leads_html'] ='';
+            $leads_html = '';
+  
+            foreach($data['leads'] as $lead) {  
+              $lead['name'] = highlightSearchTerm($lead['name'], $gsearch);
+              $lead['email'] = highlightSearchTerm($lead['email'], $gsearch);
+              $lead['phonenumber'] = highlightSearchTerm($lead['phonenumber'], $gsearch);
+            
+              $name = $lead['name'];
+              $lead_company = (!empty($lead['company'])) ? '<i class="fa fa-building mr-2"></i>' ." ".$lead['company'] : '';
+              $email = (!empty($lead['email'])) ? '<i class="fa fa-envelope mr-2"></i>' ." ".$lead['email'] : '';
+              $phonenumber = (!empty($lead['phonenumber'])) ? '<i class="fa fa-phone mr-2"></i>' . " ".$lead['phonenumber'] : '';
+              $separator = '';
+              if (!empty($email) && !empty($phonenumber)) {
+                  $separator = ' | ';
+              }
+              $contact_details = $email . $separator . $phonenumber;
+              $data['leads_html'] .= '<li class="relative notification-wrapper thsr-lead">
+                <div class="media">
+                  <div class="media-body">
+                    <h5 class="media-heading mtop5">
+                      <a href="'.admin_url('leads/lead/'.$lead["id"]).'">'.$name.'</a>                                
+                    </h5>
+                    <p>'.$lead_company.'</p>
+                    <p>'.$contact_details.'</p>
+              </div>
+                </div>
+              </li>';
+            }
+            
+            $data['all_html'] .= $data['leads_html'];
+            
+           $projects_html = '';
+
+            foreach($data['projects'] as $project) {   
+              $project['name'] = highlightSearchTerm($project['projectname'],$gsearch);
+
+              if(!empty($project['teamleader'])){
+                $teamleader = '<i class="fa fa-user" mr-2"></i>' . " ".$project['firstname']." ".$project['lastname'];
+              }
+              else{
+                $teamleader ="";
+              }
+
+              if(!empty($project['pipelinename'])){
+                $pipelinename = '<i class="fa fa-bar-chart mleft5 mright5 fa-flip-vertical fa-rotate-180" mr-2"></i>' . " ".$project['pipelinename'];
+              }
+              else{
+                $pipelinename ="";
+              }
+              $clientid =(!empty($project['clientid'])) ?'<i class="fa fa-building" mr-2"></i>' . " ".$project['company']: '';
+              $data['projects_html'] .= '<li class="relative notification-wrapper thsr-project">
+                <div class="media">
+                  <div class="media-body">
+                    <h5 class="media-heading mtop5">
+                      <a href="'.admin_url('projects/view/'.$project["id"]).'">'.$project['name'].'</a>
+                    </h5>
+                    <p>'.$clientid.'</p>
+                    <p>'.$teamleader." ".$pipelinename.'</p>
+                    
+                  </div>
+                </div>
+              </li>';
+            }
+            
+            $data['all_html'] .= $data['projects_html'];
+            
+            $clients_html = '';
+
+            foreach($data['clients'] as $client) {  
+                $client['company'] = highlightSearchTerm($client['company'], $gsearch);
+                $client['address'] = highlightSearchTerm($client['address'], $gsearch);
+                $client['city'] = highlightSearchTerm($client['city'], $gsearch);
+                $client['state'] = highlightSearchTerm($client['state'], $gsearch);
+                $client['zip'] = highlightSearchTerm($client['zip'], $gsearch);
+                $client['country'] = highlightSearchTerm($client['country'], $gsearch);
+                $client['phonenumber'] = highlightSearchTerm($client['phonenumber'], $gsearch);
+
+                $client_company = $client['company'];
+                $city =(!empty($client['city'])) ?$client['city']: '';
+                $state =(!empty($client['state'])) ?$client['state']: '';
+                $zip =(!empty($client['zip'])) ?$client['zip']: '';
+                $country =(!empty($client['country'])) ? $client['short_name']: '';                
+                $phonenumber = (!empty($client['phonenumber'])) ? '<i class="fa fa-phone mr-2"></i>' . " ".$client['phonenumber'] : '';
+                if (!empty($client['address'])) {
+                    $address ='<i class="fa fa-map-marker" mr-2"></i>' . " ".$client['address'];
+                }
+                else if (empty($client['address']) && !empty($client['city'])) {
+                    $city ='<i class="fa fa-map-marker" mr-2"></i>' . " ".$client['city'];
+                }
+                else if (empty($client['address']) && empty($client['city']) && !empty($client['state'])) {
+                    $state ='<i class="fa fa-map-marker" mr-2"></i>' . " ".$client['state'];
+                }
+                else if (empty($client['address']) && empty($client['city']) && empty($client['state']) && !empty($client['country'])) {
+                    $country ='<i class="fa fa-map-marker" mr-2"></i>' . " ".$client['short_name'];
+                }
+                $address_city_state_zip_country = $address . " " . $city . " " . $state . " " . $zip . " " . $country;
+                $data['clients_html'] .= '<li class="relative notification-wrapper thsr-client">
+                <div class="media">
+                    <div class="media-body">
+                        <h5 class="media-heading mtop5">
+                        <a href="'.admin_url('clients/client/'.$client["userid"]).'">'.$client_company.'</a>                                
+                        </h5>
+                        <p>'.$phonenumber.'</p>
+                        <p>'.$address_city_state_zip_country.'</p>
+                    </div>
+                </div>
+            </li>';
+
+            }
+            
+            $data['all_html'] .= $data['clients_html'];
+
+            foreach($data['contacts'] as $contact)
+            {   
+                $contact['firstname'] = highlightSearchTerm($contact['firstname'], $gsearch);
+                $contact['email'] = highlightSearchTerm($contact['email'], $gsearch);
+                $contact['phonenumber'] = highlightSearchTerm($contact['phonenumber'], $gsearch);
+                $companyname = (!empty($contact['userids'])||!empty($contact['userid']) ) ? '<i class="fa fa-building" mr-2"></i>' . " ".$contact['company']: '';
+                $email = (!empty($contact['email'])) ? '<i class="fa fa-envelope mr-2"></i>' . " " . $contact['email'] : '';
+                $phonenumber = (!empty($contact['phonenumber'])) ? '<i class="fa fa-phone mr-2"></i>' . " " . $contact['phonenumber'] : '';
+                $separator = '';
+                if (!empty($email) && !empty($phonenumber)) {
+                    $separator = ' | ';
+                }
+                $contact_details = $email . $separator . $phonenumber;
+                $data['contacts_html'] .= 
+                '<li class="relative notification-wrapper thsr-contact">
+                    <div class="media">
+                        <div class="media-body">
+                            <h5 class="media-heading mtop5">
+                                <a href="'.admin_url('clients/view_contact/'.$contact["id"]).'">'.$contact['firstname'].'</a>
+                            </h5>
+                            <p>'.$companyname.'</p>
+                            <p>'.$contact_details.'</p>
+                         </div>
+                    </div>
+                </li>';                
+            }
+            
+		$data['all_html'] .= $data['contacts_html'];
+        if(!empty($gsearch)) {
 
             } else {
-                $data['all_count'] = $data['projects_count'] = $data['clients_count'] = $data['contacts_count'] = 0;
-                $data['contacts'] = $data['clients'] = $data['projects'] = '';
-                $data['all_html'] = $data['projects_html'] = $data['clients_html'] = $data['contacts_html'] = '';
+                $data['all_count'] = $data['projects_count'] = $data['clients_count'] = $data['contacts_count'] = $data['leads_count'] = 0;
+                $data['contacts'] = $data['clients'] = $data['projects'] = $data['leads'] = '';
+                $data['all_html'] = $data['projects_html'] = $data['clients_html'] = $data['contacts_html'] = $data['leads_html'] ='';
             }
 			
 			 echo json_encode($data);
