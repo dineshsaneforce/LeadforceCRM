@@ -3102,6 +3102,10 @@ class Tasks_model extends App_Model
 		$where_cond = task_count_cond();
 		if(!empty($sWhere))
 			$where_cond = ltrim($where_cond," where");
+
+        if($sWhere){
+            $sWhere .=' AND ';
+        }
 		$sWhere .= $where_cond;
 		// if(!empty($_REQUEST['cur_val']) && $_REQUEST['cur_val']=='today_tasks'){
 		// 	$req_cond = (!empty($sWhere))?" and ":" where ";
