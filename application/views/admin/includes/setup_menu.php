@@ -8,10 +8,12 @@
         </li>
         <?php
         $totalSetupMenuItems = 0;
-        foreach($setup_menu as $key => $item){
-         if(isset($item['collapse']) && count($item['children']) === 0) {
-           continue;
-       }
+        if($setup_menu){
+            foreach($setup_menu as $key => $item){
+                if(isset($item['collapse']) && count($item['children']) === 0) {
+                continue;
+            }   
+        }
        $totalSetupMenuItems++;
        $uri = $this->uri->segment(3);
        ?>

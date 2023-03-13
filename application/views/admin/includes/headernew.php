@@ -17,6 +17,7 @@
             $isActive = false;
             $uri = $this->uri->segment(3);
         ?>
+        <?php if($sidebar_menu): ?>
         <?php foreach($sidebar_menu as $key => $item): ?>
         <?php 
             if(isset($uri) && $uri == 'view_contact') {
@@ -71,6 +72,7 @@
             <?php endif; ?>
         </li>
         <?php endforeach; ?>
+        <?php endif; ?>
     </ul>
 </div>
 

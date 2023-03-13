@@ -231,10 +231,11 @@ class Leads_model extends App_Model {
         $currency = $data['currency'];
         $data['lead_currency'] =$currency;
         unset($data['currency']);
-
-        foreach($data['no'] as $val) {
-            if($data['status_'.$val]) {
-                unset($data['status_'.$val]);
+        if($data){
+            foreach($data['no'] as $val) {
+                if($data['status_'.$val]) {
+                    unset($data['status_'.$val]);
+                }
             }
         }
 

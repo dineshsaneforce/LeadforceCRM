@@ -111,8 +111,10 @@
                             if ($lead_id) {
                                 $selected = $_POST['project_contacts'];
                             }
-                            foreach ($contacts as $contact) {
-                                array_push($selected, $contact['contacts_id']);
+                            if($contacts){
+                                foreach ($contacts as $contact) {
+                                    array_push($selected, $contact['contacts_id']);
+                                }
                             }
                             echo render_select('project_contacts[]', $client_contacts, array('id', array('firstname', 'lastname')), false, $selected, array('multiple' => true, 'data-actions-box' => true, 'aria-describedby' => 'project_contacts-error'), array(), '', '', false);
 
