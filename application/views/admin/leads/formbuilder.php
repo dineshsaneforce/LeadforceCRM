@@ -49,11 +49,18 @@
                               <div class="panel_s mtop15">
                               <div class="panel-body">
                                  <div class="row">
+                                 <div class="col-xs-4">
+                                       <p class="text-muted">Form name</p>
+                                    </div>
+                                    <div class="col-xs-8">
+                                       <p class=""><?php echo $form->name ?></p>
+                                    </div>
+
                                     <div class="col-xs-4">
                                        <p class="text-muted">Webhook URL</p>
                                     </div>
                                     <div class="col-xs-8">
-                                       <p class=""><?php echo base_url('webhooks/webforms/lead/' . $configure_id) ?></p>
+                                       <p class=""><?php echo base_url('webhooks/webforms/lead/' . $form->id) ?></p>
                                     </div>
 
                                     <div class="col-xs-4">
