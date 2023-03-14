@@ -75,6 +75,7 @@ class AccountTransfer_model extends App_Model
 
     public function get_transfer_history() {
         $this->db->select('tbltransfer_history.*,(select firstname from tblstaff where staffid = tbltransfer_history.transfer_by) as t_by, (select firstname from tblstaff where staffid = tbltransfer_history.trans_from) as t_from, (select firstname from tblstaff where staffid = tbltransfer_history.trans_to) as t_to');
+        $this->db->where('transfer_type', 'account');
         return $result = $this->db->get(db_prefix() . 'transfer_history')->result_array();
     }
 

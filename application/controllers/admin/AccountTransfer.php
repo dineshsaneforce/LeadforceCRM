@@ -49,6 +49,7 @@ class AccountTransfer extends AdminController
                     $history['contacts'] = count((array)$da->contacts->addedfrom);
                     $history['transfer_by'] = get_staff_user_id();
                     $history['transfer_details'] = $dataUpdate['deavite_follow_ids'];
+                    $history['transfer_type'] = 'account';
                     $this->AccountTransfer_model->storeTransferHierarchy($history);
 
                     $this->db->where('trans_to',$id);

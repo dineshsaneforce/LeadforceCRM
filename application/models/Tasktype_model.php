@@ -80,4 +80,23 @@ class Tasktype_model extends App_Model
         }
         return false;
     }
+/**
+ * Count Tasktype
+**/
+    public function countTasks_by_tasktype($id) {
+        $this->db->where('tasktype', $id);
+        $this->db->from('tbltasks');
+        return $this->db->count_all_results();
+    }
+/**
+ * Change Tasktype status
+**/  
+    public function change_tasktype_status($id, $status){
+        $status_value = ($status == 'active') ? 'active' : 'inactive';
+        $this->db->where('id', $id);
+        $this->db->update(db_prefix() . 'tasktype', [
+            'status' => $status_value,
+        ]);
+        log_activity('Task Type Status Changed [id: ' . $id . ' - Status: ' . $status . ']');
+    }
 }
