@@ -372,7 +372,7 @@ echo form_input($form_hidden_var);
                 </div>
             </div>
             <div class="col-md-4 period">
-            <a href="#" class="btn btn-xs" data-cview="custom_tasks" onclick="dt_custom_view('custom_tasks','<?php echo $view_table_name; ?>','custom_tasks'); return false;">
+            <a href="#" class="btn btn-xs btn-info" data-cview="custom_tasks" onclick="dt_custom_view('custom_tasks','<?php echo $view_table_name; ?>','custom_tasks'); return false;">
             <?php echo _l('apply'); ?>
         </a>
             </div>

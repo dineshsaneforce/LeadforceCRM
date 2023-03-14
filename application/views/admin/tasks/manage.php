@@ -142,6 +142,7 @@
   $( function() {
     $( "#sortable" ).sortable();
     $( "#sortable" ).disableSelection();
+    dt_custom_view('all_period','.table-tasks','all_period')
   } );
   </script>
 <script>
