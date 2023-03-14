@@ -370,8 +370,7 @@
 								</div>
 							<?php } else if ($need_field12 == 'status') { ?>
 								<div id="div_<?php echo $need_fields_label[$i]; ?>" style="display:none;margin-top:15px;" class="ch_field_div">
-									<select name="sel_<?php echo $need_field12; ?>" id="<?php echo $need_fields_label[$i]; ?>" class="selectpicker " data-live-search="true" data-width="100%" data-none-selected-text="<?php echo _l('dropdown_non_selected_tex'); ?>">
-										<option></option>
+									<select name="sel_<?php echo $need_field12; ?>" id="<?php echo $need_fields_label[$i]; ?>" class="selectpicker " data-live-search="true" data-width="100%">
 										<?php foreach ($statuses as $status) { ?>
 											<option value="<?php echo $status['id']; ?>"><?php echo $status['name']; ?></option>
 										<?php } ?>
@@ -541,21 +540,35 @@ $status1 = (!empty($_REQUEST['status'])) ? '?status=' . $_REQUEST['status'] : ''
 			}
 			$('#div_' + a).show();
 		}
-		if (a == 'project_customer' || a == 'project_contacts' || a == 'project_primary_contacts') {
-			$('#bul_project_customer').val('Edit current value...');
+
+		if(a == 'project_customer' && $('#bul_project_customer').val() =='Keep current value'){
+			$('#div_project_customer').hide();
+			$('#bul_project_primary_contacts').val('Keep current value');
+			$('#div_project_primary_contacts').hide();
+			$('#bul_project_contacts').val('Keep current value');
+			$('#div_project_contacts').hide();
+		}else if(a == 'project_contacts' && $('#bul_project_contacts').val() =='Keep current value'){
+			$('#div_project_customer').hide();
+			$('#bul_project_primary_contacts').val('Keep current value');
+			$('#div_project_primary_contacts').hide();
+			$('#bul_project_contacts').val('Keep current value');
+			$('#div_project_contacts').hide();
+		}else if(a == 'pipeline' && $('#bul_pipeline').val() =='Keep current value'){
+			$('#bul_project_status').val('Keep current value');
+			$('#div_project_status').hide();
+		}else if (a == 'project_customer' || a == 'project_contacts' || a == 'project_primary_contacts') {
+			// $('#bul_project_customer').val('Edit current value...');
 			$('#div_project_customer').show();
 			$('#bul_project_primary_contacts').val('Edit current value...');
 			$('#div_project_primary_contacts').show();
-			$('#bul_project_contacts').val('Edit current value...');
-			$('#div_project_contacts').show();
-		}
-
-		if (a == 'project_status' || a == 'pipeline') {
+		}else if (a == 'project_status' || a == 'pipeline') {
 			$('#bul_pipeline').val('Edit current value...');
 			$('#div_pipeline').show();
 			$('#bul_project_status').val('Edit current value...');
 			$('#div_project_status').show();
 		}
+
+		
 		$('.selectpicker').selectpicker('refresh');
 	}
 

@@ -3885,7 +3885,7 @@ class Projects extends AdminController
 		$req_project = $_REQUEST['pipeline'];
 		$req_out = array();
 		$stages = $this->projects_model->pipelinestagebypipelineid($req_project);
-		$stage_option = '<option value="">'._l('select_stage').'</option>';
+		// $stage_option = '<option value="">'._l('select_stage').'</option>';
 		if(!empty($stages)){
 			foreach($stages as $stage12){
 				$stage_option .= "<option value='".$stage12['id']."'>".$stage12['name']."</option>";
