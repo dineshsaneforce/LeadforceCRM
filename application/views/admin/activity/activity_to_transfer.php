@@ -182,7 +182,7 @@ to {transform: rotate(359deg);}
               </div>
               <div class="col-md-12 row">
                 <hr class="hr-panel-heading">
-                <h4 class="no-margin"><?php echo _l('Activity Transfer History'); ?></h4><br>
+                <h4 class="no-margin"><?php echo _l('activity_trans_history'); ?></h4><br>
                 <div class="clearfix"></div> 
                 <table class="table dt-table scroll-responsive table-project-files" data-order-col="0" data-order-type="desc">
                   <thead>

@@ -28,13 +28,12 @@ class Tasktype extends AdminController
 /**
  * Add or edit Task-type
 **/
-    public function save()
+    public function save($id = '')
     {
         if (!has_permission('tasktype', '', 'view')) {
             access_denied('tasktype');
         }
-        if ($this->input->post())
-		{
+        if ($this->input->post()){
             $data = $this->input->post();
             if (!isset($data['id']) || !$data['id']) {
 				$checktasktypeexist = $this->tasktype_model->checkTasktypeexist($data['name']);
@@ -63,7 +62,7 @@ class Tasktype extends AdminController
 					}
 				}
             }
-			else{
+			else {
 				$checktasktypeexist = $this->tasktype_model->checkTasktypeexist($data['name']);
 				if(!empty($checktasktypeexist) && $checktasktypeexist->id != $data['id']) {
                     $response = array(
@@ -103,57 +102,53 @@ class Tasktype extends AdminController
         $this->load->view('admin/tasktype/form', $data);
     }
 
-public function edit($id)
-{ 
-    if (!has_permission('tasktype', '', 'view')) {
-        access_denied('tasktype');
-    } 
-    $tasktype = $this->tasktype_model->getTasktype($id);
-    if (!$tasktype) {
-        $response = array(
-            'success' => false,
-            'msg' => _l( _l('tasktype_not_found'))
-        );
-        echo json_encode($response);
-        return;
-    }else {
-        $response = array(
-            'success'=>true,
-            'data'=>$tasktype
-        );
-        echo json_encode($response);
-        return;
-    }
-    if ($this->input->post()) 
-    {  
-        $data = $this->input->post();
-        $data['id'] = $id;
-
-        $checktasktypeexist = $this->tasktype_model->checkTasktypeexist($data['name']);
-        if (!empty($checktasktypeexist) && $checktasktypeexist->id != $id) {
+    public function edit($id){ 
+        if (!has_permission('tasktype', '', 'view')) {
+            access_denied('tasktype');
+        } 
+        $tasktype = $this->tasktype_model->getTasktype($id);
+        if (!$tasktype) {
             $response = array(
-                'warning' => true,
-                'msg' => _l('already_exist', _l('tasktype'))
+                'success' => false,
+                'msg' => _l( _l('tasktype_not_found'))
+            );
+            echo json_encode($response);
+            return;
+        }else {
+            $response = array(
+                'success'=>true,
+                'data'=>$tasktype
             );
             echo json_encode($response);
             return;
         }
-        else {
-          
-            $success = $this->tasktype_model->updateTasktype($data, $id);
-            if ($success) {
+        if ($this->input->post()) {  
+            $data = $this->input->post();
+            $data['id'] = $id;
+
+            $checktasktypeexist = $this->tasktype_model->checkTasktypeexist($data['name']);
+            if (!empty($checktasktypeexist) && $checktasktypeexist->id != $id) {
                 $response = array(
-                    'success' => true,
-                    'msg' => _l('updated_successfully', _l('tasktype')),
-                    'data' => $tasktype
+                    'warning' => true,
+                    'msg' => _l('already_exist', _l('tasktype'))
                 );
                 echo json_encode($response);
                 return;
+            }else{          
+                $success = $this->tasktype_model->updateTasktype($data, $id);
+                if ($success){
+                    $response = array(
+                        'success' => true,
+                        'msg' => _l('updated_successfully', _l('tasktype')),
+                        'data' => $tasktype
+                    );
+                    echo json_encode($response);
+                    return;
+                }
+                $this->load->view('admin/tasktype/form', $data);
             }
-            $this->load->view('admin/tasktype/form', $data);
         }
     }
-}
 /**
  * View Task-type
 **/
@@ -199,7 +194,7 @@ public function edit($id)
  /* Change tasktype status active or inactive */
     public function change_tasktype_status($id, $status)
     {
-        if ($this->input->is_ajax_request()) {
+        if ($this->input->is_ajax_request()){
             $this->load->model('tasktype_model');
             $this->tasktype_model->change_tasktype_status($id, $status);
         }

@@ -17,8 +17,7 @@ foreach ($rResult as $aRow)
     for ($i = 0; $i < count($aColumns); $i++)
     {
         $_data = $aRow[$aColumns[$i]];
-        if ($aColumns[$i] == 'name')
-        {
+        if ($aColumns[$i] == 'name'){
             $_data = '<b><a href="#" class="edit-task task-type-link" data-taskypeid="' . $aRow['id'] . '">' . $_data . '</a></b>';
             $_data .= '<div class="row-options">';
             $_data .= '</div>';
@@ -41,9 +40,7 @@ foreach ($rResult as $aRow)
             } else {
                 $_data = "";
             }
-        }
-        
-        elseif ($aColumns[$i] == 'icon') {
+        }elseif ($aColumns[$i] == 'icon'){
             $_data = '<i class="fa ' . $aRow['icon'] . '"></i>';
         }elseif ($aColumns[$i] == 'option'&&$aRow['id'] != 1){
             $_data = '<a href="' . admin_url('tasktype/delete_tasktype/' . $aRow['id']) . '" class="_delete text-danger tasktype-delete-link"><i class="fa fa-trash"></i></a>';

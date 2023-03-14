@@ -65,7 +65,7 @@ class Activity_transfer extends AdminController
 //        pre($data['files']);\
         $data['history'] = $this->Activity_user_model->get_transfer_history();
         $data['employees']    = $this->Activity_user_model->get_staffs_whom_follow();
-        $data['title']     = _l('Activity Transfer');
+        $data['title']     = _l('activity_transfer');
         $data['bodyclass'] = 'dynamic-create-groups';
         $this->load->view('admin/activity/activity_to_transfer', $data);
     }

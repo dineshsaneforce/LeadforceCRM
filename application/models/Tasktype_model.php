@@ -91,13 +91,12 @@ class Tasktype_model extends App_Model
 /**
  * Change Tasktype status
 **/  
-public function change_tasktype_status($id, $status)
-{
-    $status_value = ($status == 'active') ? 'active' : 'inactive';
-    $this->db->where('id', $id);
-    $this->db->update(db_prefix() . 'tasktype', [
-        'status' => $status_value,
-    ]);
-    log_activity('Task Type Status Changed [id: ' . $id . ' - Status: ' . $status . ']');
-}
+    public function change_tasktype_status($id, $status){
+        $status_value = ($status == 'active') ? 'active' : 'inactive';
+        $this->db->where('id', $id);
+        $this->db->update(db_prefix() . 'tasktype', [
+            'status' => $status_value,
+        ]);
+        log_activity('Task Type Status Changed [id: ' . $id . ' - Status: ' . $status . ']');
+    }
 }
